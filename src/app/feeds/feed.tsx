@@ -1,16 +1,15 @@
 import * as React from 'react';
 
-export class Tech {
+export class Feed {
   constructor(
-    public title: string,
-    public text1: string,
-    public text2: string,
-    public logo: string
+    public url: string,
+    public logo: string,
+    public string: string,
   ) {}
 }
 
 const styles = {
-  tech: {
+  feed: {
     height: '15rem',
     width: '15rem',
     border: '1px solid lightgray',
@@ -30,27 +29,24 @@ const styles = {
   }
 };
 
-interface ITechProps {
+interface IFeedProps {
   key: number;
-  tech: Tech;
+  feed: Feed;
 };
 
-interface ITechState {};
+interface IFeedState {};
 
-export class TechComponent extends React.Component<ITechProps, ITechState> {
+export class FeedComponent extends React.Component<IFeedProps, IFeedState> {
   static propTypes = {
-    tech: React.PropTypes.object.isRequired
+    feed: React.PropTypes.object.isRequired
   };
 
   render() {
     return (
-      <div style={styles.tech}>
-        <img style={styles.logo} src={this.props.tech.logo}/>
+      <div>
         <h3 style={styles.h3}>
-          {this.props.tech.title}
+          {this.props.feed.url}
         </h3>
-        <p>{this.props.tech.text1}</p>
-        <p>{this.props.tech.text2}</p>
       </div>
     );
   }
