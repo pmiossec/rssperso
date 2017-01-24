@@ -35,7 +35,14 @@ export class Feeds extends React.Component<IFeedsProps, IFeedsState> {
     axios
       .get('app/feeds/feeds.json')
       .then((response: Axios.AxiosXHR<Feed[]>) => {
-        this.setState({feeds: response.data});
+        const feeds = response.data;
+        var feedsWithContent = feeds.map(f => {
+          var feed = new Feed(f.url);
+          feed.loadFeedContent();
+          return feed;
+        });
+
+        this.setState({feeds: feedsWithContent});
       });
   }
 
