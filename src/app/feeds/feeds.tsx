@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as axios from 'axios';
 
-import {Feed, FeedComponent} from './feed';
+import {FeedComponent} from './feed';
 
 const styles = {
   container: {
@@ -9,7 +9,6 @@ const styles = {
   },
   h2: {
     fontWeight: 300,
-    fontSize: '1.5rem'
   },
   feeds: {
     display: 'flex',
@@ -22,7 +21,7 @@ const styles = {
 interface IFeedsProps {};
 
 interface IFeedsState {
-  feeds: Feed[];
+  feeds: string[];
 };
 
 export class Feeds extends React.Component<IFeedsProps, IFeedsState> {
@@ -31,18 +30,11 @@ export class Feeds extends React.Component<IFeedsProps, IFeedsState> {
     this.state = {feeds: []};
   }
 
-  componentDidMount() {
+  componentWillMount(): void {
     axios
       .get('app/feeds/feeds.json')
-      .then((response: Axios.AxiosXHR<Feed[]>) => {
-        const feeds = response.data;
-        var feedsWithContent = feeds.map(f => {
-          var feed = new Feed(f.url);
-          feed.loadFeedContent();
-          return feed;
-        });
-
-        this.setState({feeds: feedsWithContent});
+      .then((response: Axios.AxiosXHR<string[]>) => {
+        this.setState({feeds: response.data});
       });
   }
 
@@ -50,9 +42,9 @@ export class Feeds extends React.Component<IFeedsProps, IFeedsState> {
     return (
       <div style={styles.container}>
         <div style={styles.feeds as any}>
-          {this.state.feeds.map((feed: Feed, i: number) => (
-            <FeedComponent key={i} feed={feed}/>
-          ))}
+          {this.state.feeds.map((url: string, i: number) =>
+              <FeedComponent key={i} url={url}/>
+          )}
         </div>
       </div>
     );
