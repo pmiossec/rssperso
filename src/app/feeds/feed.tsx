@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as axios from 'axios';
+import * as moment from 'moment';
 
 export class Feed {
 
@@ -28,9 +29,9 @@ export class Feed {
       .get(this.url)
       .then((response: Axios.AxiosXHR<string>) => {
         try {
-          this.content = response.data;
-          const xmlDoc = parser.parseFromString(this.content, 'text/xml');
-          console.log('xmlDoc:', xmlDoc.documentElement);
+          var content = response.data;
+          const xmlDoc = parser.parseFromString(content, 'text/xml');
+          //console.log('xmlDoc:', xmlDoc.documentElement);
           const feedFormat = xmlDoc.documentElement.tagName;
           // debugger;
           switch (feedFormat) {
@@ -48,7 +49,10 @@ export class Feed {
             var parts = this.url.split('/');
             this.logo = parts[0] + '//' + parts[2] + '/favicon.ico';
           }
-
+          if (!this.title) {
+            this.title = this.url;
+          }
+          console.log('feed read', this);
         } catch (ex) {
           this.title = `${this.url} Error loading :( Error: ${ex}`;
         }
@@ -68,29 +72,41 @@ export class Feed {
 
   private manageRssFeed(xmlDoc: HTMLElement): void {
     console.log(`Processing Rss feed ( ${this.url} )...`);
-    const channel = xmlDoc.getElementsByTagName('channel').item(0);
+    const channel = this.getElementByTagName(xmlDoc, 'channel');
     this.title = this.getElementContentByTagName(channel, 'title');
     this.logo = this.getElementContentByTagName(this.getElementByTagName(channel, 'image'), 'url');
-    const items = channel.getElementsByTagName('item');
+    const items = xmlDoc.getElementsByTagName('item');
+    console.log('items', items)
     for (var iItems = 0; iItems < items.length; iItems++) {
       var item = items.item(iItems);
       var link = new Link(this.getElementContentByTagName(item, 'link'), this.getElementContentByTagName(item, 'title'));
       link.publicationDate = this.getLinkRssDate(item);
+      console.log('link found', link);
       if (link.publicationDate > this.clearDate) {
+        console.log('...Added!');
         this.links = [...this.links, link];
       }
     }
   }
 
+  private parseDate(date: string): Date {
+    var parsedDate = moment(date);
+    if(parsedDate.isValid()) {
+      return parsedDate.toDate();
+    }
+    parsedDate = moment(date, 'ddd, DD MMM YYYY HH:mm:ss Z');
+    return parsedDate.toDate();
+  }
+
   private getLinkRssDate(element: Element): Date {
     var publicationDateElement = this.getElementByTagName(element, 'pubDate');
     if (publicationDateElement) {
-      return new Date(publicationDateElement.textContent);
+      return this.parseDate(publicationDateElement.textContent);
     }
 
     publicationDateElement = this.getElementByTagName(element, 'dc:date');
     if (publicationDateElement) {
-      return new Date(publicationDateElement.textContent);
+      return this.parseDate(publicationDateElement.textContent);
     }
 
     return new Date();
@@ -135,11 +151,25 @@ export class Feed {
     for (var iItems = 0; iItems < items.length; iItems++) {
       var item = items.item(iItems);
       var link = new Link(this.getElementByTagName(item, 'link').getAttribute('href'), this.getElementContentByTagName(item, 'title'));
-      link.publicationDate = new Date(this.getElementContentByTagName(item, 'published'));
+      link.publicationDate = this.getLinkAtomDate(item);
       if (link.publicationDate > this.clearDate) {
         this.links = [...this.links, link];
       }
     }
+  }
+
+  private getLinkAtomDate(element: Element): Date {
+    var publicationDateElement = this.getElementByTagName(element, 'published');
+    if (publicationDateElement) {
+      return this.parseDate(publicationDateElement.textContent);
+    }
+
+    publicationDateElement = this.getElementByTagName(element, 'updated');
+    if (publicationDateElement) {
+      return this.parseDate(publicationDateElement.textContent);
+    }
+
+    return new Date();
   }
 }
 
