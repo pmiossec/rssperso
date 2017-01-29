@@ -1,5 +1,6 @@
 import * as React from 'react';
 import {Feeds} from './feeds/feeds';
+import {ReadingList} from './readingList/readingList';
 
 const styles = {
   container: {
@@ -24,6 +25,7 @@ export class Main extends React.Component<IMainProps, IMainState> {
       <div style={styles.container}>
         <main style={styles.main}>
           <Feeds/>
+          <ReadingList/>
         </main>
       </div>
     );

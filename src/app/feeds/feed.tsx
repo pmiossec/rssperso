@@ -284,10 +284,21 @@ interface ILinkProps {
 interface ILinkState { };
 
 export class NewsComponent extends React.Component<ILinkProps, ILinkState> {
+
+  addToReadList(): void {
+    var readList : ILinkProps[] = JSON.parse(localStorage.getItem('ReadingList')) || [];
+    readList.push({url: this.props.url, title: this.props.title, date: this.props.date});
+    localStorage.setItem('ReadingList', JSON.stringify(readList));
+  }
+
+  addToPocket(): void {
+    axios.post('https://getpocket.com/v3/add', {url: this.props.url, title: this.props.title, consumer_key: 'toto', access_token: ''});
+  }
+
   render() {
     return (
       <div>
-        <a href={this.props.url} target='_blank' >{this.props.title}</a> - {this.props.date}
+        <a href={this.props.url} target='_blank' >{this.props.title}</a> - {this.props.date} - <a onClick={this.addToReadList.bind(this)} >To Read</a> - <a onClick={this.addToPocket.bind(this)} >Poket</a>
       </div>
     );
   }
