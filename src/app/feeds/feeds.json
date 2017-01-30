@@ -1,8 +1,8 @@
 [
     "http://rss.slashdot.org/Slashdot/slashdot",
-    "https://www.nextinpact.com/rss/news.xml",
     "http://linuxfr.org/news.atom",
     "http://linuxfr.org/journaux.atom",
+    "https://www.nextinpact.com/rss/news.xml",
     "http://www.lemonde.fr/rss/une.xml",
     "http://standblog.org/blog/feed/rss2",
     "http://planetKDE.org/rss20.xml",
