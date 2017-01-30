@@ -206,6 +206,7 @@ interface IFeedState {
 
 export class FeedComponent extends React.Component<IFeedProps, IFeedState> {
 
+  shouldDisplayEmptyFeeds: boolean = false;
   constructor(props: IFeedProps) {
     super(props);
     this.state = {
@@ -250,6 +251,12 @@ export class FeedComponent extends React.Component<IFeedProps, IFeedState> {
       options = <span className='text-badge' >
         <a onClick={this.clearFeed.bind(this)}>{this.state.feed.links.length}</a>
       </span>;
+    } else {
+      if(this.shouldDisplayEmptyFeeds) {
+        options = ' - Nothing new :('
+      } else {
+        return(<div></div>);
+      }
     }
 
     let links = null;
@@ -259,8 +266,6 @@ export class FeedComponent extends React.Component<IFeedProps, IFeedState> {
           <NewsComponent key={i} url={l.url} title={l.title} date={this.formatDate(l.publicationDate)} />
         ))}
       </div>;
-    } else {
-      links = 'No new links';
     }
 
     return (
