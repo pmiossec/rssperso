@@ -36,9 +36,17 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
     this.setState({ links: readList });
   }
 
+  remove(i: number): void {
+    var readList : Link[] = JSON.parse(localStorage.getItem('ReadingList')) || [];
+    readList.splice(i, 1);
+
+    localStorage.setItem('ReadingList', JSON.stringify(readList));
+    this.setState({ links: readList });
+  }
+
   render() {
     const readItems = this.state.links.map((l: Link, i: number) =>
-               <div><a href={l.url} target='_blank' > {l.title} </a> - {l.publicationDate} </div>);
+      <div><a href={l.url} target='_blank'> {l.title} </a> - {l.publicationDate} <a onClick={this.remove.bind(this, i)}>Remove</a></div>);
 
     return (
       <div style={styles.feed}>
