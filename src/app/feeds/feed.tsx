@@ -31,7 +31,7 @@ export class Feed {
         try {
           var content = response.data;
           const xmlDoc = parser.parseFromString(content, 'text/xml');
-          //console.log('xmlDoc:', xmlDoc.documentElement);
+          // console.log('xmlDoc:', xmlDoc.documentElement);
           const feedFormat = xmlDoc.documentElement.tagName;
           // debugger;
           switch (feedFormat) {
@@ -52,7 +52,7 @@ export class Feed {
           if (!this.title) {
             this.title = this.url;
           }
-          console.log('feed read', this);
+          // console.log('feed read', this);
         } catch (ex) {
           this.title = `${this.url} Error loading :( Error: ${ex}`;
         }
@@ -76,14 +76,11 @@ export class Feed {
     this.title = this.getElementContentByTagName(channel, 'title');
     this.logo = this.getElementContentByTagName(this.getElementByTagName(channel, 'image'), 'url');
     const items = xmlDoc.getElementsByTagName('item');
-    console.log('items', items)
     for (var iItems = 0; iItems < items.length; iItems++) {
       var item = items.item(iItems);
       var link = new Link(this.getElementContentByTagName(item, 'link'), this.getElementContentByTagName(item, 'title'));
       link.publicationDate = this.getLinkRssDate(item);
-      console.log('link found', link);
       if (link.publicationDate > this.clearDate) {
-        console.log('...Added!');
         this.links = [...this.links, link];
       }
     }
@@ -185,7 +182,7 @@ const styles = {
   feed: {
     border: '1px solid lightgray',
     margin: '2px',
-    padding: '0rem'
+    padding: '5px'
   },
   logo: {
     height: '16px'
