@@ -88,7 +88,7 @@ export class Feed {
 
   private parseDate(date: string): Date {
     var parsedDate = moment(date);
-    if(parsedDate.isValid()) {
+    if (parsedDate.isValid()) {
       return parsedDate.toDate();
     }
     parsedDate = moment(date, 'ddd, DD MMM YYYY HH:mm:ss Z');
@@ -249,8 +249,8 @@ export class FeedComponent extends React.Component<IFeedProps, IFeedState> {
         <a onClick={this.clearFeed.bind(this)}>{this.state.feed.links.length}</a>
       </span>;
     } else {
-      if(this.shouldDisplayEmptyFeeds) {
-        options = ' - Nothing new :('
+      if (this.shouldDisplayEmptyFeeds) {
+        options = ' - Nothing new :(';
       } else {
         return(<div></div>);
       }

@@ -1,6 +1,4 @@
 import * as React from 'react';
-import * as axios from 'axios';
-import * as moment from 'moment';
 import {Link} from '../feeds/feed';
 
 const styles = {
