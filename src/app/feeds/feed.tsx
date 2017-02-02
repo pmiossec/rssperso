@@ -18,7 +18,11 @@ export class Feed {
   }
 
   public clearFeed(): void {
-    this.clearDate = new Date();
+    if(this.links && this.links.length != 0) {
+      this.clearDate = this.links[0].publicationDate;
+    } else {
+      this.clearDate = new Date();
+    }
     this.links = new Array<Link>();
     this.storeClearDate(this.clearDate);
   }
@@ -107,7 +111,7 @@ export class Feed {
       return this.parseDate(publicationDateElement.textContent);
     }
 
-    return new Date();
+    return new Date(2000, 1, 1);
   }
 
   private getElementContentByTagName(element: Element | Document, tagName: string): string {
