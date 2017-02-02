@@ -235,11 +235,15 @@ export class FeedComponent extends React.Component<IFeedProps, IFeedState> {
     this.setState({ feed: this.state.feed });
   }
 
+  padDigits(number: number, digits: number = 2): string {
+    return Array(Math.max(digits - String(number).length + 1, 0)).join('0') + number;
+  }
+
   formatDate(date: Date): string {
     const now = new Date();
     return (now.getDate() === date.getDate() && now.getMonth() === date.getMonth())
-      ? `${date.getHours()}:${date.getMinutes()}`
-      : `${date.getDate()}/${date.getMonth() + 1}`;
+      ? `${this.padDigits(date.getHours())}:${this.padDigits(date.getMinutes())}`
+      : `${this.padDigits(date.getDate())}/${this.padDigits(date.getMonth() + 1)}`;
   }
 
   render() {
@@ -301,7 +305,7 @@ export class NewsComponent extends React.Component<ILinkProps, ILinkState> {
   render() {
     return (
       <div>
-        <a href={this.props.url} target='_blank' >{this.props.title}</a> - {this.props.date} - <a onClick={this.addToReadList.bind(this)} >To Read</a> - <a onClick={this.addToPocket.bind(this)} >Poket</a>
+  <a href={this.props.url} target='_blank' >* {this.props.title}</a> - <span className='date'>{this.props.date}</span> - <a onClick={this.addToReadList.bind(this)} >To Read</a> {/* - <a onClick={this.addToPocket.bind(this)} >Pocket</a> */}
       </div>
     );
   }

@@ -5,7 +5,6 @@ import {FeedComponent} from './feed';
 
 const styles = {
   container: {
-    margin: '1rem'
   },
   h2: {
     fontWeight: 300,

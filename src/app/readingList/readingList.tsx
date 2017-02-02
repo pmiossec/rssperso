@@ -44,7 +44,7 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
 
   render() {
     const readItems = this.state.links.map((l: Link, i: number) =>
-      <div><a href={l.url} target='_blank'> {l.title} </a> - {l.publicationDate} <a onClick={this.remove.bind(this, i)}>Remove</a></div>);
+  <div><a href={l.url} target='_blank'>* {l.title} </a> - {l.publicationDate} <a onClick={this.remove.bind(this, i)}>Remove</a></div>);
 
     return (
       <div style={styles.feed}>
