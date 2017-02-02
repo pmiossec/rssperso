@@ -250,8 +250,8 @@ export class FeedComponent extends React.Component<IFeedProps, IFeedState> {
 
     let options = null;
     if (this.state.feed.links.length !== 0) {
-      options = <span className='text-badge' >
-        <a onClick={this.clearFeed.bind(this)}>{this.state.feed.links.length}</a>
+      options = <span className='text-badge' onClick={this.clearFeed.bind(this)}>
+        <a>{this.state.feed.links.length}</a>
       </span>;
     } else {
       if (this.shouldDisplayEmptyFeeds) {
