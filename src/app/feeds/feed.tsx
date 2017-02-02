@@ -309,7 +309,7 @@ export class NewsComponent extends React.Component<ILinkProps, ILinkState> {
   render() {
     return (
       <div>
-  <a href={this.props.url} target='_blank' >* {this.props.title}</a> - <span className='date'>{this.props.date}</span> - <a onClick={this.addToReadList} >To Read</a> {/* - <a onClick={this.addToPocket} >Pocket</a> */}
+  [<span className='date'>{this.props.date}</span>|<a onClick={this.addToReadList} >Add</a>{/*|<a onClick={this.addToPocket}>Pocket</a>*/}]<a href={this.props.url} target='_blank' > {this.props.title}</a>
       </div>
     );
   }
