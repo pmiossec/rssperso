@@ -7,6 +7,7 @@ export class Feed {
   public logo: string;
   public title: string = 'Future title';
   public links: Link[] = [];
+  public allLinks: Link[] = [];
   public content: string;
   public clearDate: Date = new Date(1900, 1, 1);
   constructor(
@@ -18,12 +19,18 @@ export class Feed {
   }
 
   public clearFeed(): void {
-    if(this.links && this.links.length != 0) {
+    if(this.links && this.links.length !== 0) {
       this.clearDate = this.links[0].publicationDate;
     } else {
       this.clearDate = new Date();
     }
     this.links = new Array<Link>();
+    this.storeClearDate(this.clearDate);
+  }
+
+  public displayAllLinks(): void {
+    this.clearDate = new Date(2000, 1, 1);
+    this.links = this.allLinks;
     this.storeClearDate(this.clearDate);
   }
 
@@ -85,6 +92,7 @@ export class Feed {
       var item = items.item(iItems);
       var link = new Link(this.getElementContentByTagName(item, 'link'), this.getElementContentByTagName(item, 'title'));
       link.publicationDate = this.getLinkRssDate(item);
+      this.allLinks = [...this.allLinks, link];
       if (link.publicationDate > this.clearDate) {
         this.links = [...this.links, link];
       }
@@ -111,6 +119,7 @@ export class Feed {
       return this.parseDate(publicationDateElement.textContent);
     }
 
+    console.debug("date not found :(", this.url);
     return new Date(2000, 1, 1);
   }
 
@@ -179,7 +188,7 @@ export class Link {
   public publicationDate: Date;
   constructor(
     public url: string,
-    public title: string,
+    public title: string
   ) { }
 }
 
@@ -239,27 +248,26 @@ export class FeedComponent extends React.Component<IFeedProps, IFeedState> {
     this.setState({ feed: this.state.feed });
   }
 
-  padDigits(number: number, digits: number = 2): string {
-    return Array(Math.max(digits - String(number).length + 1, 0)).join('0') + number;
-  }
+  displayAll =  (): void => {
 
-  formatDate(date: Date): string {
-    const now = new Date();
-    return (now.getDate() === date.getDate() && now.getMonth() === date.getMonth())
-      ? `${this.padDigits(date.getHours())}:${this.padDigits(date.getMinutes())}`
-      : `${this.padDigits(date.getDate())}/${this.padDigits(date.getMonth() + 1)}`;
+    this.state.feed.displayAllLinks();
+    this.setState({ feed: this.state.feed });
   }
 
   render() {
 
+    let allLinks = (this.state.feed.links < this.state.feed.allLinks)
+    ? <span className='text-badge' onClick={this.displayAll}><a>All</a> </span>
+    : (<div></div>);
+
     let options = null;
     if (this.state.feed.links.length !== 0) {
-      options = <span className='text-badge' onClick={this.clearFeed.bind(this)}>
+      options = <span> <span className='text-badge' onClick={this.clearFeed.bind(this)}>
         <a>{this.state.feed.links.length}</a>
-      </span>;
+      </span> {allLinks}</span>;
     } else {
       if (this.shouldDisplayEmptyFeeds) {
-        options = ' - Nothing new :(';
+        options =  <span> {allLinks} - Nothing new :( </span>;
       } else {
         return(<div></div>);
       }
@@ -269,7 +277,7 @@ export class FeedComponent extends React.Component<IFeedProps, IFeedState> {
     if (this.state.feed.links.length !== 0) {
       links = <div className='links'>
         {this.state.feed.links.map((l: Link, i: number) => (
-          <NewsComponent key={i} url={l.url} title={l.title} date={this.formatDate(l.publicationDate)} />
+          <NewsComponent key={i} url={l.url} title={l.title} date={l.publicationDate} />
         ))}
       </div>;
     }
@@ -289,7 +297,7 @@ export class FeedComponent extends React.Component<IFeedProps, IFeedState> {
 interface ILinkProps {
   url: string;
   title: string;
-  date: string;
+  date: Date;
 };
 
 interface ILinkState { };
@@ -306,10 +314,21 @@ export class NewsComponent extends React.Component<ILinkProps, ILinkState> {
     axios.post('https://getpocket.com/v3/add', {url: this.props.url, title: this.props.title, consumer_key: 'toto', access_token: ''});
   }
 
+  padDigits(number: number, digits: number = 2): string {
+    return Array(Math.max(digits - String(number).length + 1, 0)).join('0') + number;
+  }
+
+  formatDate(date: Date): string {
+    const now = new Date();
+    return (now.getDate() === date.getDate() && now.getMonth() === date.getMonth())
+      ? `${this.padDigits(date.getHours())}:${this.padDigits(date.getMinutes())}`
+      : `${this.padDigits(date.getDate())}/${this.padDigits(date.getMonth() + 1)}`;
+  }
+
   render() {
     return (
       <div>
-  [<span className='date'>{this.props.date}</span>|<a onClick={this.addToReadList} >Add</a>{/*|<a onClick={this.addToPocket}>Pocket</a>*/}]<a href={this.props.url} target='_blank' > {this.props.title}</a>
+  [<span className='date'>{this.formatDate(this.props.date)}</span>|<a onClick={this.addToReadList} ><i className="fa fa-plus" aria-hidden="true"></i></a>{/*|<a onClick={this.addToPocket}>Pocket</a>*/}]<a href={this.props.url} target='_blank' > {this.props.title}</a>
       </div>
     );
   }
