@@ -54,6 +54,9 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
   }
 
   formatDate(date: Date): string {
+    if(!date) {
+      return '-';
+    }
     const now = new Date();
     return (now.getDate() === date.getDate() && now.getMonth() === date.getMonth())
       ? `${this.padDigits(date.getHours())}:${this.padDigits(date.getMinutes())}`
