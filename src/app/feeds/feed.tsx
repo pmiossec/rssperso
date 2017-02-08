@@ -97,6 +97,7 @@ export class Feed {
         this.links = [...this.links, link];
       }
     }
+    this.links = this.links.sort((l1, l2) => {return l1.publicationDate < l2.publicationDate ? -1 : 1;});
   }
 
   private parseDate(date: string): Date {
@@ -119,7 +120,7 @@ export class Feed {
       return this.parseDate(publicationDateElement.textContent);
     }
 
-    console.debug("date not found :(", this.url);
+    console.debug('date not found :(', this.url);
     return new Date(2000, 1, 1);
   }
 
@@ -186,6 +187,7 @@ export class Feed {
 
 export class Link {
   public publicationDate: Date;
+  public read: boolean;
   constructor(
     public url: string,
     public title: string
@@ -328,7 +330,7 @@ export class NewsComponent extends React.Component<ILinkProps, ILinkState> {
   render() {
     return (
       <div>
-  [<span className='date'>{this.formatDate(this.props.date)}</span>|<a onClick={this.addToReadList} ><i className="fa fa-plus" aria-hidden="true"></i></a>{/*|<a onClick={this.addToPocket}>Pocket</a>*/}]<a href={this.props.url} target='_blank' > {this.props.title}</a>
+  [<span className='date'>{this.formatDate(this.props.date)}</span>|<a onClick={this.addToReadList} >Add</a>{/*|<a onClick={this.addToPocket}>Pocket</a>*/}]<a href={this.props.url} target='_blank' > {this.props.title}</a>
       </div>
     );
   }
