@@ -83,7 +83,7 @@ export class Feed {
   }
 
   private manageRssFeed(xmlDoc: HTMLElement): void {
-    console.log(`Processing Rss feed ( ${this.url} )...`);
+    //console.debug(`Processing Rss feed ( ${this.url} )...`);
     const channel = this.getElementByTagName(xmlDoc, 'channel');
     this.title = this.getElementContentByTagName(channel, 'title');
     this.logo = this.getElementContentByTagName(this.getElementByTagName(channel, 'image'), 'url');
@@ -155,7 +155,7 @@ export class Feed {
   // }
 
   private manageAtomFeed(xmlDoc: HTMLElement): void {
-    console.log(`Processing Atom feed ( ${this.url} )...`);
+    //console.debug(`Processing Atom feed ( ${this.url} )...`);
     this.title = this.getElementContentByTagName(xmlDoc, 'title');
     this.logo = this.getElementContentByTagName(xmlDoc, 'icon');
     const items = xmlDoc.getElementsByTagName('entry');
