@@ -39,8 +39,8 @@ export class Feed {
   public loadFeedContent(): Axios.IPromise<void> {
     const parser = new DOMParser();
     return axios
-      .get('http://cors-anywhere.herokuapp.com/' + this.url, { headers: {'X-Requested-With': 'XMLHttpRequest', 'origin': 'MyRssReader' }})
-      // .get(this.url, { headers: {'X-Requested-With': 'XMLHttpRequest', 'origin': 'MyRssReader' }})
+      .get('http://cors-anywhere.herokuapp.com/' + this.url, { headers: {'X-Requested-With': 'XMLHttpRequest' }})
+      // .get(this.url, { headers: {'X-Requested-With': 'XMLHttpRequest' }})
       .then((response: Axios.AxiosXHR<string>) => {
         try {
           var content = response.data;
