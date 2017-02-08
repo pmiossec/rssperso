@@ -29,7 +29,7 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
     setInterval(() => this.loadReadingList(), 1000);
   }
 
-  private dateTimeReviver = function (key, value) {
+  dateTimeReviver = (key: string, value: string): any => {
       if (key === 'publicationDate') {
         return new Date(value);
       }
@@ -62,7 +62,7 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
 
   render() {
     const readItems = this.state.links.map((l: Link, i: number) =>
-  <div>[<span className='date'>{this.formatDate(l.publicationDate)}</span>|<a onClick={this.remove.bind(this, i)}>Del</a>]<a href={l.url} target='_blank'>{l.title} </a></div>);
+  <div key={i}>[<span className='date'>{this.formatDate(l.publicationDate)}</span>|<a onClick={this.remove.bind(this, i)}>Del</a>]<a href={l.url} target='_blank'>{l.title} </a></div>);
 
     return (
       <div style={styles.feed}>
