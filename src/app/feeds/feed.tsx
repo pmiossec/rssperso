@@ -97,7 +97,7 @@ export class Feed {
         this.links = [...this.links, link];
       }
     }
-    this.links = this.links.sort((l1, l2) => { return l1.publicationDate < l2.publicationDate ? -1 : 1; });
+    this.sortFeed();
   }
 
   private parseDate(date: string): Date {
@@ -159,6 +159,11 @@ export class Feed {
         this.links = [...this.links, link];
       }
     }
+    this.sortFeed();
+  }
+
+  private sortFeed = (): void => {
+    this.links = this.links.sort((l1, l2) => { return l1.publicationDate < l2.publicationDate ? -1 : 1; });
   }
 
   private getLinkAtomDate(element: Element): Date {
@@ -241,7 +246,7 @@ export class FeedComponent extends React.Component<IFeedProps, IFeedState> {
     this.setState({ feed: this.state.feed });
   }
 
-  displayAll =  (): void => {
+  displayAll = (): void => {
 
     this.state.feed.displayAllLinks();
     this.setState({ feed: this.state.feed });
