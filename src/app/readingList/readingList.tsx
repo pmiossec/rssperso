@@ -29,8 +29,15 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
     setInterval(() => this.loadReadingList(), 1000);
   }
 
+  private dateTimeReviver = function (key, value) {
+      if (key === 'publicationDate') {
+        return new Date(value);
+      }
+      return value;
+  }
+
   loadReadingList(): void {
-    var readList : Link[] = JSON.parse(localStorage.getItem('ReadingList')) || [];
+    var readList : Link[] = JSON.parse(localStorage.getItem('ReadingList'), this.dateTimeReviver) || [];
     this.setState({ links: readList });
   }
 
@@ -47,7 +54,6 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
   }
 
   formatDate(date: Date): string {
-    // console.log('date:', date);
     const now = new Date();
     return (now.getDate() === date.getDate() && now.getMonth() === date.getMonth())
       ? `${this.padDigits(date.getHours())}:${this.padDigits(date.getMinutes())}`
@@ -56,12 +62,12 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
 
   render() {
     const readItems = this.state.links.map((l: Link, i: number) =>
-  <div><a href={l.url} target='_blank'>* {l.title} </a> - {l.publicationDate} <a onClick={this.remove.bind(this, i)}>Remove</a></div>);
+  <div>[<span className='date'>{this.formatDate(l.publicationDate)}</span>|<a onClick={this.remove.bind(this, i)}>Del</a>]<a href={l.url} target='_blank'>{l.title} </a></div>);
 
     return (
       <div style={styles.feed}>
         <div style={styles.h3}>
-          Reading list...
+          >> Reading list...
         </div>
         <div className='links'>
             {readItems}

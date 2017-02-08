@@ -305,10 +305,16 @@ interface ILinkProps {
 interface ILinkState { };
 
 export class NewsComponent extends React.Component<ILinkProps, ILinkState> {
+  private dateTimeReviver = function (key, value) {
+      if (key === 'publicationDate') {
+        return new Date(value);
+      }
+      return value;
+  }
 
   addToReadList = () : void => {
-    var readList : ILinkProps[] = JSON.parse(localStorage.getItem('ReadingList')) || [];
-    readList.push({url: this.props.url, title: this.props.title, date: this.props.date});
+    var readList : Link[] = JSON.parse(localStorage.getItem('ReadingList'), this.dateTimeReviver) || [];
+    readList.push({url: this.props.url, title: this.props.title, publicationDate: this.props.date} as Link);
     localStorage.setItem('ReadingList', JSON.stringify(readList));
   }
 
