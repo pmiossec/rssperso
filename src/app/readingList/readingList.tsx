@@ -42,6 +42,18 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
     this.setState({ links: readList });
   }
 
+  padDigits(number: number, digits: number = 2): string {
+    return Array(Math.max(digits - String(number).length + 1, 0)).join('0') + number;
+  }
+
+  formatDate(date: Date): string {
+    // console.log('date:', date);
+    const now = new Date();
+    return (now.getDate() === date.getDate() && now.getMonth() === date.getMonth())
+      ? `${this.padDigits(date.getHours())}:${this.padDigits(date.getMinutes())}`
+      : `${this.padDigits(date.getDate())}/${this.padDigits(date.getMonth() + 1)}`;
+  }
+
   render() {
     const readItems = this.state.links.map((l: Link, i: number) =>
   <div><a href={l.url} target='_blank'>* {l.title} </a> - {l.publicationDate} <a onClick={this.remove.bind(this, i)}>Remove</a></div>);
