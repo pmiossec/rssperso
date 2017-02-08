@@ -4,6 +4,7 @@ import * as moment from 'moment';
 
 export class Feed {
 
+  private isOrderNewerFirst = false;
   public logo: string;
   public title: string = 'Future title';
   public links: Link[] = [];
@@ -20,7 +21,8 @@ export class Feed {
 
   public clearFeed(): void {
     if (this.links && this.links.length !== 0) {
-      this.clearDate = this.links[0].publicationDate;
+      const indexNewerLink = this.isOrderNewerFirst ? 0 : this.links.length -1;
+      this.clearDate = this.links[indexNewerLink].publicationDate;
     } else {
       this.clearDate = new Date();
     }
@@ -163,7 +165,8 @@ export class Feed {
   }
 
   private sortFeed = (): void => {
-    this.links = this.links.sort((l1, l2) => { return l1.publicationDate < l2.publicationDate ? -1 : 1; });
+    const inverter = this.isOrderNewerFirst ? -1 : 1;
+    this.links = this.links.sort((l1, l2) => { return inverter * (l1.publicationDate < l2.publicationDate ? -1 : 1); });
   }
 
   private getLinkAtomDate(element: Element): Date {
