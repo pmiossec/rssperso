@@ -2,19 +2,6 @@ import * as React from 'react';
 import {Feeds} from './feeds/feeds';
 import {ReadingList} from './readingList/readingList';
 
-const styles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    minHeight: '100%'
-  },
-  main: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column'
-  }
-};
-
 const feeds = [
     'http://rss.slashdot.org/Slashdot/slashdot',
     'http://linuxfr.org/news.atom',
@@ -52,11 +39,9 @@ const feeds = [
 
 export const Main = () => {
   return (
-    <div style={styles.container}>
-      <main style={styles.main}>
-        <Feeds feeds={feeds}/>
-        <ReadingList />
-      </main>
-    </div>
+    <main className='feeds'>
+      <Feeds feeds={feeds}/>
+      <ReadingList />
+    </main>
   );
 };
