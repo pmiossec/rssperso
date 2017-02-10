@@ -17,31 +17,19 @@ const styles = {
   }
 };
 
-interface IFeedsProps {};
-
-interface IFeedsState {
+interface IFeedsProps {
   feeds: string[];
 };
 
+interface IFeedsState {
+};
+
 export class Feeds extends React.Component<IFeedsProps, IFeedsState> {
-  constructor() {
-    super();
-    this.state = {feeds: []};
-  }
-
-  componentWillMount(): void {
-    axios
-      .get('app/feeds/feeds.json')
-      .then((response: Axios.AxiosXHR<string[]>) => {
-        this.setState({feeds: response.data});
-      });
-  }
-
   render() {
     return (
       <div style={styles.container}>
         <div style={styles.feeds as any}>
-          {this.state.feeds.map((url: string, i: number) =>
+          {this.props.feeds.map((url: string, i: number) =>
               <FeedComponent key={i} url={url}/>
           )}
         </div>
