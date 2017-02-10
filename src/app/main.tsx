@@ -50,14 +50,13 @@ const feeds = [
     'http://reflets.info/feed/'
 ];
 
-
 export const Main = () => {
-    return (
-      <div style={styles.container}>
-        <main style={styles.main}>
-          <Feeds feeds={feeds}/>
-          <ReadingList />
-        </main>
-      </div>
-    );
-}
+  return (
+    <div style={styles.container}>
+      <main style={styles.main}>
+        <Feeds feeds={feeds}/>
+        <ReadingList />
+      </main>
+    </div>
+  );
+};

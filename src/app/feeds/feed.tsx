@@ -3,14 +3,14 @@ import * as axios from 'axios';
 import * as moment from 'moment';
 
 export class Feed {
-
-  private isOrderNewerFirst = false;
   public logo: string;
   public title: string = 'Future title';
   public links: Link[] = [];
   public allLinks: Link[] = [];
   public content: string;
   public clearDate: Date = new Date(1900, 1, 1);
+  private isOrderNewerFirst = false;
+
   constructor(
     public url: string,
   ) {
@@ -21,7 +21,7 @@ export class Feed {
 
   public clearFeed(): void {
     if (this.links && this.links.length !== 0) {
-      const indexNewerLink = this.isOrderNewerFirst ? 0 : this.links.length -1;
+      const indexNewerLink = this.isOrderNewerFirst ? 0 : this.links.length - 1;
       this.clearDate = this.links[indexNewerLink].publicationDate;
     } else {
       this.clearDate = new Date();
@@ -326,7 +326,7 @@ export class NewsComponent extends React.Component<ILinkProps, ILinkState> {
   }
 
   formatDate(date: Date): string {
-    if(!date) {
+    if (!date) {
       return '-';
     }
     const now = new Date();

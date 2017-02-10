@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as axios from 'axios';
 
 import {FeedComponent} from './feed';
 
@@ -21,19 +20,14 @@ interface IFeedsProps {
   feeds: string[];
 };
 
-interface IFeedsState {
-};
-
-export class Feeds extends React.Component<IFeedsProps, IFeedsState> {
-  render() {
-    return (
-      <div style={styles.container}>
-        <div style={styles.feeds as any}>
-          {this.props.feeds.map((url: string, i: number) =>
-              <FeedComponent key={i} url={url}/>
-          )}
-        </div>
+export const Feeds = (props: IFeedsProps) => {
+  return (
+    <div style={styles.container}>
+      <div style={styles.feeds as any}>
+        {props.feeds.map((url: string, i: number) =>
+            <FeedComponent key={i} url={url}/>
+        )}
       </div>
-    );
-  }
-}
+    </div>
+  );
+};

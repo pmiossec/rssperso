@@ -30,10 +30,10 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
   }
 
   dateTimeReviver = (key: string, value: string): any => {
-      if (key === 'publicationDate') {
-        return new Date(value);
-      }
-      return value;
+    if (key === 'publicationDate') {
+      return new Date(value);
+    }
+    return value;
   }
 
   loadReadingList(): void {
@@ -54,7 +54,7 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
   }
 
   formatDate(date: Date): string {
-    if(!date) {
+    if (!date) {
       return '-';
     }
     const now = new Date();
