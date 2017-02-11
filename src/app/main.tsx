@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Feeds} from './feeds/feeds';
+import {Feed} from './feeds/feed';
 import {ReadingList} from './readingList/readingList';
 
 const feeds = [
@@ -40,7 +40,11 @@ const feeds = [
 export const Main = () => {
   return (
     <main className='feeds'>
-      <Feeds feeds={feeds}/>
+      <div className='feeds'>
+        {feeds.map((url: string, i: number) =>
+            <Feed key={i} url={url}/>
+        )}
+      </div>
       <ReadingList />
     </main>
   );
