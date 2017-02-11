@@ -10,6 +10,7 @@ export class FeedService {
   public content: string;
   public clearDate: Date = new Date(1900, 1, 1);
   private isOrderNewerFirst = false;
+  private corsProxyUrl: string = 'http://cors-anywhere.herokuapp.com/';
 
   constructor(
     public url: string,
@@ -37,11 +38,20 @@ export class FeedService {
   }
 
   public loadFeedContent(): Axios.IPromise<void> {
-    const parser = new DOMParser();
+    var url: string = this.url;
+    var headers: any;
+    if(localStorage.getItem('use_proxy.' + this.url)) {
+        url = this.corsProxyUrl + this.url;
+        headers = { headers: {'X-Requested-With': 'XMLHttpRequest' }};
+    } else {
+        url = this.url;
+        headers = { headers: {'Origin': this.url }};
+    }
     return axios
-      .get('http://cors-anywhere.herokuapp.com/' + this.url, { headers: {'X-Requested-With': 'XMLHttpRequest' }})
-      // .get(this.url, { headers: {'X-Requested-With': 'XMLHttpRequest' }})
+      .get(url, )
+      // .get(this.url, { headers: {'X-Requested-With': 'XMLHttpRequest' }}) //'X-Requested-With': 'XMLHttpRequest',
       .then((response: Axios.AxiosXHR<string>) => {
+        const parser = new DOMParser();
         try {
           var content = response.data;
           const xmlDoc = parser.parseFromString(content, 'text/xml');
@@ -72,6 +82,9 @@ export class FeedService {
         } catch (ex) {
           this.title = `${this.url} Error loading :( Error: ${ex}`;
         }
+      })
+      .catch( err => {
+          localStorage.setItem('use_proxy.' + this.url, 'true');
       });
   }
 
