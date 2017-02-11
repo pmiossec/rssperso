@@ -3,7 +3,14 @@ import {FeedService} from './feeds/feedService';
 import {Feed} from './feeds/feed';
 import {ReadingList} from './readingList/readingList';
 
-const feeds = [
+
+
+interface IMainProps {};
+
+interface IMainState {};
+
+export class Main extends React.Component<IMainProps, IMainState> {
+  feeds = [
     'http://rss.slashdot.org/Slashdot/slashdot',
     'http://linuxfr.org/news.atom',
     'http://linuxfr.org/journaux.atom',
@@ -38,15 +45,27 @@ const feeds = [
     'http://reflets.info/feed/'
 ].map(url => new FeedService(url));
 
-export const Main = () => {
-  return (
-    <main className='feeds'>
-      <div className='feeds'>
-        {feeds.map((feed: FeedService, i: number) =>
-            <Feed key={i} feed={feed}/>
-        )}
-      </div>
-      <ReadingList />
-    </main>
-  );
-};
+  clearAll = () => {
+    this.feeds.forEach(f=>f.clearFeed());
+    this.forceUpdate();
+  }
+
+  displayAll = () => {
+    this.feeds.forEach(f=>f.displayAllLinks());
+    this.forceUpdate();
+  }
+
+  render() {
+    return (
+      <main className='feeds'>
+        <div><a onClick={this.clearAll}>Clear All</a> / <a onClick={this.displayAll}>Show All</a></div>
+        <div className='feeds'>
+          {this.feeds.map((feed: FeedService, i: number) =>
+              <Feed key={i} feed={feed}/>
+          )}
+        </div>
+        <ReadingList />
+      </main>
+    );
+  }
+}
