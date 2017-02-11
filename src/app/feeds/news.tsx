@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as Helper from '../helper';
 
 export class Link {
   public publicationDate: Date;
@@ -18,37 +19,14 @@ interface ILinkProps {
 interface ILinkState { };
 
 export class News extends React.Component<ILinkProps, ILinkState> {
-  dateTimeReviver = (key: string, value: string): any => {
-      if (key === 'publicationDate') {
-        return new Date(value);
-      }
-      return value;
-  }
-
   addToReadList = () : void => {
-    var readList : Link[] = JSON.parse(localStorage.getItem('ReadingList'), this.dateTimeReviver) || [];
-    readList.push({url: this.props.url, title: this.props.title, publicationDate: this.props.date} as Link);
-    localStorage.setItem('ReadingList', JSON.stringify(readList));
-  }
-
-  padDigits(number: number, digits: number = 2): string {
-    return Array(Math.max(digits - String(number).length + 1, 0)).join('0') + number;
-  }
-
-  formatDate(date: Date): string {
-    if (!date) {
-      return '-';
-    }
-    const now = new Date();
-    return (now.getDate() === date.getDate() && now.getMonth() === date.getMonth())
-      ? `${this.padDigits(date.getHours())}:${this.padDigits(date.getMinutes())}`
-      : `${this.padDigits(date.getDate())}/${this.padDigits(date.getMonth() + 1)}`;
+    Helper.Storage.addToReadList('ReadingList', {url: this.props.url, title: this.props.title, publicationDate: this.props.date} as Link);
   }
 
   render() {
     return (
       <div>
-  [<span className='date'>{this.formatDate(this.props.date)}</span>|<a onClick={this.addToReadList} >Add</a>{/*|<a onClick={this.addToPocket}>Pocket</a>*/}]<a href={this.props.url} target='_blank' > {this.props.title}</a>
+  [<span className='date'>{Helper.DateFormatter.formatDate(this.props.date)}</span>|<a onClick={this.addToReadList} >Add</a>]<a href={this.props.url} target='_blank' > {this.props.title}</a>
       </div>
     );
   }
