@@ -20,7 +20,7 @@ interface ILinkState { };
 
 export class News extends React.Component<ILinkProps, ILinkState> {
   addToReadList = () : void => {
-    Helper.Storage.addToReadList('ReadingList', {url: this.props.url, title: this.props.title, publicationDate: this.props.date} as Link);
+    Helper.Storage.addToStoredList('ReadingList', {url: this.props.url, title: this.props.title, publicationDate: this.props.date} as Link);
   }
 
   render() {

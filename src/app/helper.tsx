@@ -29,7 +29,6 @@ export namespace Storage {
   };
 
   export const remove = (storeName: string, i: number): Link[] => {
-    console.log('i:', i);
     var readList : Link[] = loadReadingList(storeName);
     readList.splice(i, 1);
 
@@ -37,7 +36,11 @@ export namespace Storage {
     return readList;
   };
 
-  export const addToReadList = (storeName: string, link: Link) : void => {
+  export const elementAt = (storeName: string, i: number): Link => {
+    return loadReadingList(storeName)[i];
+  };
+
+  export const addToStoredList = (storeName: string, link: Link) : void => {
     var readList : Link[] = loadReadingList(storeName);
     readList.push(link);
     localStorage.setItem(storeName, JSON.stringify(readList));

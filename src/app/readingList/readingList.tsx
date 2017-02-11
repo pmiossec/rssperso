@@ -21,13 +21,21 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
   }
 
   remove = (i: number): void => {
+    const link = Helper.Storage.elementAt('ReadingList', i);
+    Helper.Storage.addToStoredList('ArchiveList', link);
+
     const readList = Helper.Storage.remove('ReadingList', i);
     this.setState({ links: readList });
   }
 
+  openAndRemoveLink = (url: string, i: number): void => {
+    window.open(url,'_blank');
+    this.remove(i);
+  }
+
   render() {
     const readItems = this.state.links.map((l: Link, i: number) =>
-      <div key={i}>[<span className='date'>{Helper.DateFormatter.formatDate(l.publicationDate)}</span>|<a onClick={this.remove.bind(null, i)}>Del</a>]<a href={l.url} target='_blank'>{l.title} </a></div>);
+      <div key={i}>[<span className='date'>{Helper.DateFormatter.formatDate(l.publicationDate)}</span>|<a onClick={this.remove.bind(null, i)}>Del</a>]<a onClick={this.openAndRemoveLink.bind(null, l.url, i)} >{l.title} </a></div>);
 
     return (
       <div className='feed'>
