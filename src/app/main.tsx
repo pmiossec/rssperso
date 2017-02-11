@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {FeedService} from './feeds/feedService';
 import {Feed} from './feeds/feed';
 import {ReadingList} from './readingList/readingList';
 
@@ -35,14 +36,14 @@ const feeds = [
     'http://passeurdesciences.blog.lemonde.fr/feed/',
     'http://sciencetonnante.wordpress.com/feed/',
     'http://reflets.info/feed/'
-];
+].map(url => new FeedService(url));
 
 export const Main = () => {
   return (
     <main className='feeds'>
       <div className='feeds'>
-        {feeds.map((url: string, i: number) =>
-            <Feed key={i} url={url}/>
+        {feeds.map((feed: FeedService, i: number) =>
+            <Feed key={i} feed={feed}/>
         )}
       </div>
       <ReadingList />
