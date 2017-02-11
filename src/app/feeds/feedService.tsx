@@ -48,9 +48,11 @@ export class FeedService {
         headers = { headers: {'Origin': this.url }};
     }
     return axios
-      .get(url, )
+      .get(url, headers)
       // .get(this.url, { headers: {'X-Requested-With': 'XMLHttpRequest' }}) //'X-Requested-With': 'XMLHttpRequest',
       .then((response: Axios.AxiosXHR<string>) => {
+        this.allLinks = [];
+        this.links = [];
         const parser = new DOMParser();
         try {
           var content = response.data;
