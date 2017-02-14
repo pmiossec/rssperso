@@ -1,13 +1,13 @@
 import * as React from 'react';
-import {FeedService} from './feeds/feedService';
-import {Feed} from './feeds/feed';
-import {ReadingList} from './readingList/readingList';
+import { FeedService } from './feeds/feedService';
+import { Feed } from './feeds/feed';
+import { ReadingList } from './readingList/readingList';
 
 
 
-interface IMainProps {};
+interface IMainProps { };
 
-interface IMainState {};
+interface IMainState { };
 
 export class Main extends React.Component<IMainProps, IMainState> {
   feeds = [
@@ -43,15 +43,15 @@ export class Main extends React.Component<IMainProps, IMainState> {
     'http://passeurdesciences.blog.lemonde.fr/feed/',
     'http://sciencetonnante.wordpress.com/feed/',
     'http://reflets.info/feed/'
-].map(url => new FeedService(url));
+  ].map(url => new FeedService(url));
 
   clearAll = () => {
-    this.feeds.forEach(f=>f.clearFeed());
+    this.feeds.forEach(f => f.clearFeed());
     this.forceUpdate();
   }
 
   displayAll = () => {
-    this.feeds.forEach(f=>f.displayAllLinks());
+    this.feeds.forEach(f => f.displayAllLinks());
     this.forceUpdate();
   }
 
@@ -61,7 +61,7 @@ export class Main extends React.Component<IMainProps, IMainState> {
         <div><a onClick={this.clearAll}>Clear All</a> / <a onClick={this.displayAll}>Show All</a></div>
         <div className='feeds'>
           {this.feeds.map((feed: FeedService, i: number) =>
-              <Feed key={i} feed={feed}/>
+            <Feed key={i} feed={feed} />
           )}
         </div>
         <ReadingList />

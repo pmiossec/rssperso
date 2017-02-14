@@ -1,4 +1,4 @@
-import {Link} from './feeds/news';
+import { Link } from './feeds/news';
 
 export namespace DateFormatter {
   const padDigits = (number: number, digits: number = 2): string => {
@@ -17,6 +17,7 @@ export namespace DateFormatter {
 }
 
 export namespace Storage {
+  var stateChanged: boolean = true;
   const dateTimeReviver = (key: string, value: string): any => {
     if (key === 'publicationDate') {
       return new Date(value);
@@ -24,12 +25,20 @@ export namespace Storage {
     return value;
   };
 
-  export const loadReadingList = (storeName: string) : Link[] => {
+  const loadReadingList = (storeName: string): Link[] => {
     return JSON.parse(localStorage.getItem(storeName), dateTimeReviver) || [];
   };
 
+  export const loadReadingListIfChanged = (storeName: string): Link[] => {
+    if (!stateChanged) {
+      return null;
+    }
+    stateChanged = false;
+    return loadReadingList(storeName);
+  };
+
   export const remove = (storeName: string, i: number): Link[] => {
-    var readList : Link[] = loadReadingList(storeName);
+    var readList: Link[] = loadReadingList(storeName);
     readList.splice(i, 1);
 
     localStorage.setItem(storeName, JSON.stringify(readList));
@@ -40,8 +49,9 @@ export namespace Storage {
     return loadReadingList(storeName)[i];
   };
 
-  export const addToStoredList = (storeName: string, link: Link) : void => {
-    var readList : Link[] = loadReadingList(storeName);
+  export const addToStoredList = (storeName: string, link: Link): void => {
+    stateChanged = true;
+    var readList: Link[] = loadReadingList(storeName);
     readList.push(link);
     localStorage.setItem(storeName, JSON.stringify(readList));
   };

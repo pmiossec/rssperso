@@ -1,6 +1,6 @@
 import * as axios from 'axios';
 import * as moment from 'moment';
-import {Link} from './news';
+import { Link } from './news';
 
 export class FeedService {
   public logo: string;
@@ -40,12 +40,12 @@ export class FeedService {
   public loadFeedContent(): Axios.IPromise<void> {
     var url: string = this.url;
     var headers: any;
-    if(localStorage.getItem('use_proxy.' + this.url)) {
-        url = this.corsProxyUrl + this.url;
-        headers = { headers: {'X-Requested-With': 'XMLHttpRequest' }};
+    if (localStorage.getItem('use_proxy.' + this.url)) {
+      url = this.corsProxyUrl + this.url;
+      headers = { headers: { 'X-Requested-With': 'XMLHttpRequest' } };
     } else {
-        url = this.url;
-        headers = { headers: {'Origin': this.url }};
+      url = this.url;
+      headers = { headers: { 'Origin': this.url } };
     }
     return axios
       .get(url, headers)
@@ -85,8 +85,8 @@ export class FeedService {
           this.title = `${this.url} Error loading :( Error: ${ex}`;
         }
       })
-      .catch( err => {
-          localStorage.setItem('use_proxy.' + this.url, 'true');
+      .catch(err => {
+        localStorage.setItem('use_proxy.' + this.url, 'true');
       });
   }
 
