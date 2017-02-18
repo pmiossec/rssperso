@@ -37,7 +37,7 @@ export class Main extends React.Component<IMainProps, IMainState> {
     'http://secouchermoinsbete.fr/feeds.atom',
     'http://feeds.arstechnica.com/arstechnica/index/?format=xml',
     'http://www.zdnet.fr/feeds/rss/actualites/',
-    'http://feedpress.me/minimachines',
+    'http://www.minimachines.net/feed',
     'http://www.infoq.com/rss/rss.action?token=AfW4QujXbXZ8dGSnyBLlLfWstkdmdpgR',
     'http://www.aubryconseil.com/feed/rss2',
     'http://passeurdesciences.blog.lemonde.fr/feed/',
