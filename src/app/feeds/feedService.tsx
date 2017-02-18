@@ -173,6 +173,7 @@ export class FeedService {
       var item = items.item(iItems);
       var link = new Link(this.getElementByTagName(item, 'link').getAttribute('href'), this.getElementContentByTagName(item, 'title'));
       link.publicationDate = this.getLinkAtomDate(item);
+      this.allLinks = [...this.allLinks, link];
       if (link.publicationDate > this.clearDate) {
         this.links = [...this.links, link];
       }
