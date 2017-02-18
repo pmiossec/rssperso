@@ -5,6 +5,7 @@ import { Link } from './news';
 export class FeedService {
   public logo: string;
   public title: string = 'Future title';
+  public webSiteUrl: string;
   public links: Link[] = [];
   public allLinks: Link[] = [];
   public content: string;
@@ -105,7 +106,12 @@ export class FeedService {
     // console.debug(`Processing Rss feed ( ${this.url} )...`);
     const channel = this.getElementByTagName(xmlDoc, 'channel');
     this.title = this.getElementContentByTagName(channel, 'title');
+    this.webSiteUrl = this.getElementContentByTagName(channel, 'link');
     this.logo = this.getElementContentByTagName(this.getElementByTagName(channel, 'image'), 'url');
+    if(!this.logo && this.webSiteUrl) {
+      this.logo = this.formatWebsiteUrl(this.webSiteUrl) + '/favicon.ico';
+    }
+
     const items = xmlDoc.getElementsByTagName('item');
     for (var iItems = 0; iItems < items.length; iItems++) {
       var item = items.item(iItems);
@@ -164,10 +170,25 @@ export class FeedService {
     return null;
   }
 
+  private formatWebsiteUrl(url: string): string {
+    return url;;//.replace('https://', 'http://');
+  }
+
   private manageAtomFeed(xmlDoc: HTMLElement): void {
     // console.log(`Processing Atom feed ( ${this.url} )...`);
     this.title = this.getElementContentByTagName(xmlDoc, 'title');
     this.logo = this.getElementContentByTagName(xmlDoc, 'icon');
+    const linksWebSite = xmlDoc.getElementsByTagName('link');
+    for (var iItems = 0; iItems < linksWebSite.length; iItems++) {
+      var tag = linksWebSite.item(iItems);
+      if (tag.getAttribute('rel') === 'alternate') {
+        this.webSiteUrl = tag.getAttribute('href');
+        break;
+      }
+    }
+    if(!this.logo && this.webSiteUrl) {
+        this.logo = this.formatWebsiteUrl(this.webSiteUrl) + '/favicon.ico';
+    }
     const items = xmlDoc.getElementsByTagName('entry');
     for (var iItems = 0; iItems < items.length; iItems++) {
       var item = items.item(iItems);
