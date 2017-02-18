@@ -119,11 +119,11 @@ export class FeedService {
   }
 
   private parseDate(date: string): Date {
-    var parsedDate = moment(date);
+    var parsedDate = moment(date, 'ddd, DD MMM YYYY HH:mm:ss Z');
     if (parsedDate.isValid()) {
       return parsedDate.toDate();
     }
-    parsedDate = moment(date, 'ddd, DD MMM YYYY HH:mm:ss Z');
+    parsedDate = moment(date);
     return parsedDate.toDate();
   }
 
