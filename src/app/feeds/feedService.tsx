@@ -108,7 +108,7 @@ export class FeedService {
     this.title = this.getElementContentByTagName(channel, 'title');
     this.webSiteUrl = this.getElementContentByTagName(channel, 'link');
     this.logo = this.getElementContentByTagName(this.getElementByTagName(channel, 'image'), 'url');
-    if(!this.logo && this.webSiteUrl) {
+    if (!this.logo && this.webSiteUrl) {
       this.logo = this.formatWebsiteUrl(this.webSiteUrl) + '/favicon.ico';
     }
 
@@ -171,7 +171,7 @@ export class FeedService {
   }
 
   private formatWebsiteUrl(url: string): string {
-    return url;;//.replace('https://', 'http://');
+    return url; // .replace('https://', 'http://');
   }
 
   private manageAtomFeed(xmlDoc: HTMLElement): void {
@@ -186,8 +186,8 @@ export class FeedService {
         break;
       }
     }
-    if(!this.logo && this.webSiteUrl) {
-        this.logo = this.formatWebsiteUrl(this.webSiteUrl) + '/favicon.ico';
+    if (!this.logo && this.webSiteUrl) {
+      this.logo = this.formatWebsiteUrl(this.webSiteUrl) + '/favicon.ico';
     }
     const items = xmlDoc.getElementsByTagName('entry');
     for (var iItems = 0; iItems < items.length; iItems++) {
