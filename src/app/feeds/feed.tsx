@@ -62,8 +62,8 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
     this.forceUpdate();
   }
 
-  clearFeed(): void {
-    this.props.feed.clearFeed();
+  clearFeed = (date?: Date): void => {
+    this.props.feed.clearFeed(date);
     this.forceUpdate();
   }
 
@@ -94,7 +94,7 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
     if (this.props.feed.links.length !== 0) {
       links = <div>
         {this.props.feed.links.map((l: Link, i: number) => (
-          <News key={i} url={l.url} title={l.title} date={l.publicationDate} />
+          <News key={i} url={l.url} title={l.title} date={l.publicationDate} parentFeed={this} />
         ))}
       </div>;
     }

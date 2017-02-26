@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as Helper from '../helper';
+import { Feed } from './feed';
 
 export class Link {
   public publicationDate: Date;
@@ -11,6 +12,7 @@ export class Link {
 }
 
 interface ILinkProps {
+  parentFeed: Feed;
   url: string;
   title: string;
   date: Date;
@@ -26,7 +28,7 @@ export class News extends React.Component<ILinkProps, ILinkState> {
   render() {
     return (
       <div>
-  [<span className='date'>{Helper.DateFormatter.formatDate(this.props.date)}</span>|<a onClick={this.addToReadList} >Add</a>]<a href={this.props.url} target='_blank' > {this.props.title}</a>
+  [<a  onClick={this.props.parentFeed.clearFeed.bind(null, this.props.date)} >{Helper.DateFormatter.formatDate(this.props.date)}</a>|<a onClick={this.addToReadList} >Add</a>]<a href={this.props.url} target='_blank' > {this.props.title}</a>
       </div>
     );
   }

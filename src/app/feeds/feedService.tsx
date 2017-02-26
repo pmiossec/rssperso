@@ -21,14 +21,19 @@ export class FeedService {
     this.restoreInitialClearDate();
   }
 
-  public clearFeed(): void {
-    if (this.links && this.links.length !== 0) {
-      const indexNewerLink = this.isOrderNewerFirst ? 0 : this.links.length - 1;
-      this.clearDate = this.links[indexNewerLink].publicationDate;
+  public clearFeed = (date?: Date): void => {
+    if(date) {
+      this.clearDate = date;
+      this.links = this.links.filter(l => l.publicationDate > this.clearDate);
     } else {
-      this.clearDate = new Date();
+      if (this.links && this.links.length !== 0) {
+        const indexNewerLink = this.isOrderNewerFirst ? 0 : this.links.length - 1;
+        this.clearDate = this.links[indexNewerLink].publicationDate;
+      } else {
+        this.clearDate = new Date();
+      }
+      this.links = new Array<Link>();
     }
-    this.links = new Array<Link>();
     this.storeClearDate(this.clearDate);
   }
 
