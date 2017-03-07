@@ -7,13 +7,14 @@ export class RemoteStore {
   private aLongLongTimeAgo: Date = new Date(1900, 1, 1);
   private shouldBeSaved: boolean = false;
   private state: any;
+  public receivedPromise: Axios.IPromise<any>;
 
   constructor() {
     setInterval(this.updateState, 5000);
-    this.getRemoteState();
+    this.receivedPromise = this.getRemoteState();
   }
 
-  updateFeedDate = (url: string, date: Date) => {
+  public updateFeedDate = (url: string, date: Date) => {
     if (!this.state || !this.state.updates) {
       this.state = {
         updates: {}
@@ -26,17 +27,17 @@ export class RemoteStore {
     this.shouldBeSaved = true;
   }
 
-  getDateForFeed = (url: string): Date => {
+  public getDateForFeed = (url: string): Date => {
     if (!this.state) {
       return this.aLongLongTimeAgo;
     }
     if (this.state.updates[url]) {
-      return this.state.updates[url];
+      return new Date(this.state.updates[url]);
     }
     return this.aLongLongTimeAgo;
   }
 
-  getRemoteState = () => {
+  public getRemoteState = () => {
     return axios.get(this.jsonStoreBlobUrl)
       .then((response: Axios.AxiosXHR<any>) => {
         this.state = response.data;
@@ -52,7 +53,7 @@ export class RemoteStore {
       });
   }
 
-  updateState = () => {
+  public updateState = () => {
     if (!this.shouldBeSaved) {
       return;
     }

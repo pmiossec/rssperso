@@ -20,11 +20,11 @@ export class FeedService {
   ) {
     this.links = [];
     this.title = 'loading...';
-    this.restoreInitialClearDate();
+    this.remoteStore.receivedPromise.then(() => this.restoreInitialClearDate());
   }
 
   public clearFeed = (date?: Date): void => {
-    if(date) {
+    if (date) {
       this.clearDate = date;
       this.links = this.links.filter(l => l.publicationDate > this.clearDate);
     } else {
@@ -107,6 +107,12 @@ export class FeedService {
     const jsonClearDate = localStorage.getItem(this.url);
     if (jsonClearDate) {
       this.clearDate = new Date(jsonClearDate);
+    }
+
+    const fetchedDate = this.remoteStore.getDateForFeed(this.url);
+
+    if (this.clearDate < fetchedDate) {
+      this.clearDate = fetchedDate;
     }
   }
 
