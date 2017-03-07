@@ -1,6 +1,7 @@
 import * as axios from 'axios';
 import * as moment from 'moment';
 import { Link } from './news';
+import { RemoteStore } from './remoteStore';
 
 export class FeedService {
   public logo: string;
@@ -15,6 +16,7 @@ export class FeedService {
 
   constructor(
     public url: string,
+    private remoteStore: RemoteStore
   ) {
     this.links = [];
     this.title = 'loading...';
@@ -98,6 +100,7 @@ export class FeedService {
 
   private storeClearDate(clearDate: Date): void {
     localStorage.setItem(this.url, clearDate.toJSON());
+    this.remoteStore.updateFeedDate(this.url, clearDate);
   }
 
   private restoreInitialClearDate(): void {

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { RemoteStore } from './feeds/remoteStore';
 import { FeedService } from './feeds/feedService';
 import { Feed } from './feeds/feed';
 import { ReadingList } from './readingList/readingList';
@@ -10,6 +11,8 @@ interface IMainProps { };
 interface IMainState { };
 
 export class Main extends React.Component<IMainProps, IMainState> {
+  remoteStore = new RemoteStore();
+
   feeds = [
     'http://rss.slashdot.org/Slashdot/slashdot',
     'http://linuxfr.org/news.atom',
@@ -43,7 +46,7 @@ export class Main extends React.Component<IMainProps, IMainState> {
     'http://passeurdesciences.blog.lemonde.fr/feed/',
     'http://sciencetonnante.wordpress.com/feed/',
     'http://reflets.info/feed/'
-  ].map(url => new FeedService(url));
+  ].map(url => new FeedService(url, this.remoteStore));
 
   clearAll = () => {
     this.feeds.forEach(f => f.clearFeed());
