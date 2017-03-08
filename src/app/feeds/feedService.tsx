@@ -12,7 +12,7 @@ export class FeedService {
   public content: string;
   public clearDate: Date = new Date(1900, 1, 1);
   private isOrderNewerFirst = false;
-  private corsProxyUrl: string = 'http://cors-anywhere.herokuapp.com/';
+  private corsProxyUrl: string = 'https://cors-anywhere.herokuapp.com/';
 
   constructor(
     public url: string,
