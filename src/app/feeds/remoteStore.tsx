@@ -10,7 +10,6 @@ export class RemoteStore {
   public receivedPromise: Axios.IPromise<any>;
 
   constructor() {
-    setInterval(this.updateState, 5000);
     this.receivedPromise = this.getRemoteState();
   }
 
@@ -24,7 +23,10 @@ export class RemoteStore {
     if (!this.state.last_update || this.state.last_update < date) {
       this.state.last_update = date;
     }
-    this.shouldBeSaved = true;
+    if (!this.shouldBeSaved) {
+      setTimeout(this.updateState, 5000);
+      this.shouldBeSaved = true;
+    }
   }
 
   public getDateForFeed = (url: string): Date => {
