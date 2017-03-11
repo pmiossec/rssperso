@@ -40,7 +40,10 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
 
   render() {
     const readItems = this.state.links.map((l: Link, i: number) =>
-      <div key={i}>[<span className='date'>{Helper.DateFormatter.formatDate(l.publicationDate)}</span>|<a onClick={this.remove.bind(null, i)}>Del</a>]<a onClick={this.openAndRemoveLink.bind(null, l.url, i)} >{l.title} </a></div>);
+      <div key={i}>
+        [<span className='date'>{Helper.DateFormatter.formatDate(l.publicationDate)}</span>|<a onClick={this.remove.bind(null, i)}>Del</a>]
+        <a onClick={this.openAndRemoveLink.bind(null, l.url, i)} >{l.title} </a>
+      </div>);
 
     return (
       <div className='feed'>
