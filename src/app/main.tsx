@@ -4,10 +4,7 @@ import { FeedService } from './feeds/feedService';
 import { Feed } from './feeds/feed';
 import { ReadingList } from './readingList/readingList';
 
-
-
 interface IMainProps { };
-
 interface IMainState { };
 
 export class Main extends React.Component<IMainProps, IMainState> {

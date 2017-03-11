@@ -4,6 +4,7 @@ import { Link } from './news';
 import { RemoteStore } from './remoteStore';
 
 export class FeedService {
+  public httpProtocol: string;
   public logo: string;
   public title: string = 'Future title';
   public webSiteUrl: string;
@@ -12,7 +13,7 @@ export class FeedService {
   public content: string;
   public clearDate: Date = new Date(1900, 1, 1);
   private isOrderNewerFirst = false;
-  private corsProxyUrl: string = 'https://cors-anywhere.herokuapp.com/';
+  private corsProxyUrl: string;
 
   constructor(
     public url: string,
@@ -20,6 +21,8 @@ export class FeedService {
   ) {
     this.links = [];
     this.title = 'loading...';
+    this.httpProtocol = window.location.protocol + '//';
+    this.corsProxyUrl = this.httpProtocol + 'cors-anywhere.herokuapp.com/';
     this.remoteStore.receivedPromise.then(() => this.restoreInitialClearDate());
   }
 
@@ -83,7 +86,7 @@ export class FeedService {
 
           if (!this.logo || !this.logo.startsWith('http')) {
             var parts = this.url.split('/');
-            this.logo = parts[0] + '//' + parts[2] + '/favicon.ico';
+            this.logo = this.httpProtocol + parts[2] + '/favicon.ico';
           }
           if (!this.title) {
             this.title = this.url;
