@@ -57,9 +57,6 @@ export class BlobRemoteStorage {
   // }
 
   public saveListToRemote = (list: any) => {
-    if (!this.shouldBeSaved) {
-      return;
-    }
     axios.put(this.jsonStoreBlobUrl, list)
       .then((response: Axios.AxiosXHR<any>) => {
         this.shouldBeSaved = false;
