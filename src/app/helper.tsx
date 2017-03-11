@@ -1,4 +1,5 @@
 import { Link } from './feeds/news';
+import { BlobRemoteStorage } from './readingList/blobRemoteStorage';
 
 export namespace DateFormatter {
   const padDigits = (number: number, digits: number = 2): string => {
@@ -16,7 +17,13 @@ export namespace DateFormatter {
   };
 }
 
+export const ReadingListKey: string = 'ReadingList';
+export const ArchiveListKey: string = 'ArchiveList';
+
 export namespace Storage {
+
+  const readListStorage: BlobRemoteStorage = new BlobRemoteStorage('4013cc1f-0657-11e7-a0ba-8deb10d7638f');
+  const archiveListStorage: BlobRemoteStorage = new BlobRemoteStorage('1a115a19-06a3-11e7-a0ba-399ae9b7d9b1');
   var stateChanged: boolean = true;
   const dateTimeReviver = (key: string, value: string): any => {
     if (key === 'publicationDate') {
@@ -54,5 +61,6 @@ export namespace Storage {
     var readList: Link[] = loadReadingList(storeName);
     readList.push(link);
     localStorage.setItem(storeName, JSON.stringify(readList));
+    readListStorage.saveListToRemote(readList);
   };
 }

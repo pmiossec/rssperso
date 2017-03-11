@@ -9,8 +9,6 @@ interface IReadingListState {
   links: Link[];
 };
 
-const ReadingListKey: string = 'ReadingList';
-const ArchiveListKey: string = 'ArchiveList';
 
 export class ReadingList extends React.Component<IReadingListProps, IReadingListState> {
   componentWillMount(): void {
@@ -19,17 +17,17 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
   }
 
   loadReadingList = (): void => {
-    const readList = Helper.Storage.loadReadingListIfChanged(ReadingListKey);
+    const readList = Helper.Storage.loadReadingListIfChanged(Helper.ReadingListKey);
     if (readList) {
       this.setState({ links: readList });
     }
   }
 
   remove = (i: number): void => {
-    const link = Helper.Storage.elementAt(ReadingListKey, i);
-    Helper.Storage.addToStoredList(ArchiveListKey, link);
+    const link = Helper.Storage.elementAt(Helper.ReadingListKey, i);
+    Helper.Storage.addToStoredList(Helper.ArchiveListKey, link);
 
-    const readList = Helper.Storage.remove(ReadingListKey, i);
+    const readList = Helper.Storage.remove(Helper.ReadingListKey, i);
     this.setState({ links: readList });
   }
 
