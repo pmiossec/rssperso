@@ -44,7 +44,7 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
 
     return (
       <div className='feed'>
-        <div className='title'> >> Reading list...</div>
+        <div className='title'> >> Reading list... ({this.state.links.length})</div>
         <div className='links'> {readItems} </div>
       </div>
     );
