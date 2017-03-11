@@ -1,4 +1,4 @@
-start /wait npm run build
+REM start /wait npm run build
 git commit -am "Save local changes"
 git checkout -B gh-pages
 git add -f dist
