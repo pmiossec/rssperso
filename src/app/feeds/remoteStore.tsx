@@ -3,11 +3,11 @@ import * as axios from 'axios';
 export class RemoteStore {
   public jsonStoreUrl: string = 'https://jsonblob.com/api/jsonBlob';
   public jsonStoreBlobUrl: string = 'https://jsonblob.com/api/jsonBlob/ebba8dc9-0378-11e7-a0ba-7f55dedc152c';
+  public receivedPromise: Axios.IPromise<any>;
 
   private aLongLongTimeAgo: Date = new Date(1900, 1, 1);
   private shouldBeSaved: boolean = false;
   private state: any;
-  public receivedPromise: Axios.IPromise<any>;
 
   constructor() {
     this.receivedPromise = this.getRemoteState();

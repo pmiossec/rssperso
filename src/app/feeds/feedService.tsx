@@ -87,7 +87,7 @@ export class FeedService {
           if (!this.logo || !this.logo.startsWith('http')) {
             var parts = this.url.split('/');
             this.logo = this.httpProtocol + parts[2] + '/favicon.ico';
-          } else if(!this.logo.startsWith(this.httpProtocol)) {
+          } else if (!this.logo.startsWith(this.httpProtocol)) {
             this.logo = this.httpProtocol + this.logo.split('://')[1];
           }
 
