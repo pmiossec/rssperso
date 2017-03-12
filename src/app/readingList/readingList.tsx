@@ -17,18 +17,20 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
   }
 
   loadReadingList = (): void => {
-    const readList = Helper.Storage.loadReadingListIfChanged(Helper.ReadingListKey);
-    if (readList) {
-      this.setState({ links: readList });
-    }
+    Helper.Storage.loadReadingListIfChanged(Helper.ReadingListKey).then((readList) => {
+      if (readList) {
+        this.setState({ links: readList });
+      }
+    });
   }
 
   remove = (i: number): void => {
     const link = Helper.Storage.elementAt(Helper.ReadingListKey, i);
     Helper.Storage.addToStoredList(Helper.ArchiveListKey, link);
 
-    const readList = Helper.Storage.remove(Helper.ReadingListKey, i);
-    this.setState({ links: readList });
+    const readList = Helper.Storage.remove(Helper.ReadingListKey, i).then((readList) => {
+      this.setState({ links: readList });
+    });
   }
 
   openAndRemoveLink = (url: string, i: number): void => {
@@ -37,15 +39,20 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
   }
 
   render() {
-    const readItems = this.state.links.map((l: Link, i: number) =>
+    var readItems;
+    if (!this.state || !this.state.links) {
+      readItems = (<div></div>);
+    } else {
+      readItems = this.state.links.map((l: Link, i: number) =>
       <div key={i}>
-        [<span className='date'>{Helper.DateFormatter.formatDate(l.publicationDate)}</span>|<a onClick={this.remove.bind(null, i)}>Del</a>]
+        [<span className='date'>{Helper.DateFormatter.formatDate(new Date(l.publicationDate))}</span>|<a onClick={this.remove.bind(null, i)}>Del</a>]
         <a onClick={this.openAndRemoveLink.bind(null, l.url, i)} >{l.title} </a>
       </div>);
+    }
 
     return (
       <div className='feed'>
-        <div className='title'> >> Reading list... ({this.state.links.length})</div>
+        <div className='title'> >> Reading list... ({ (!this.state || !this.state.links) ? 0 : this.state.links.length})</div>
         <div className='links'> {readItems} </div>
       </div>
     );

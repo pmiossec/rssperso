@@ -2,16 +2,16 @@ import * as axios from 'axios';
 
 export class BlobRemoteStorage {
   public receivedPromise: Axios.IPromise<any>;
+  public dataFetched: boolean = false;
 
   private jsonStoreApiUrl: string = 'https://jsonblob.com/api/jsonBlob/';
   private jsonStoreBlobUrl: string;
-  private aLongLongTimeAgo: Date = new Date(1900, 1, 1);
-  private shouldBeSaved: boolean = false;
-  private state: any;
+  // private aLongLongTimeAgo: Date = new Date(1900, 1, 1);
+  // private shouldBeSaved: boolean = false;
 
   constructor(jsonBlobId: string) {
     this.jsonStoreBlobUrl = this.jsonStoreApiUrl + jsonBlobId;
-    //this.receivedPromise = this.getRemoteReadingList();
+    // this.receivedPromise = this.getRemoteReadingList();
   }
 
   // public updateFeedDate = (url: string, date: Date) => {
@@ -40,26 +40,24 @@ export class BlobRemoteStorage {
   //   return this.aLongLongTimeAgo;
   // }
 
-  // public getRemoteReadingList = () => {
-  //   return axios.get(this.jsonStoreBlobUrl)
-  //     .then((response: Axios.AxiosXHR<any>) => {
-  //       this.state = response.data;
-  //       console.log('data fetched', this.state);
-  //       return this.state;
-  //     })
-  //     .catch(err => {
-  //       console.log('err fetching online state:', err);
-  //       return {
-  //         last_update: this.aLongLongTimeAgo,
-  //         updates: {}
-  //       };
-  //     });
-  // }
+  public getDataFromRemote = () => {
+    return axios.get(this.jsonStoreBlobUrl)
+      .then((response: Axios.AxiosXHR<any>) => {
+        this.dataFetched = true;
+        const data = response.data;
+        console.log('data fetched', data);
+        return data;
+      })
+      .catch(err => {
+        console.log('err fetching online state:', err);
+        return {};
+      });
+  }
 
-  public saveListToRemote = (list: any) => {
+  public saveDataToRemote = (list: any) => {
     axios.put(this.jsonStoreBlobUrl, list)
       .then((response: Axios.AxiosXHR<any>) => {
-        this.shouldBeSaved = false;
+        // this.shouldBeSaved = false;
         console.log('reading list saved ;)');
       })
       .catch(err => {

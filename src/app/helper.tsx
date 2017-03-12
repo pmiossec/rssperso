@@ -32,24 +32,49 @@ export namespace Storage {
     return value;
   };
 
-  const loadReadingList = (storeName: string): Link[] => {
-    return JSON.parse(localStorage.getItem(storeName), dateTimeReviver) || [];
+  const GetStore = (storeName: string): BlobRemoteStorage => {
+    if (storeName === ReadingListKey) {
+      return readListStorage;
+    }
+    return archiveListStorage;
   };
 
-  export const loadReadingListIfChanged = (storeName: string): Link[] => {
+  const loadReadingList = (storeName: string): Promise<Link[]> => {
+    var p = new Promise<Link[]>((resolve, reject) => {
+      const remoteStore = GetStore(storeName);
+      if (!remoteStore.dataFetched) {
+        remoteStore.getDataFromRemote()
+          .then((data: Link[]) => {
+            localStorage.setItem(storeName, JSON.stringify(data));
+            resolve(data);
+          })
+          .catch(() => {
+            resolve([]);
+          });
+      } else {
+        resolve(JSON.parse(localStorage.getItem(storeName), dateTimeReviver) || []);
+      }
+    });
+    return p;
+  };
+
+  export const loadReadingListIfChanged = (storeName: string): Promise<Link[]> => {
     if (!stateChanged) {
-      return null;
+      return new Promise<Link[]>((resolve, reject) => { resolve(null) });
     }
     stateChanged = false;
     return loadReadingList(storeName);
   };
 
-  export const remove = (storeName: string, i: number): Link[] => {
-    var readList: Link[] = loadReadingList(storeName);
-    readList.splice(i, 1);
+  export const remove = (storeName: string, i: number): Promise<Link[]> => {
+    return loadReadingList(storeName).then((readList: Link[]) => {
+      readList.splice(i, 1);
 
-    localStorage.setItem(storeName, JSON.stringify(readList));
-    return readList;
+      localStorage.setItem(storeName, JSON.stringify(readList));
+
+      readListStorage.saveDataToRemote(readList);
+      return readList;
+    });
   };
 
   export const elementAt = (storeName: string, i: number): Link => {
@@ -58,9 +83,10 @@ export namespace Storage {
 
   export const addToStoredList = (storeName: string, link: Link): void => {
     stateChanged = true;
-    var readList: Link[] = loadReadingList(storeName);
-    readList.push(link);
-    localStorage.setItem(storeName, JSON.stringify(readList));
-    readListStorage.saveListToRemote(readList);
+    loadReadingList(storeName).then((readList: Link[]) => {
+      readList.push(link);
+      localStorage.setItem(storeName, JSON.stringify(readList));
+      readListStorage.saveDataToRemote(readList);
+    });
   };
 }
