@@ -1,5 +1,4 @@
 import * as axios from 'axios';
-import * as moment from 'moment';
 import { Link } from './news';
 import { RemoteStore } from './remoteStore';
 
@@ -145,25 +144,7 @@ export class FeedService {
   }
 
   private parseDate(date: string): Date {
-
-    var date = date.endsWith('Z') ? date.substr(0, date.length-1) : date;
-    var parsedDate = moment(date, 'ddd, DD MMM YYYY HH:mm:ss');
-    var normalParsedDate = new Date(date);
-
-    if (parsedDate.isValid()) {
-      if (parsedDate.toDate().getTime() !== normalParsedDate.getTime()) {
-        console.log('0. date :', date);
-        console.log('1.Not same date parsed!!!', parsedDate.format(), normalParsedDate.toString());
-      }
-      return parsedDate.toDate();
-    }
-    parsedDate = moment(date);
-    normalParsedDate = new Date(date);
-    if (parsedDate.toDate().getTime() !== normalParsedDate.getTime()) {
-      console.log('0. date :', date);
-      console.log('2.Not same date parsed!!!', parsedDate.format(), normalParsedDate.toString());
-    }
-    return parsedDate.toDate();
+    return new Date(date.endsWith('Z') ? date.substr(0, date.length - 1) : date);
   }
 
   private getLinkRssDate(element: Element): Date {
