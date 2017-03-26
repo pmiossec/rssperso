@@ -60,7 +60,7 @@ export namespace Storage {
 
   export const loadReadingListIfChanged = (storeName: string): Promise<Link[]> => {
     if (!stateChanged) {
-      return new Promise<Link[]>((resolve, reject) => { resolve(null) });
+      return new Promise<Link[]>((resolve, reject) => { resolve(null); });
     }
     stateChanged = false;
     return loadReadingList(storeName);
