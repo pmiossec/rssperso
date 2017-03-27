@@ -67,13 +67,13 @@ export namespace Storage {
   };
 
   export const remove = (storeName: string, i: number): Promise<Link[]> => {
-    return loadReadingList(storeName).then((readList: Link[]) => {
-      readList.splice(i, 1);
+    return loadReadingList(storeName).then((linkList: Link[]) => {
+      linkList.splice(i, 1);
 
-      localStorage.setItem(storeName, JSON.stringify(readList));
+      localStorage.setItem(storeName, JSON.stringify(linkList));
 
-      readListStorage.saveDataToRemote(readList);
-      return readList;
+      GetStore(storeName).saveDataToRemote(linkList);
+      return linkList;
     });
   };
 
@@ -83,10 +83,10 @@ export namespace Storage {
 
   export const addToStoredList = (storeName: string, link: Link): void => {
     stateChanged = true;
-    loadReadingList(storeName).then((readList: Link[]) => {
-      readList.push(link);
-      localStorage.setItem(storeName, JSON.stringify(readList));
-      readListStorage.saveDataToRemote(readList);
+    loadReadingList(storeName).then((linkList: Link[]) => {
+      linkList.push(link);
+      localStorage.setItem(storeName, JSON.stringify(linkList));
+      GetStore(storeName).saveDataToRemote(linkList);
     });
   };
 }
