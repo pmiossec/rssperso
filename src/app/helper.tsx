@@ -77,8 +77,11 @@ export namespace Storage {
     });
   };
 
-  export const elementAt = (storeName: string, i: number): Link => {
-    return loadReadingList(storeName)[i];
+  export const elementAt = (storeName: string, i: number): Promise<Link> => {
+    return loadReadingList(storeName).then((linkList: Link[]) => {
+      console.log('here', linkList, linkList[i]);
+      return linkList[i];
+    });
   };
 
   export const addToStoredList = (storeName: string, link: Link): void => {

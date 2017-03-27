@@ -25,11 +25,13 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
   }
 
   remove = (i: number): void => {
-    const link = Helper.Storage.elementAt(Helper.ReadingListKey, i);
-    Helper.Storage.addToStoredList(Helper.ArchiveListKey, link);
+    const link = Helper.Storage.elementAt(Helper.ReadingListKey, i).then((link) => {
+      console.log('link to archieve', link);
+      Helper.Storage.addToStoredList(Helper.ArchiveListKey, link);
 
-    const readList = Helper.Storage.remove(Helper.ReadingListKey, i).then((readList) => {
-      this.setState({ links: readList });
+      const readList = Helper.Storage.remove(Helper.ReadingListKey, i).then((readList) => {
+        this.setState({ links: readList });
+      });
     });
   }
 
