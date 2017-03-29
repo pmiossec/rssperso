@@ -121,15 +121,21 @@ export class FeedService {
     }
   }
 
+  private getFaviconUrl(logoUrl:string, webSiteUrl: string): string {
+    if (!logoUrl && this.webSiteUrl) {
+      logoUrl = this.formatWebsiteUrl(this.webSiteUrl) + '/favicon.ico';
+    }
+    return logoUrl;
+  }
+
+
   private manageRssFeed(xmlDoc: HTMLElement): void {
     // console.debug(`Processing Rss feed ( ${this.url} )...`);
     const channel = this.getElementByTagName(xmlDoc, 'channel');
     this.title = this.getElementContentByTagName(channel, 'title');
     this.webSiteUrl = this.getElementContentByTagName(channel, 'link');
-    this.logo = this.getElementContentByTagName(this.getElementByTagName(channel, 'image'), 'url');
-    if (!this.logo && this.webSiteUrl) {
-      this.logo = this.formatWebsiteUrl(this.webSiteUrl) + '/favicon.ico';
-    }
+    const logoUrl = this.getElementContentByTagName(this.getElementByTagName(channel, 'image'), 'url');
+    this.logo = this.getFaviconUrl(logoUrl, this.webSiteUrl);
 
     const items = xmlDoc.getElementsByTagName('item');
     for (var iItems = 0; iItems < items.length; iItems++) {
