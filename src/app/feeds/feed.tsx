@@ -20,6 +20,14 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
     });
   }
 
+  getFeedName = (): string => {
+    return this.props.feed.title;
+  }
+
+  getIconUrl = (): string => {
+    return this.props.feed.logo;
+  }
+
   calculateRefreshInterval() {
     const oneDay = 24 * 3600 * 1000;
     const maxInterval = 2 * 3600 * 1000;

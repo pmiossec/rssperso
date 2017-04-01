@@ -5,6 +5,8 @@ import { Feed } from './feed';
 export class Link {
   public publicationDate: Date;
   public read: boolean;
+  public iconUrl: string;
+  public feedName: string;
   constructor(
     public url: string,
     public title: string
@@ -22,7 +24,13 @@ interface ILinkState { };
 
 export class News extends React.Component<ILinkProps, ILinkState> {
   addToReadList = () : void => {
-    Helper.Storage.addToStoredList('ReadingList', {url: this.props.url, title: this.props.title, publicationDate: this.props.date} as Link);
+    Helper.Storage.addToStoredList('ReadingList', {
+      url: this.props.url,
+      title: this.props.title,
+      publicationDate: this.props.date,
+      feedName: this.props.parentFeed.getFeedName(),
+      iconUrl: this.props.parentFeed.getIconUrl(),
+    } as Link);
   }
 
   render() {
