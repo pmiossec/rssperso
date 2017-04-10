@@ -13,6 +13,7 @@ export class FeedService {
   public clearDate: Date = new Date(1900, 1, 1);
   private isOrderNewerFirst = false;
   private corsProxyUrl: string;
+  private headers: any;
 
   constructor(
     public url: string,
@@ -23,6 +24,7 @@ export class FeedService {
     this.httpProtocol = window.location.protocol + '//';
     this.corsProxyUrl = this.httpProtocol + 'cors-anywhere.herokuapp.com/';
     this.remoteStore.receivedPromise.then(() => this.restoreInitialClearDate());
+    this.headers = this.getHeaders(url);
   }
 
   public clearFeed = (date?: Date): void => {
@@ -47,57 +49,60 @@ export class FeedService {
     this.storeClearDate(this.clearDate);
   }
 
-  public loadFeedContent(): Axios.IPromise<void> {
-    var url: string = this.url;
-    var headers: any;
-    if (localStorage.getItem('use_proxy.' + this.url)) {
-      url = this.corsProxyUrl + this.url;
-      headers = { headers: { 'X-Requested-With': 'XMLHttpRequest' } };
+  private getHeaders(url: string) {
+    if (localStorage.getItem('use_proxy.' + url)) {
+      // Use proxy!
+      this.url = this.corsProxyUrl + url;
+      return { headers: { 'X-Requested-With': 'XMLHttpRequest' } };
     } else {
-      url = this.url;
-      headers = { headers: { 'Origin': this.url } };
+      // No need of a proxy
+      return { headers: { 'Origin': url } };
     }
+  }
+
+  private processFeedXml = (response: Axios.AxiosXHR<string>) => {
+    this.allLinks = [];
+    this.links = [];
+    const parser = new DOMParser();
+    try {
+      var content = response.data;
+      const xmlDoc = parser.parseFromString(content, 'text/xml');
+      // console.log('xmlDoc:', xmlDoc.documentElement);
+      const feedFormat = xmlDoc.documentElement.tagName;
+      switch (feedFormat) {
+        case 'rss':
+        case 'rdf:RDF':
+          this.manageRssFeed(xmlDoc.documentElement);
+          break;
+        case 'feed':
+          this.manageAtomFeed(xmlDoc.documentElement);
+          break;
+        default:
+          this.title = `${this.url} => Feed format not supported:` + feedFormat;
+      }
+
+      this.sortFeed();
+
+      if (!this.logo || !this.logo.startsWith('http')) {
+        var parts = this.url.split('/');
+        this.logo = this.httpProtocol + parts[2] + '/favicon.ico';
+      } else if (!this.logo.startsWith(this.httpProtocol)) {
+        this.logo = this.httpProtocol + this.logo.split('://')[1];
+      }
+
+      if (!this.title) {
+        this.title = this.url;
+      }
+      // console.log('feed read', this);
+    } catch (ex) {
+      this.title = `${this.url} Error loading :( Error: ${ex}`;
+    }
+  };
+
+  public loadFeedContent(): Axios.IPromise<void> {
     return axios
-      .get(url, headers)
-      // .get(this.url, { headers: {'X-Requested-With': 'XMLHttpRequest' }}) //'X-Requested-With': 'XMLHttpRequest',
-      .then((response: Axios.AxiosXHR<string>) => {
-        this.allLinks = [];
-        this.links = [];
-        const parser = new DOMParser();
-        try {
-          var content = response.data;
-          const xmlDoc = parser.parseFromString(content, 'text/xml');
-          // console.log('xmlDoc:', xmlDoc.documentElement);
-          const feedFormat = xmlDoc.documentElement.tagName;
-          switch (feedFormat) {
-            case 'rss':
-            case 'rdf:RDF':
-              this.manageRssFeed(xmlDoc.documentElement);
-              break;
-            case 'feed':
-              this.manageAtomFeed(xmlDoc.documentElement);
-              break;
-            default:
-              this.title = `${this.url} => Feed format not supported:` + feedFormat;
-          }
-
-          this.sortFeed();
-
-          if (!this.logo || !this.logo.startsWith('http')) {
-            var parts = this.url.split('/');
-            this.logo = this.httpProtocol + parts[2] + '/favicon.ico';
-          } else if (!this.logo.startsWith(this.httpProtocol)) {
-            this.logo = this.httpProtocol + this.logo.split('://')[1];
-          }
-
-          if (!this.title) {
-            this.title = this.url;
-          }
-          // console.log('feed read', this);
-        } catch (ex) {
-          this.title = `${this.url} Error loading :( Error: ${ex}`;
-        }
-      })
+      .get(this.url, this.headers)
+      .then(this.processFeedXml)
       .catch(err => {
         localStorage.setItem('use_proxy.' + this.url, 'true');
       });
@@ -121,7 +126,7 @@ export class FeedService {
     }
   }
 
-  private getFaviconUrl(logoUrl:string, webSiteUrl: string): string {
+  private getFaviconUrl(logoUrl: string, webSiteUrl: string): string {
     if (!logoUrl && this.webSiteUrl) {
       logoUrl = this.formatWebsiteUrl(this.webSiteUrl) + '/favicon.ico';
     }
