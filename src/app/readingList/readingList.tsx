@@ -47,7 +47,7 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
     } else {
       readItems = this.state.links.map((l: Link, i: number) =>
       <div key={i}>
-        [<span className='date'>{Helper.DateFormatter.formatDate(new Date(l.publicationDate))}</span>|<a onClick={this.remove.bind(null, i)}>Del</a>]
+        [<span className='date'>{Helper.DateFormatter.formatDate(new Date(l.publicationDate))}</span>|<a href={l.url} target="_blank">Open</a>|<a onClick={this.remove.bind(null, i)}>Del</a>]
         <a onClick={this.openAndRemoveLink.bind(null, l.url, i)} ><img src={l.iconUrl} />{l.title} </a>
       </div>);
     }
