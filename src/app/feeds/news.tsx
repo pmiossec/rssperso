@@ -36,7 +36,7 @@ export class News extends React.Component<ILinkProps, ILinkState> {
   render() {
     return (
       <div>
-  [<a  onClick={this.props.parentFeed.clearFeed.bind(null, this.props.date)} >{Helper.DateFormatter.formatDate(this.props.date)}</a>|<a onClick={this.addToReadList} >Add</a>]<a href={this.props.url} target='_blank' > {this.props.title}</a>
+  [<a  onClick={this.props.parentFeed.clearFeed.bind(null, this.props.date)} >{Helper.DateFormatter.formatDate(this.props.date)}</a>|<a onClick={this.addToReadList} >➕</a>]<a href={this.props.url} target='_blank' > {this.props.title}</a>
       </div>
     );
   }
