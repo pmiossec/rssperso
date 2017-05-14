@@ -1,5 +1,16 @@
 
-#MyRss
+# MyRss
+
+## Development
+
+### Debug
+
+`npm run serve`
+
+### Publish to Github pages
+
+`npm run build && to_ghpages.bat`
+
 
 ## ToDo
 
