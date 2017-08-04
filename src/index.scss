@@ -1,0 +1,82 @@
+html, body, #root {
+  margin: 0;
+  height: 100%;
+  font-family: Tahoma,Arial,Verdana,Helvetica,"Bitstream Vera Sans",sans-serif;
+  font-size: 15px;
+  color: #7e7070;
+}
+
+.feeds {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: space-around;
+  }
+
+.feed {
+  border: 1px solid lightgray;
+  margin: 2px;
+  padding: 5px;
+
+  img {
+    height: 16px;
+  }
+  .title {
+    margin: 0 0 5px 0;
+  }
+}
+
+a {
+  cursor: pointer;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 13px;
+  line-height: 0.8em;
+  font-size-adjust: none;
+  font-stretch: normal;
+  -x-system-font: none;
+  font-feature-settings: normal;
+  font-language-override: normal;
+  font-kerning: auto;
+  font-synthesis: weight style;
+  font-variant-alternates: normal;
+  font-variant-caps: normal;
+  font-variant-east-asian: normal;
+  font-variant-ligatures: normal;
+  font-variant-numeric: normal;
+  font-variant-position: normal;
+  text-decoration: none;
+  color: #7e7070;
+
+  &:hover {
+    color: #5aadbb;
+  }
+}
+
+.date {
+  font-size: 12px;
+}
+
+.text-badge {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    padding: 0px 3px 0px;
+    min-width: 12px;
+    margin-left: 8px;
+    border-radius: 3px;
+    line-height: 17px;
+    white-space: nowrap;
+    font-size: 10px;
+    font-family: inherit;
+    font-weight: bold;
+    overflow: hidden;
+    background-color: #7e7070;
+
+    a {
+      color: white;
+        &:hover {
+          color: #5aadbb;
+        }
+    }
+}
