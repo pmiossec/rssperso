@@ -58,7 +58,9 @@ export class Main extends React.Component<IMainProps, IMainState> {
   render() {
     return (
       <main className="feeds">
-        <div><a onClick={this.clearAll}>Clear All</a> / <a onClick={this.displayAll}>Show All</a></div>
+        <div className="displayModes">
+          <a onClick={this.clearAll}>Clear All</a> / <a onClick={this.displayAll}>Show All</a>
+        </div>
         <div className="feeds">
           {this.feeds.map((feed: FeedService, i: number) =>
             <Feed key={i} feed={feed} />

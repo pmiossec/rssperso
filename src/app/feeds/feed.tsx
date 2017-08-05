@@ -124,8 +124,13 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
     return (
       <div className="feed">
         <div className="title">
-          <img src={this.props.feed.logo} />
-          <a href={this.props.feed.webSiteUrl as string} target="_blank"> {this.props.feed.title}</a> {options}
+          <div>
+            <img src={this.props.feed.logo} />
+            <a href={this.props.feed.webSiteUrl as string} target="_blank"> {this.props.feed.title}</a>
+          </div>
+          <div>
+            {options}
+          </div>
         </div>
         {linksToDisplay.length !== 0 && links}
       </div>

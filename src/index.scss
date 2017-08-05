@@ -5,12 +5,16 @@ html, body, #root {
   font-size: 15px;
   color: #7e7070;
 }
-
+.displayModes {
+  display: flex;
+  justify-content: right;
+}
 .feeds {
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
     justify-content: space-around;
+    width: -moz-fit-content;
   }
 
 .feed {
@@ -23,6 +27,8 @@ html, body, #root {
   }
   .title {
     margin: 0 0 5px 0;
+    display: flex;
+    justify-content: space-between;
   }
 }
 
