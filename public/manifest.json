@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "RssPerso",
+  "name": "My Rss feed reader",
   "icons": [
     {
       "src": "favicon.ico",
