@@ -1,4 +1,3 @@
-
 # MyRss
 
 ## Development
@@ -27,3 +26,4 @@ https://github.com/facebookincubator/create-react-app/blob/master/packages/react
 * Better favicons
 * Being able to add to Pocket or Wallabag (from ToDoList or from rss feed)
 * Display icon of all feeds on top (toggle show all/none)
+* Being able to re-add to the reading list the last link opened!!!
