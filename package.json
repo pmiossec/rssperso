@@ -21,7 +21,7 @@
   "scripts": {
     "start": "npm-run-all -p watch-css start-ts",
     "start-ts": "react-scripts-ts start",
-    "build": "npm run build-css && react-scripts-ts build",
+    "build": "set PUBLIC_URL=.&& npm run build-css && react-scripts-ts build",
     "test": "react-scripts-ts test --env=jsdom",
     "eject": "react-scripts-ts eject",
     "build-css": "node-sass-chokidar src/ -o src/",
