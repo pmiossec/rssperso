@@ -2,6 +2,8 @@ import * as axios from 'axios';
 import { Link } from './news';
 import { RemoteStore } from './remoteStore';
 
+const ProxyHeaders = { headers: { 'X-Requested-With': 'XMLHttpRequest' } };
+
 export class FeedService {
   public httpProtocol: string;
   public logo: string;
@@ -14,6 +16,7 @@ export class FeedService {
   private isOrderNewerFirst = false;
   private corsProxyUrl: string;
   private headers: {};
+  private shouldDisplayAllLinks: boolean = false;
 
   constructor(
     public url: string,
@@ -28,6 +31,7 @@ export class FeedService {
   }
 
   public clearFeed = (date?: Date): void => {
+    this.shouldDisplayAllLinks = false;
     if (date) {
       this.clearDate = date;
       this.links = this.links.filter(l => l.publicationDate > this.clearDate);
@@ -43,17 +47,22 @@ export class FeedService {
     this.storeClearDate(this.clearDate);
   }
 
+  public getLinksToDisplay(): Link[] {
+    return this.shouldDisplayAllLinks ? this.allLinks : this.links;
+  }
+
+  public isDisplayingAllLinks(): boolean {
+    return this.shouldDisplayAllLinks || this.allLinks.length === this.links.length;
+  }
+
   public displayAllLinks(): void {
-    this.clearDate = new Date(2000, 1, 1);
-    this.links = this.allLinks;
-    this.storeClearDate(this.clearDate);
+    this.shouldDisplayAllLinks = !this.shouldDisplayAllLinks;
   }
 
   private getHeaders(url: string) {
     if (localStorage.getItem('use_proxy.' + url)) {
-      // use proxy!
       this.url = this.corsProxyUrl + url;
-      return { headers: { 'X-Requested-With': 'XMLHttpRequest' } };
+      return ProxyHeaders;
     } else {
       // no need of a proxy
       return { headers: { 'Origin': url } };
@@ -81,7 +90,8 @@ export class FeedService {
           this.title = `${this.url} => Feed format not supported:` + feedFormat;
       }
 
-      this.sortFeed();
+      this.allLinks = this.sortFeed(this.allLinks);
+      this.links = this.sortFeed(this.links);
 
       if (!this.logo || !this.logo.startsWith('http')) {
         var parts = this.url.split('/');
@@ -237,9 +247,9 @@ export class FeedService {
     }
   }
 
-  private sortFeed = (): void => {
+  private sortFeed = (links: Link[]): Link[] => {
     const inverter = this.isOrderNewerFirst ? -1 : 1;
-    this.links = this.links.sort((l1, l2) => { return inverter * (l1.publicationDate < l2.publicationDate ? -1 : 1); });
+    return links.sort((l1, l2) => { return inverter * (l1.publicationDate < l2.publicationDate ? -1 : 1); });
   }
 
   private getLinkAtomDate(element: Element): Date {

@@ -82,48 +82,44 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
   }
 
   openAll = (): void => {
-    this.props.feed.links.forEach(element => {
-      document.open(element.url, '_blank');
+    this.props.feed.getLinksToDisplay().forEach(element => {
+      window.open(element.url, '_blank');
     });
+    this.clearFeed();
   }
 
   render() {
-    let allLinks = (this.props.feed.links.length < this.props.feed.allLinks.length)
-      ? <span className="text-badge" onClick={this.displayAll}><a>All</a> </span>
-      : (<div />);
-
-    let openAllLinks = (this.props.feed.links.length !== 0)
-      ? <span className="text-badge" onClick={this.openAll}><a> Open All</a> </span>
-      : (<div />);
-
     let options = null;
-    if (this.props.feed.links.length !== 0) {
+    const linksToDisplay = this.props.feed.getLinksToDisplay();
+    if (linksToDisplay.length !== 0) {
       options = (
         <span>
-          <span className="text-badge" onClick={this.clearFeed.bind(null, null)}>
-            <a>{this.props.feed.links.length}</a>
-          </span>
-          {allLinks}
-          {openAllLinks}
+          <div className="text-badge" onClick={this.clearFeed.bind(null, null)}>
+            <a>{linksToDisplay.length}</a>
+          </div>
+          {!this.props.feed.isDisplayingAllLinks()
+            && <div className="text-badge" onClick={this.displayAll}><a>All</a> </div>}
+          {linksToDisplay.length !== 0
+            && <div className="text-badge" onClick={this.openAll}><a> Open All</a> </div>}
         </span>);
     } else {
       if (this.shouldDisplayEmptyFeeds) {
-        options = <span> {allLinks} - Nothing new :( </span>;
+        options = (
+          <span>
+            <div className="text-badge" onClick={this.displayAll}><a>All</a> </div> - Nothing new :(
+          </span>);
       } else {
         return (<div />);
       }
     }
 
-    let links = null;
-    if (this.props.feed.links.length !== 0) {
-      links = (
+    let links = (
         <div>
-          {this.props.feed.links.map((l: Link, i: number) => (
+          {linksToDisplay.map((l: Link, i: number) => (
             <News key={i} url={l.url} title={l.title} date={l.publicationDate} parentFeed={this} />
           ))}
         </div>
       );
-    }
 
     return (
       <div className="feed">
@@ -131,7 +127,7 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
           <img src={this.props.feed.logo} />
           <a href={this.props.feed.webSiteUrl as string} target="_blank"> {this.props.feed.title}</a> {options}
         </div>
-        {links}
+        {linksToDisplay.length !== 0 && links}
       </div>
     );
   }
