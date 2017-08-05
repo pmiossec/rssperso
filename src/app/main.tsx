@@ -3,6 +3,7 @@ import { RemoteStore } from './feeds/remoteStore';
 import { FeedService } from './feeds/feedService';
 import { Feed } from './feeds/feed';
 import { ReadingList } from './readingList/readingList';
+import { NotificationContainer } from 'react-notifications';
 
 interface IMainProps { }
 interface IMainState { }
@@ -58,6 +59,7 @@ export class Main extends React.Component<IMainProps, IMainState> {
   render() {
     return (
       <main className="feeds">
+        <NotificationContainer/>
         <div className="displayModes">
           <a onClick={this.clearAll}>Clear All</a> / <a onClick={this.displayAll}>Show All</a>
         </div>

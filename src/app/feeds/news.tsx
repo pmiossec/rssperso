@@ -1,6 +1,8 @@
 import * as React from 'react';
 import * as Helper from '../helper';
 import { Feed } from './feed';
+import 'react-notifications/lib/notifications.css';
+import { NotificationManager } from 'react-notifications';
 
 export class Link {
   public publicationDate: Date;
@@ -31,6 +33,7 @@ export class News extends React.Component<ILinkProps, ILinkState> {
       feedName: this.props.parentFeed.getFeedName(),
       iconUrl: this.props.parentFeed.getIconUrl(),
     } as Link);
+    NotificationManager.info('"' + this.props.title + '" added', 'Reading list', 750);
   }
 
   render() {

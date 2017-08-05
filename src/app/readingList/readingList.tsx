@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Link } from '../feeds/news';
 import * as Helper from '../helper';
+import { NotificationManager } from 'react-notifications';
 
 interface IReadingListProps {
 }
@@ -31,6 +32,7 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
       Helper.Storage.remove(Helper.ReadingListKey, i).then((readList) => {
         this.setState({ links: readList });
       });
+      NotificationManager.warning('"' + link.title + '" removed', 'Reading list', 3000);
     });
   }
 

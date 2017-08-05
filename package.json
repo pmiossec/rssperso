@@ -10,6 +10,7 @@
     "axios": "^0.9.1",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
+    "react-notifications": "^1.4.3",
     "react-scripts-ts": "2.5.0"
   },
   "devDependencies": {
