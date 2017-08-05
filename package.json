@@ -13,12 +13,17 @@
     "react-scripts-ts": "2.5.0"
   },
   "devDependencies": {
-    "@types/axios": "^0.9.32"
+    "@types/axios": "^0.9.32",
+    "node-sass-chokidar": "^0.0.3",
+    "npm-run-all": "^4.0.2"
   },
   "scripts": {
-    "start": "react-scripts-ts start",
-    "build": "react-scripts-ts build",
+    "start": "npm-run-all -p watch-css start-ts",
+    "start-ts": "react-scripts-ts start",
+    "build": "npm run build-css && react-scripts-ts build",
     "test": "react-scripts-ts test --env=jsdom",
-    "eject": "react-scripts-ts eject"
+    "eject": "react-scripts-ts eject",
+    "build-css": "node-sass-chokidar src/ -o src/",
+    "watch-css": "npm run build-css && node-sass-chokidar src/ -o src/ --watch --recursive"
   }
 }
