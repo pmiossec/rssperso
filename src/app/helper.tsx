@@ -44,9 +44,10 @@ export namespace Storage {
       const remoteStore = GetStore(storeName);
       if (!remoteStore.dataFetched) {
         remoteStore.getDataFromRemote()
-          .then((data: Link[]) => {
-            localStorage.setItem(storeName, JSON.stringify(data));
-            resolve(data);
+          .then((links: Link[]) => {
+            const linksSorted = links.sort((n1, n2) => n2.publicationDate.getTime() - n1.publicationDate.getTime());
+            localStorage.setItem(storeName, JSON.stringify(linksSorted));
+            resolve(linksSorted);
           })
           .catch(() => {
             resolve([]);
