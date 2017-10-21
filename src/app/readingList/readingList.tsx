@@ -1,7 +1,6 @@
 import * as React from 'react';
-// import { Link } from '../feeds/news';
 import * as Helper from '../helper';
-import { NotificationManager } from 'react-notifications';
+// import { NotificationManager } from 'react-notifications';
 import { GistStorage, ReadListItem, Gist } from '../storage/gistStorage';
 
 interface IReadingListProps {
@@ -13,29 +12,20 @@ interface IReadingListState {
 }
 
 export class ReadingList extends React.Component<IReadingListProps, IReadingListState> {
-  componentWillMount(): void {
-    this.loadReadingList();
-    setInterval(() => this.loadReadingList(), 2000);
-  }
-
-  loadReadingList = (): void => {
-    Helper.Storage.loadReadingListIfChanged(Helper.ReadingListKey).then((readList) => {
-      if (readList) {
-        this.setState({ links: readList });
-      }
-    });
-  }
+  // TODO:setInterval(() => this.loadReadingList(), 2000);
 
   remove = (i: number): void => {
-    Helper.Storage.elementAt(Helper.ReadingListKey, i).then((link) => {
-      // console.log('link to archieve', link);
-      Helper.Storage.addToStoredList(Helper.ArchiveListKey, link);
+    // TODO: remove an item!
 
-      Helper.Storage.remove(Helper.ReadingListKey, i).then((readList) => {
-        this.setState({ links: readList });
-      });
-      NotificationManager.warning('"' + link.title + '" removed', 'Reading list', 3000);
-    });
+    // Helper.Storage.elementAt(Helper.ReadingListKey, i).then((link) => {
+    //   // console.log('link to archieve', link);
+    //   Helper.Storage.addToStoredList(Helper.ArchiveListKey, link);
+
+    //   Helper.Storage.remove(Helper.ReadingListKey, i).then((readList) => {
+    //     this.setState({ links: readList });
+    //   });
+    //   NotificationManager.warning('"' + link.title + '" removed', 'Reading list', 3000);
+    // });
   }
 
   openAndRemoveLink = (url: string, i: number): void => {
@@ -49,24 +39,30 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
       readItems = (<div>loading...</div>);
     } else {
       const data = this.props.data;
-      readItems = this.props.data.readList.map((l: ReadListItem, i: number) => (
+      readItems = data.readList.map((l: ReadListItem, i: number) => {
+        const feed = data.feeds.find(f => f.id === l.idFeed);
+        return (
       <div key={i}>
         [<span className="date">{Helper.DateFormatter.formatDate(new Date(l.publicationDate))}</span>
           |<a href={l.url} target="_blank">📄</a>
           |<a onClick={this.remove.bind(null, i)}>❌</a>]
         <a onClick={this.openAndRemoveLink.bind(null, l.url, i)} >
-          <img src={data.feeds.find(f => f.id === l.id)!.icon} />
+          {feed && <img src={feed.icon} />}
           {l.title}
         </a>
-      </div>));
+      </div>);
+      });
     }
 
-    return (
-      <div className="feed">
+    if (this.props.data) {
+      return (
+        <div className="feed">
         <div className="title"> >> Reading list...
           ({!this.props.data.readList ? 0 : this.props.data.readList.length})</div>
         <div className="links"> {readItems} </div>
-      </div>
-    );
+      </div>);
+    } else {
+        return <div />;
+      }
   }
 }

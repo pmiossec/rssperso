@@ -26,14 +26,14 @@ interface ILinkState { }
 
 export class News extends React.Component<ILinkProps, ILinkState> {
   addToReadList = (): void => {
-    Helper.Storage.addToStoredList('ReadingList', {
-      url: this.props.url,
-      title: this.props.title,
-      publicationDate: this.props.date,
-      feedName: this.props.parentFeed.getFeedName(),
-      iconUrl: this.props.parentFeed.getIconUrl(),
-    } as Link);
-    NotificationManager.info('"' + this.props.title + '" added', 'Reading list', 750);
+    // Helper.Storage.addToStoredList('ReadingList', {
+    //   url: this.props.url,
+    //   title: this.props.title,
+    //   publicationDate: this.props.date,
+    //   feedName: this.props.parentFeed.getFeedName(),
+    //   iconUrl: this.props.parentFeed.getIconUrl(),
+    // } as Link);
+    NotificationManager.info('"TODO:!!!!!' + this.props.title + '" added', 'Reading list', 750);
   }
 
   render() {

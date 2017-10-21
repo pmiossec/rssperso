@@ -28,7 +28,7 @@ export interface State {
 }
 
 export interface ReadListItem {
-  id: string;
+  idFeed: string;
   title: string;
   url: string;
   publicationDate: Date;
