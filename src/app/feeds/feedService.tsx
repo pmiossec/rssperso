@@ -1,6 +1,6 @@
 import * as axios from 'axios';
 import { Link } from './news';
-import { FeedData, FeedState, GistStorage } from '../storage/gistStorage';
+import { FeedData, GistStorage } from '../storage/gistStorage';
 
 const ProxyHeaders = { headers: { 'X-Requested-With': 'XMLHttpRequest' } };
 
@@ -21,7 +21,7 @@ export class FeedService {
 
   constructor(
     public feedData: FeedData,
-    public feedState: FeedState,
+    public offsetDate: Date,
     private storage: GistStorage
   ) {
     this.links = [];
@@ -29,8 +29,8 @@ export class FeedService {
     this.logo = feedData.icon;
     this.httpProtocol = window.location.protocol + '//';
     this.corsProxyUrl = this.httpProtocol + 'cors-anywhere.herokuapp.com/';
-    if (this.feedState.date !== null) {
-      this.restoreInitialClearDate(this.feedState.date);
+    if (this.offsetDate !== null) {
+      this.restoreInitialClearDate(this.offsetDate);
     }
     this.headers = this.getHeaders(this.feedData.url);
   }
@@ -65,13 +65,13 @@ export class FeedService {
   }
 
   private getHeaders(url: string) {
-    if (localStorage.getItem('use_proxy.' + url)) {
+    // if (localStorage.getItem('use_proxy.' + url)) {
       this.url = this.corsProxyUrl + url;
       return ProxyHeaders;
-    } else {
-      // no need of a proxy
-      return { headers: { 'Origin': url } };
-    }
+    // } else {
+    //   // no need of a proxy
+    //   return { headers: { 'Origin': url } };
+    // }
   }
 
   private processFeedXml = (response: Axios.AxiosXHR<string>) => {
@@ -126,8 +126,7 @@ export class FeedService {
 
   private storeClearDate(clearDate: Date): void {
     localStorage.setItem(this.url, clearDate.toJSON());
-    // TODO:this.remoteStore.updateFeedDate(this.url, clearDate);
-    this.storage.saveDataToRemote({});
+    this.storage.saveFeedsState(this.feedData.id, clearDate);
   }
 
   private restoreInitialClearDate(clearDate: Date): void {

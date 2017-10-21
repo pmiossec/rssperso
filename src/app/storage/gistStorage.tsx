@@ -1,4 +1,5 @@
 import * as axios from 'axios';
+import { NotificationManager } from 'react-notifications';
 
 export interface Gist {
   feeds: FeedData[];
@@ -17,14 +18,9 @@ interface Feeds {
   feeds: FeedData[];
 }
 
-export interface FeedState {
-  id: string;
-  date: Date | null;
-}
-
 export interface State {
   last_update: Date;
-  updates: { [feedid: string]: FeedState};
+  updates: { [feedid: string]: Date};
 }
 
 export interface ReadListItem {
@@ -47,29 +43,37 @@ interface GistFileContent {
 interface Storage {
   files: { [fileId: string]: GistFileContent; };
 }
+interface GistFileUpdate {
+  content: string;
+}
+interface GistUpdate {
+  description: string;
+  files: { [fileId: string]: GistFileUpdate; };
+}
 
 export class GistStorage {
   public receivedPromise: Axios.IPromise<{}>;
   public dataFetched: boolean = false;
 
-  private gistUrl: string = 'https://api.github.com/gists/1d800438c2edee3e07e547a3d4d20ef1';
+  private data: Gist;
+  private gistUrl: string = 'aHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9naXN0cy8xZDgwMDQzOGMyZWRlZTNlMDdlNTQ3YTNkNGQ'
+  + 'yMGVmMT9hY2Nlc3NfdG9rZW49MzAzNzJiMmNkOWQ5NDdmZjhjODg5MWIzMTUzNDA1MTNmMjJkMTEzNw=';
+
+  constructor() {
+    this.gistUrl = this.goodOne(this.gistUrl);
+  }
+
+  private goodOne = (str: string): string => {
+    return atob(str + '=');
+  }
 
   public loadGist = (): Axios.IPromise<Gist> => {
     return this.getDataFromRemote().then((data: Storage) => {
       var feeds = (JSON.parse(data.files['feed.json'].content) as Feeds).feeds;
       var state = JSON.parse(data.files['state.json'].content) as State;
       var readList = JSON.parse(data.files['readlist.json'].content) as ReadListItem[];
-      // var archive = JSON.parse(data.files['archive.json'].content) as ReadList;
-
-      // tslint:disable
-      // console.log('gist', gist);
-      // console.log(gist.readList[9].title);
-      // console.log(gist.feeds[9].id);
-      // console.log(gist.state.last_update);
-      // console.log(gist.state.updates[gist.feeds[9].url]);
-      // tslint:enable
-
-      return {feeds, state, readList};
+      this.data = {feeds, state, readList};
+      return this.data;
     });
   }
 
@@ -78,7 +82,6 @@ export class GistStorage {
       .then((response: Axios.AxiosXHR<{}>) => {
         this.dataFetched = true;
         const data = response.data;
-        // console.log('data fetched', data);
         return data;
       })
       .catch(err => {
@@ -88,15 +91,37 @@ export class GistStorage {
       });
   }
 
-  public saveDataToRemote = (list: {}) => {
-    axios.put(this.gistUrl, list)
+  private saveFileToGist = (content: GistUpdate) => {
+    axios.patch(this.gistUrl, content)
       .then((response: Axios.AxiosXHR<{}>) => {
         // this.shouldBeSaved = false;
-        // console.log('reading list saved ;)');
-      })
+         // tslint:disable-next-line:no-console
+         console.info('reading list saved ;)');
+         NotificationManager.info('"Successfully saved update', 'Update', 3000);
+        })
       .catch(err => {
+        NotificationManager.warning('"Failed to save update', 'Update', 3000);
         // tslint:disable-next-line:no-console
-        console.log('err saving state:', err);
+        console.error('err saving state:', err);
+      });
+    }
+
+    public saveFeedsState = (feedId: string, date: Date) => {
+      this.data.state.updates[feedId] = date;
+      this.saveFileToGist({
+        description : `Update publication date for feed "${feedId}"`,
+        files: {
+          'state.json': { content: JSON.stringify(this.data.state)}
+        }
+      });
+    }
+
+    public saveReadingList = (readingList: ReadListItem[], description: string) => {
+      this.saveFileToGist({
+        description : description && 'Update reading list',
+        files: {
+          'readlist.json': { content: JSON.stringify(readingList)}
+        }
       });
     }
 }

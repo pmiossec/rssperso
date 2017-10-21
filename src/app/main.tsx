@@ -65,7 +65,7 @@ export class Main extends React.Component<IMainProps, IMainState> {
           {this.state.data.feeds.map((feed: FeedData, i: number) =>
              <Feed
                key={feed.id}
-               feed={new FeedService(feed, this.state.data.state.updates[feed.id], this.state.store)}
+               feed={new FeedService(feed, new Date(this.state.data.state.updates[feed.id]), this.state.store)}
              />
           )}
         </div>
