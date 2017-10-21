@@ -92,15 +92,17 @@ export class GistStorage {
   }
 
   private saveFileToGist = (content: GistUpdate) => {
+    // tslint:disable-next-line:no-console
+    // console.info('reading list saved ;)', content);
     axios.patch(this.gistUrl, content)
       .then((response: Axios.AxiosXHR<{}>) => {
         // this.shouldBeSaved = false;
          // tslint:disable-next-line:no-console
-         console.info('reading list saved ;)');
+        //  console.info('reading list saved ;)');
          NotificationManager.info('"Successfully saved update', 'Update', 3000);
         })
       .catch(err => {
-        NotificationManager.warning('"Failed to save update', 'Update', 3000);
+        NotificationManager.error('"Failed to save update', 'Update', 3000);
         // tslint:disable-next-line:no-console
         console.error('err saving state:', err);
       });
@@ -116,12 +118,21 @@ export class GistStorage {
       });
     }
 
-    public saveReadingList = (readingList: ReadListItem[], description: string) => {
+    private saveReadingList = (readingList: ReadListItem[], description: string) => {
       this.saveFileToGist({
         description : description && 'Update reading list',
         files: {
           'readlist.json': { content: JSON.stringify(readingList)}
         }
       });
+    }
+
+    public addItemToReadingList = (item: ReadListItem) => {
+      // tslint:disable-next-line:no-console
+      // console.log('old reading list', this.data.readList);
+      this.data.readList.push(item);
+      // tslint:disable-next-line:no-console
+      // console.log('new reading list', this.data.readList);
+      this.saveReadingList(this.data.readList, 'Add item "' + item.title + '"');
     }
 }

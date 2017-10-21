@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { FeedService } from './feedService';
-import { News, Link } from './news';
+import * as Helper from '../helper';
+import { FeedService, Link } from './feedService';
+import { ReadListItem } from '../storage/gistStorage';
 
 interface IFeedProps {
   key: string;
@@ -88,6 +89,12 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
     this.clearFeed();
   }
 
+  addToReadList = (item: ReadListItem ): (() => void) => {
+    return () => {
+      this.props.feed.storage.addItemToReadingList(item);
+    };
+  }
+
   render() {
     let options = null;
     const linksToDisplay = this.props.feed.getLinksToDisplay();
@@ -116,7 +123,11 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
     let links = (
         <div>
           {linksToDisplay.map((l: Link, i: number) => (
-            <News key={i} url={l.url} title={l.title} date={l.publicationDate} parentFeed={this} />
+            <div>
+            [<a  onClick={this.clearFeed.bind(null, l.publicationDate)} >
+              {Helper.DateFormatter.formatDate(l.publicationDate)}</a>|<a onClick={this.addToReadList(l)} >➕</a>]
+            <a href={l.url} target="_blank" > {l.title}</a>
+                </div>
           ))}
         </div>
       );

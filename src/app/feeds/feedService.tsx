@@ -1,8 +1,13 @@
 import * as axios from 'axios';
-import { Link } from './news';
-import { FeedData, GistStorage } from '../storage/gistStorage';
+import { FeedData, GistStorage, ReadListItem } from '../storage/gistStorage';
 
 const ProxyHeaders = { headers: { 'X-Requested-With': 'XMLHttpRequest' } };
+
+export interface Link extends ReadListItem {
+  read: boolean;
+  iconUrl: string;
+  feedName: string;
+}
 
 export class FeedService {
   public httpProtocol: string;
@@ -22,7 +27,7 @@ export class FeedService {
   constructor(
     public feedData: FeedData,
     public offsetDate: Date,
-    private storage: GistStorage
+    public storage: GistStorage
   ) {
     this.links = [];
     this.title = feedData.name;
@@ -158,12 +163,19 @@ export class FeedService {
     const items = xmlDoc.getElementsByTagName('item');
     for (var iItems = 0; iItems < items.length; iItems++) {
       var item = items.item(iItems);
-      var link = new Link(this.getElementContentByTagName(item, 'link'),
-                          item ? this.getElementContentByTagName(item, 'title') : 'No tile found :(');
-      link.publicationDate = this.getLinkRssDate(item);
-      this.allLinks = [...this.allLinks, link];
+      var link = {
+        url: this.getElementContentByTagName(item, 'link'),
+        title: item ? this.getElementContentByTagName(item, 'title') : 'No tile found :(',
+        publicationDate: this.getLinkRssDate(item),
+        read: false,
+        iconUrl: this.feedData.icon,
+        feedName: this.feedData.name,
+        idFeed: this.feedData.id
+      };
+
+      this.allLinks.push(link);
       if (link.publicationDate > this.clearDate) {
-        this.links = [...this.links, link];
+        this.links.push(link);
       }
     }
   }
@@ -235,12 +247,18 @@ export class FeedService {
       if (!linkFound) {
         continue;
       }
-      var link = new Link(linkFound.getAttribute('href') as string,
-                          this.getElementContentByTagName(item, 'title'));
-      link.publicationDate = this.getLinkAtomDate(item);
-      this.allLinks = [...this.allLinks, link];
+      var link = {
+        url: linkFound.getAttribute('href') as string,
+        title: this.getElementContentByTagName(item, 'title'),
+        publicationDate: this.getLinkAtomDate(item),
+        read: false,
+        iconUrl: this.feedData.icon,
+        feedName: this.feedData.name,
+        idFeed: this.feedData.id
+      };
+      this.allLinks.push(link);
       if (link.publicationDate > this.clearDate) {
-        this.links = [...this.links, link];
+        this.links.push(link);
       }
     }
   }
