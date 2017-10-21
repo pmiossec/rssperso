@@ -3,7 +3,7 @@ import { FeedService } from './feedService';
 import { News, Link } from './news';
 
 interface IFeedProps {
-  key: number;
+  key: string;
   feed: FeedService;
 }
 

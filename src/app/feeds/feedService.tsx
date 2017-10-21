@@ -1,6 +1,6 @@
 import * as axios from 'axios';
 import { Link } from './news';
-import { RemoteStore } from './remoteStore';
+import { FeedData, FeedState, GistStorage } from '../storage/gistStorage';
 
 const ProxyHeaders = { headers: { 'X-Requested-With': 'XMLHttpRequest' } };
 
@@ -17,17 +17,22 @@ export class FeedService {
   private corsProxyUrl: string;
   private headers: {};
   private shouldDisplayAllLinks: boolean = false;
+  private url: string;
 
   constructor(
-    public url: string,
-    private remoteStore: RemoteStore
+    public feedData: FeedData,
+    public feedState: FeedState,
+    private storage: GistStorage
   ) {
     this.links = [];
-    this.title = 'loading...';
+    this.title = feedData.name;
+    this.logo = feedData.icon;
     this.httpProtocol = window.location.protocol + '//';
     this.corsProxyUrl = this.httpProtocol + 'cors-anywhere.herokuapp.com/';
-    this.remoteStore.receivedPromise.then(() => this.restoreInitialClearDate());
-    this.headers = this.getHeaders(url);
+    if (this.feedState.date !== null) {
+      this.restoreInitialClearDate(this.feedState.date);
+    }
+    this.headers = this.getHeaders(this.feedData.url);
   }
 
   public clearFeed = (date?: Date): void => {
@@ -93,12 +98,12 @@ export class FeedService {
       this.allLinks = this.sortFeed(this.allLinks);
       this.links = this.sortFeed(this.links);
 
-      if (!this.logo || !this.logo.startsWith('http')) {
-        var parts = this.url.split('/');
-        this.logo = this.httpProtocol + parts[2] + '/favicon.ico';
-      } else if (!this.logo.startsWith(this.httpProtocol)) {
-        this.logo = this.httpProtocol + this.logo.split('://')[1];
-      }
+      // if (!this.logo || !this.logo.startsWith('http')) {
+      //   var parts = this.url.split('/');
+      //   this.logo = this.httpProtocol + parts[2] + '/favicon.ico';
+      // } else if (!this.logo.startsWith(this.httpProtocol)) {
+      //   this.logo = this.httpProtocol + this.logo.split('://')[1];
+      // }
 
       if (!this.title) {
         this.title = this.url;
@@ -121,40 +126,34 @@ export class FeedService {
 
   private storeClearDate(clearDate: Date): void {
     localStorage.setItem(this.url, clearDate.toJSON());
-    this.remoteStore.updateFeedDate(this.url, clearDate);
+    // TODO:this.remoteStore.updateFeedDate(this.url, clearDate);
+    this.storage.saveDataToRemote({});
   }
 
-  private restoreInitialClearDate(): void {
-    const jsonClearDate = localStorage.getItem(this.url);
-    if (jsonClearDate) {
-      this.clearDate = new Date(jsonClearDate);
-    }
-
-    const fetchedDate = this.remoteStore.getDateForFeed(this.url);
-
-    if (this.clearDate < fetchedDate) {
-      this.clearDate = fetchedDate;
+  private restoreInitialClearDate(clearDate: Date): void {
+    if (this.clearDate < clearDate) {
+      this.clearDate = clearDate;
     }
   }
 
-  private getFaviconUrl(logoUrl: string, webSiteUrl: string): string {
-    if (!logoUrl && this.webSiteUrl) {
-      logoUrl = this.formatWebsiteUrl(this.webSiteUrl) + '/favicon.ico';
-    }
-    return logoUrl;
-  }
+  // private getFaviconUrl(logoUrl: string, webSiteUrl: string): string {
+  //   if (!logoUrl && this.webSiteUrl) {
+  //     logoUrl = this.formatWebsiteUrl(this.webSiteUrl) + '/favicon.ico';
+  //   }
+  //   return logoUrl;
+  // }
 
   private manageRssFeed(xmlDoc: HTMLElement): void {
     // console.debug(`Processing Rss feed ( ${this.url} )...`);
     const channel = this.getElementByTagName(xmlDoc, 'channel');
     if (channel) {
-      this.title = this.getElementContentByTagName(channel, 'title');
+      // this.title = this.getElementContentByTagName(channel, 'title');
       this.webSiteUrl = this.getElementContentByTagName(channel, 'link');
-      const imageTag = this.getElementByTagName(channel, 'image');
-      if (imageTag) {
-        const logoUrl = this.getElementContentByTagName(imageTag, 'url');
-        this.logo = this.getFaviconUrl(logoUrl, this.webSiteUrl);
-      }
+      // const imageTag = this.getElementByTagName(channel, 'image');
+      // if (imageTag) {
+      //   const logoUrl = this.getElementContentByTagName(imageTag, 'url');
+      //   this.logo = this.getFaviconUrl(logoUrl, this.webSiteUrl);
+      // }
     }
 
     const items = xmlDoc.getElementsByTagName('item');
@@ -211,14 +210,14 @@ export class FeedService {
     return null;
   }
 
-  private formatWebsiteUrl(url: string): string {
-    return url; // .replace('https://', 'http://');
-  }
+  // private formatWebsiteUrl(url: string): string {
+  //   return url; // .replace('https://', 'http://');
+  // }
 
   private manageAtomFeed(xmlDoc: HTMLElement): void {
     // console.log(`Processing Atom feed ( ${this.url} )...`);
     this.title = this.getElementContentByTagName(xmlDoc, 'title');
-    this.logo = this.getElementContentByTagName(xmlDoc, 'icon');
+    // this.logo = this.getElementContentByTagName(xmlDoc, 'icon');
     const linksWebSite = xmlDoc.getElementsByTagName('link');
     for (var iLinks = 0; iLinks < linksWebSite.length; iLinks++) {
       var tag = linksWebSite.item(iLinks);
@@ -227,9 +226,9 @@ export class FeedService {
         break;
       }
     }
-    if (!this.logo && this.webSiteUrl) {
-      this.logo = this.formatWebsiteUrl(this.webSiteUrl) + '/favicon.ico';
-    }
+    // if (!this.logo && this.webSiteUrl) {
+    //   this.logo = this.formatWebsiteUrl(this.webSiteUrl) + '/favicon.ico';
+    // }
     const items = xmlDoc.getElementsByTagName('entry');
     for (var iEntries = 0; iEntries < items.length; iEntries++) {
       var item = items.item(iEntries);
