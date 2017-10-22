@@ -68,13 +68,20 @@ export class GistStorage {
   }
 
   public loadGist = (): Axios.IPromise<Gist> => {
-    return this.getDataFromRemote().then((data: Storage) => {
-      var feeds = (JSON.parse(data.files['feed.json'].content) as Feeds).feeds;
-      var state = JSON.parse(data.files['state.json'].content) as State;
-      var readList = JSON.parse(data.files['readlist.json'].content) as ReadListItem[];
-      this.data = {feeds, state, readList};
-      return this.data;
-    });
+    return this.getDataFromRemote()
+      .then((data: Storage) => {
+        var feeds = (JSON.parse(data.files['feed.json'].content) as Feeds).feeds;
+        var state = JSON.parse(data.files['state.json'].content) as State;
+        var readList = JSON.parse(data.files['readlist.json'].content) as ReadListItem[];
+        this.data = {feeds, state, readList};
+        this.saveDataInLocalStorage();
+        return this.data;
+      })
+      .catch(err => {
+        NotificationManager.error('Failed to load the gist. Loading previous data!!!!', 'Loading data', 5000);
+        this.data = JSON.parse(localStorage.getItem('rssPerso')!) as Gist;
+        return this.data;
+      });
   }
 
   private getDataFromRemote = () => {
@@ -94,6 +101,7 @@ export class GistStorage {
   private saveFileToGist = (content: GistUpdate) => {
     // tslint:disable-next-line:no-console
     // console.info('reading list saved ;)', content);
+    this.saveDataInLocalStorage();
     axios.patch(this.gistUrl, content)
       .then((response: Axios.AxiosXHR<{}>) => {
         // this.shouldBeSaved = false;
@@ -142,5 +150,9 @@ export class GistStorage {
         this.data.readList.splice(itemIndex, 1);
         this.saveReadingList(this.data.readList, 'Removing item "' + item.title + '"');
       }
+    }
+
+    private saveDataInLocalStorage() {
+        localStorage.setItem('rssPerso', JSON.stringify(this.data));
     }
 }

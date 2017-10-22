@@ -125,12 +125,12 @@ export class FeedService {
       .get(this.url, this.headers)
       .then(this.processFeedXml)
       .catch(err => {
-        localStorage.setItem('use_proxy.' + this.url, 'true');
+        // localStorage.setItem('use_proxy.' + this.url, 'true');
       });
   }
 
   private storeClearDate(clearDate: Date): void {
-    localStorage.setItem(this.url, clearDate.toJSON());
+    // localStorage.setItem(this.url, clearDate.toJSON());
     this.storage.saveFeedsState(this.feedData.id, clearDate);
   }
 
