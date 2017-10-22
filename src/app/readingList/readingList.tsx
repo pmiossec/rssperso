@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as Helper from '../helper';
-// import { NotificationManager } from 'react-notifications';
+import { NotificationManager } from 'react-notifications';
 import { GistStorage, ReadListItem, Gist } from '../storage/gistStorage';
 
 interface IReadingListProps {
@@ -12,25 +12,22 @@ interface IReadingListState {
 }
 
 export class ReadingList extends React.Component<IReadingListProps, IReadingListState> {
-  // TODO:setInterval(() => this.loadReadingList(), 2000);
-
-  remove = (i: number): void => {
-    // TODO: remove an item!
-
-    // Helper.Storage.elementAt(Helper.ReadingListKey, i).then((link) => {
-    //   // console.log('link to archieve', link);
-    //   Helper.Storage.addToStoredList(Helper.ArchiveListKey, link);
-
-    //   Helper.Storage.remove(Helper.ReadingListKey, i).then((readList) => {
-    //     this.setState({ links: readList });
-    //   });
-    //   NotificationManager.warning('"' + link.title + '" removed', 'Reading list', 3000);
-    // });
+  componentDidMount(): void {
+    setInterval(() => this.refreshReadingList(), 30000);
   }
 
-  openAndRemoveLink = (url: string, i: number): void => {
-    window.open(url, '_blank');
-    this.remove(i);
+  refreshReadingList = () => {
+    this.setState({});
+  }
+  remove = (itemIndex: number, item: ReadListItem): void => {
+    this.props.store.removeItemFromReadingList(itemIndex, item);
+    this.refreshReadingList();
+    NotificationManager.warning('"' + item.title + '" removed', 'Reading list', 3000);
+  }
+
+  openAndRemoveLink = (itemIndex: number, item: ReadListItem): void => {
+    window.open(item.url, '_blank');
+    this.remove(itemIndex, item);
   }
 
   render() {
@@ -45,8 +42,8 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
       <div key={i}>
         [<span className="date">{Helper.DateFormatter.formatDate(new Date(l.publicationDate))}</span>
           |<a href={l.url} target="_blank">📄</a>
-          |<a onClick={this.remove.bind(null, i)}>❌</a>]
-        <a onClick={this.openAndRemoveLink.bind(null, l.url, i)} >
+          |<a onClick={this.remove.bind(null, i, l)}>❌</a>]
+        <a onClick={this.openAndRemoveLink.bind(null, i, l)} >
           {feed && <img src={feed.icon} />}
           {l.title}
         </a>

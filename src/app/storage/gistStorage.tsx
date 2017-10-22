@@ -99,7 +99,7 @@ export class GistStorage {
         // this.shouldBeSaved = false;
          // tslint:disable-next-line:no-console
         //  console.info('reading list saved ;)');
-         NotificationManager.info('Successfully saved update', 'Update', 3000);
+         NotificationManager.info('Successfully saved update', 'Update', 200);
         })
       .catch(err => {
         NotificationManager.error('Failed to save update', 'Update', 3000);
@@ -134,5 +134,13 @@ export class GistStorage {
       // tslint:disable-next-line:no-console
       // console.log('new reading list', this.data.readList);
       this.saveReadingList(this.data.readList, 'Add item "' + item.title + '"');
+    }
+
+    public removeItemFromReadingList = (itemIndex: number, item: ReadListItem): void => {
+
+      if (itemIndex < this.data.readList.length && this.data.readList[itemIndex].url === item.url) {
+        this.data.readList.splice(itemIndex, 1);
+        this.saveReadingList(this.data.readList, 'Removing item "' + item.title + '"');
+      }
     }
 }
