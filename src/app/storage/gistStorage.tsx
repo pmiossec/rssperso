@@ -99,10 +99,10 @@ export class GistStorage {
         // this.shouldBeSaved = false;
          // tslint:disable-next-line:no-console
         //  console.info('reading list saved ;)');
-         NotificationManager.info('"Successfully saved update', 'Update', 3000);
+         NotificationManager.info('Successfully saved update', 'Update', 3000);
         })
       .catch(err => {
-        NotificationManager.error('"Failed to save update', 'Update', 3000);
+        NotificationManager.error('Failed to save update', 'Update', 3000);
         // tslint:disable-next-line:no-console
         console.error('err saving state:', err);
       });

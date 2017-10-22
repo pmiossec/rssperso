@@ -4,6 +4,7 @@ import { FeedService } from './feeds/feedService';
 import { Feed } from './feeds/feed';
 import { ReadingList } from './readingList/readingList';
 import { NotificationContainer } from 'react-notifications';
+import 'react-notifications/lib/notifications.css';
 
 interface IMainProps {
  }
@@ -13,17 +14,6 @@ interface IMainState {
 }
 
 export class Main extends React.Component<IMainProps, IMainState> {
-
-  // constructor(props: IMainProps) {
-  //   super(props);
-
-  //   // this.state.store = ;
-  //   this.state.data.feeds = [];
-  //   this.state.data.readList = [];
-  //   this.state.data.state = {last_update: new Date(),
-  //   updates: {}};
-  // }
-
   componentDidMount() {
     const store = new GistStorage();
     store.loadGist()
