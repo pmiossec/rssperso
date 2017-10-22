@@ -56,6 +56,7 @@ export class Main extends React.Component<IMainProps, IMainState> {
              <Feed
                key={feed.id}
                feed={new FeedService(feed, new Date(this.state.data.state.updates[feed.id]), this.state.store)}
+               unsecured={feed.id === '23'}
              />
           )}
         </div>

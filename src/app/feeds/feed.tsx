@@ -6,6 +6,7 @@ import { ReadListItem } from '../storage/gistStorage';
 interface IFeedProps {
   key: string;
   feed: FeedService;
+  unsecured: boolean;
 }
 
 interface IFeedState {
@@ -82,9 +83,12 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
     this.forceUpdate();
   }
 
+  unsecureUrl = (url: string) => {
+    return this.props.unsecured ? url.replace('https://', 'http://') : url;
+  }
   openAll = (): void => {
     this.props.feed.getLinksToDisplay().forEach(element => {
-      window.open(element.url, '_blank');
+      window.open(this.unsecureUrl(element.url), '_blank');
     });
     this.clearFeed();
   }
@@ -126,8 +130,10 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
             <div>
             [<a  onClick={this.clearFeed.bind(null, l.publicationDate)} >
               {Helper.DateFormatter.formatDate(l.publicationDate)}</a>|<a onClick={this.addToReadList(l)} >➕</a>]
-            <a href={l.url} target="_blank" > {l.title}</a>
-                </div>
+            <a href={this.unsecureUrl(l.url)} target="_blank">
+              {l.title}
+            </a>
+            </div>
           ))}
         </div>
       );
