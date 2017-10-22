@@ -25,15 +25,15 @@ export class Main extends React.Component<IMainProps, IMainState> {
       });
   }
 
-  clearAll = () => {
-    // this.state.data.feeds.forEach(f => f.clearFeed());
-    // this.forceUpdate();
-  }
+  // clearAll = () => {
+  //   this.state.data.feeds.forEach(f => f.clearFeed());
+  //   this.forceUpdate();
+  // }
 
-  displayAll = () => {
-    // this.feeds.forEach(f => f.displayAllLinks());
-    // this.forceUpdate();
-  }
+  // displayAll = () => {
+  //   this.state.data.feeds.forEach(f => f.displayAllLinks());
+  //   this.forceUpdate();
+  // }
 
   hashCode = (text: string) => {
     // tslint:disable-next-line:no-bitwise
@@ -48,9 +48,9 @@ export class Main extends React.Component<IMainProps, IMainState> {
     return (
       <main className="feeds">
         <NotificationContainer />
-        <div className="displayModes">
+        {/* <div className="displayModes">
           <a onClick={this.clearAll}>Clear All</a> / <a onClick={this.displayAll}>Show All</a>
-        </div>
+        </div> */}
         <div className="feeds">
           {this.state.data.feeds.map((feed: FeedData, i: number) =>
              <Feed
