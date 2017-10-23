@@ -12,6 +12,7 @@ interface IReadingListState {
 }
 
 export class ReadingList extends React.Component<IReadingListProps, IReadingListState> {
+  private displayReadingList: boolean = false;
   componentDidMount(): void {
     setInterval(() => this.refreshReadingList(), 30000);
   }
@@ -28,6 +29,11 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
   openAndRemoveLink = (itemIndex: number, item: ReadListItem): void => {
     window.open(item.url, '_blank');
     this.remove(itemIndex, item);
+  }
+
+  toggleVisibility = () => {
+    this.displayReadingList = !this.displayReadingList;
+    this.setState({});
   }
 
   render() {
@@ -54,12 +60,12 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
     if (this.props.data) {
       return (
         <div className="feed">
-        <div className="title"> >> Reading list
-          ({!this.props.data.readList ? 0 : this.props.data.readList.length}):
+        <div className="title"> <a onClick={this.toggleVisibility} >>>> Reading list
+          ({!this.props.data.readList ? 0 : this.props.data.readList.length}):</a>
           {this.props.store.couldBeRestored()
              && <a onClick={this.props.store.restoreLastRemoveReadingItem} >Restore last deleted item </a>}
         </div>
-        <div className="links"> {readItems} </div>
+        <div className="links"> {this.displayReadingList && readItems} </div>
       </div>);
     } else {
         return <div />;
