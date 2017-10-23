@@ -59,6 +59,7 @@ export class GistStorage {
   private gistUrl: string = 'aHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9naXN0cy8xZDgwMDQzOGMyZWRlZTNlMDdlNTQ3YTNkNGQ'
   + 'yMGVmMT9hY2Nlc3NfdG9rZW49MzAzNzJiMmNkOWQ5NDdmZjhjODg5MWIzMTUzNDA1MTNmMjJkMTEzNw=';
 
+  private lastItemRemoved: ReadListItem | null;
   constructor() {
     this.gistUrl = this.goodOne(this.gistUrl);
   }
@@ -149,8 +150,19 @@ export class GistStorage {
       if (itemIndex < this.data.readList.length && this.data.readList[itemIndex].url === item.url) {
         this.data.readList.splice(itemIndex, 1);
         this.saveReadingList(this.data.readList, 'Removing item "' + item.title + '"');
+        this.lastItemRemoved = item;
       }
     }
+
+    public restoreLastRemoveReadingItem = () => {
+      if (this.lastItemRemoved != null) {
+        this.data.readList.push(this.lastItemRemoved);
+        this.saveReadingList(this.data.readList, 'Restoring item "' + this.lastItemRemoved.title + '"');
+        this.lastItemRemoved = null;
+      }
+    }
+
+    public couldBeRestored = () => this.lastItemRemoved != null;
 
     private saveDataInLocalStorage() {
         localStorage.setItem('rssPerso', JSON.stringify(this.data));

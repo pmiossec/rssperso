@@ -54,8 +54,11 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
     if (this.props.data) {
       return (
         <div className="feed">
-        <div className="title"> >> Reading list...
-          ({!this.props.data.readList ? 0 : this.props.data.readList.length})</div>
+        <div className="title"> >> Reading list
+          ({!this.props.data.readList ? 0 : this.props.data.readList.length}):
+          {this.props.store.couldBeRestored()
+             && <a onClick={this.props.store.restoreLastRemoveReadingItem} >Restore last deleted item </a>}
+        </div>
         <div className="links"> {readItems} </div>
       </div>);
     } else {
