@@ -17,13 +17,10 @@ https://github.com/facebookincubator/create-react-app/blob/master/packages/react
 
 ## Roadmap
 
-* Use GitHub gist as backend
-* Refactoring:
-    - extract feed list in the gist + add more data (icon, use_http, name, feed id, ...)
-    - no more store icon and site in reading list, store only feed id (to reduce size)
-    - store 'use_proxy' in the state
-    - archive list in another gist
-* Better favicons
+* Reading list:
+    - order by date / feed
+    - download before saving reading list (to prevent loosing links)
+<!-- * Refactoring:
+    - archive list in another gist -->
 * Being able to add to Pocket or Wallabag (from ToDoList or from rss feed)
 * Display icon of all feeds on top (toggle show all/none)
-* Being able to re-add to the reading list the last link opened!!!
