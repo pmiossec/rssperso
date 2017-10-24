@@ -52,7 +52,7 @@ interface GistUpdate {
 }
 
 export class GistStorage {
-  public receivedPromise: Axios.IPromise<{}>;
+  public receivedPromise: axios.AxiosPromise<{}>;
   public dataFetched: boolean = false;
 
   private data: Gist;
@@ -68,7 +68,7 @@ export class GistStorage {
     return atob(str + '=');
   }
 
-  public loadGist = (): Axios.IPromise<Gist> => {
+  public loadGist = (): Promise<Gist> => {
     return this.getDataFromRemote()
       .then((data: Storage) => {
         var feeds = (JSON.parse(data.files['feed.json'].content) as Feeds).feeds;
@@ -86,8 +86,8 @@ export class GistStorage {
   }
 
   private getDataFromRemote = () => {
-    return axios.get(this.gistUrl)
-      .then((response: Axios.AxiosXHR<{}>) => {
+    return axios.default.get(this.gistUrl)
+      .then((response: axios.AxiosResponse<{}>) => {
         this.dataFetched = true;
         const data = response.data;
         return data;
@@ -103,8 +103,8 @@ export class GistStorage {
     // tslint:disable-next-line:no-console
     // console.info('reading list saved ;)', content);
     this.saveDataInLocalStorage();
-    axios.patch(this.gistUrl, content)
-      .then((response: Axios.AxiosXHR<{}>) => {
+    axios.default.patch(this.gistUrl, content)
+      .then((response: axios.AxiosResponse<{}>) => {
         // this.shouldBeSaved = false;
          // tslint:disable-next-line:no-console
         //  console.info('reading list saved ;)');

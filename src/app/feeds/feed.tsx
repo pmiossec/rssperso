@@ -62,7 +62,7 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
     return timeSpan;
   }
 
-  loadFeed(): Axios.IPromise<void> {
+  loadFeed(): Promise<void> {
     return this.props.feed.loadFeedContent().then(() => {
       this.forceUpdate();
     });

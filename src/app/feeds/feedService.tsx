@@ -79,7 +79,7 @@ export class FeedService {
     // }
   }
 
-  private processFeedXml = (response: Axios.AxiosXHR<string>) => {
+  private processFeedXml = (response: axios.AxiosResponse<string>) => {
     this.allLinks = [];
     this.links = [];
     const parser = new DOMParser();
@@ -120,8 +120,8 @@ export class FeedService {
   }
 
   // tslint:disable-next-line:member-ordering
-  public loadFeedContent(): Axios.IPromise<void> {
-    return axios
+  public loadFeedContent(): Promise<void> {
+    return axios.default
       .get(this.url, this.headers)
       .then(this.processFeedXml)
       .catch(err => {
