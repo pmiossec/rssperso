@@ -51,6 +51,11 @@ export class Main extends React.Component<IMainProps, IMainState> {
         {/* <div className="displayModes">
           <a onClick={this.clearAll}>Clear All</a> / <a onClick={this.displayAll}>Show All</a>
         </div> */}
+        <div>
+        {this.state.data.feeds.map((feed: FeedData, i: number) =>
+             <img key={i} src={feed.icon} height="16px" alt={feed.name} />
+          )}
+        </div>
         <div className="feeds">
           {this.state.data.feeds.map((feed: FeedData, i: number) =>
              <Feed
