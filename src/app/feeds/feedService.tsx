@@ -130,7 +130,6 @@ export class FeedService {
   }
 
   private storeClearDate(clearDate: Date): void {
-    // localStorage.setItem(this.url, clearDate.toJSON());
     this.storage.saveFeedsState(this.feedData.id, this.feedData.name, clearDate);
   }
 
@@ -140,15 +139,7 @@ export class FeedService {
     }
   }
 
-  // private getFaviconUrl(logoUrl: string, webSiteUrl: string): string {
-  //   if (!logoUrl && this.webSiteUrl) {
-  //     logoUrl = this.formatWebsiteUrl(this.webSiteUrl) + '/favicon.ico';
-  //   }
-  //   return logoUrl;
-  // }
-
   private manageRssFeed(xmlDoc: HTMLElement): void {
-    // console.debug(`Processing Rss feed ( ${this.url} )...`);
     const channel = this.getElementByTagName(xmlDoc, 'channel');
     if (channel) {
       // this.title = this.getElementContentByTagName(channel, 'title');
