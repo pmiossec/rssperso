@@ -40,6 +40,7 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
   }
 
   sortListByDate = () => {
+    this.sortByDate = !this.sortByDate;
     this.props.data.readList = this.props.data.readList.sort((i1, i2) => {
       return new Date(i2.publicationDate).getTime() - new Date(i1.publicationDate).getTime();
     });
@@ -47,6 +48,7 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
   }
 
   sortListByFeed = () => {
+    this.sortByDate = !this.sortByDate;
     this.props.data.readList = this.props.data.readList.sort((i1, i2) => {
       if (i1.idFeed === i2.idFeed) {
         return i2.publicationDate.getTime() - i1.publicationDate.getTime();
