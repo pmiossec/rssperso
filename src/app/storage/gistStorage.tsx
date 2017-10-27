@@ -74,8 +74,13 @@ export class GistStorage {
         var feeds = (JSON.parse(data.files['feed.json'].content) as Feeds).feeds;
         var state = JSON.parse(data.files['state.json'].content) as State;
         var readList = (JSON.parse(data.files['readlist.json'].content) as ReadListItem[])
+          .map(i => { return {
+             idFeed: i.idFeed,
+             title: i.title,
+             url: i.url,
+             publicationDate: new Date(i.publicationDate) }; })
           .sort((i1, i2) => {
-             return new Date(i2.publicationDate).getTime() - new Date(i1.publicationDate).getTime();
+             return i2.publicationDate.getTime() - i1.publicationDate.getTime();
           });
         this.data = {feeds, state, readList};
         this.saveDataInLocalStorage();
