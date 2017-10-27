@@ -20,7 +20,7 @@ interface Feeds {
 
 export interface State {
   last_update: Date;
-  updates: { [feedid: string]: Date};
+  updates: { [feedid: string]: Date };
 }
 
 export interface ReadListItem {
@@ -82,7 +82,7 @@ export class GistStorage {
           .sort((i1, i2) => {
              return i2.publicationDate.getTime() - i1.publicationDate.getTime();
           });
-        this.data = {feeds, state, readList};
+        this.data = { feeds, state, readList };
         this.saveDataInLocalStorage();
         return this.data;
       })
@@ -111,19 +111,20 @@ export class GistStorage {
     // tslint:disable-next-line:no-console
     // console.info('reading list saved ;)', content);
     this.saveDataInLocalStorage();
-    axios.default.patch(this.gistUrl, content)
+    return axios.default.patch(this.gistUrl, content)
       .then((response: axios.AxiosResponse<{}>) => {
         // this.shouldBeSaved = false;
-         // tslint:disable-next-line:no-console
+        // tslint:disable-next-line:no-console
         //  console.info('reading list saved ;)');
-         NotificationManager.info('Successfully saved update', 'Update', 200);
-        })
+        NotificationManager.info('Successfully saved update', 'Update', 200);
+      })
       .catch(err => {
         NotificationManager.error('Failed to save update', 'Update', 3000);
         // tslint:disable-next-line:no-console
         console.error('err saving state:', err);
+        throw err;
       });
-    }
+  }
 
     public saveFeedsState = (feedId: string, title: string, date: Date) => {
       this.data.state.updates[feedId] = date;
@@ -135,51 +136,61 @@ export class GistStorage {
       });
     }
 
-    private saveReadingList = (readingList: ReadListItem[], description: string) => {
-      this.saveFileToGist({
-        description : description && 'Update reading list',
-        files: {
-          'readlist.json': { content: JSON.stringify(readingList)}
-        }
-      });
-    }
-
-    public addItemToReadingList = (item: ReadListItem) => {
-      // tslint:disable-next-line:no-console
-      // console.log('old reading list', this.data.readList);
-
-      if (this.data.readList.findIndex(i => i.url === item.url) > 0 ) {
-        NotificationManager.warning('Link already in the reading list...', 'Add link', 1000);
-        return;
+  private saveReadingList = (readingList: ReadListItem[], description: string) => {
+    return this.saveFileToGist({
+      description: description && 'Update reading list',
+      files: {
+        'readlist.json': { content: JSON.stringify(readingList) }
       }
-      
-      this.data.readList.push(item);
-      // tslint:disable-next-line:no-console
-      // console.log('new reading list', this.data.readList);
-      this.saveReadingList(this.data.readList, 'Add item "' + item.title + '"');
+    });
+  }
+
+  public addItemToReadingList = (item: ReadListItem) => {
+    // tslint:disable-next-line:no-console
+    // console.log('old reading list', this.data.readList);
+
+    if (this.data.readList.findIndex(i => i.url === item.url) > 0) {
+      NotificationManager.warning('Link already in the reading list...', 'Add link', 1000);
+      return;
     }
 
-    public removeItemFromReadingList = (item: ReadListItem): void => {
+    this.data.readList.push(item);
+    // tslint:disable-next-line:no-console
+    // console.log('new reading list', this.data.readList);
+    this.saveReadingList(this.data.readList, 'Add item "' + item.title + '"')
+      // tslint:disable-next-line:no-empty
+      .catch(() => { });
+  }
+
+  public removeItemFromReadingList = (item: ReadListItem): void => {
 
       var indexFound = this.data.readList.findIndex((i) => { return i.url === item.url; });
       if (indexFound !== -1) {
-        this.data.readList.splice(indexFound, 1);
-        this.saveReadingList(this.data.readList, 'Removing item "' + item.title + '"');
-        this.lastItemRemoved = item;
-      }
+      const readingList = [...this.data.readList];
+      readingList.splice(itemIndex, 1);
+      this.saveReadingList(readingList, 'Removing item "' + item.title + '"')
+        .then(() => {
+          this.data.readList = readingList;
+          this.lastItemRemoved = item;
+        })
+        // tslint:disable-next-line:no-empty
+        .catch(() => { });
     }
+  }
 
-    public restoreLastRemoveReadingItem = () => {
-      if (this.lastItemRemoved != null) {
-        this.data.readList.push(this.lastItemRemoved);
-        this.saveReadingList(this.data.readList, 'Restoring item "' + this.lastItemRemoved.title + '"');
-        this.lastItemRemoved = null;
-      }
+  public restoreLastRemoveReadingItem = () => {
+    if (this.lastItemRemoved != null) {
+      this.data.readList.push(this.lastItemRemoved);
+      this.saveReadingList(this.data.readList, 'Restoring item "' + this.lastItemRemoved.title + '"')
+        // tslint:disable-next-line:no-empty
+        .catch(() => { });
+      this.lastItemRemoved = null;
     }
+  }
 
-    public couldBeRestored = () => this.lastItemRemoved != null;
+  public couldBeRestored = () => this.lastItemRemoved != null;
 
-    private saveDataInLocalStorage() {
-        localStorage.setItem('rssPerso', JSON.stringify(this.data));
-    }
+  private saveDataInLocalStorage() {
+    localStorage.setItem('rssPerso', JSON.stringify(this.data));
+  }
 }
