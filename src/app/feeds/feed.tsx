@@ -127,7 +127,7 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
     let links = (
         <div>
           {linksToDisplay.map((l: Link, i: number) => (
-            <div>
+            <div key={i}>
             [<a  onClick={this.clearFeed.bind(null, l.publicationDate)} >
               {Helper.DateFormatter.formatDate(l.publicationDate)}</a>|<a onClick={this.addToReadList(l)} >➕</a>]
             <a href={this.unsecureUrl(l.url)} target="_blank">
