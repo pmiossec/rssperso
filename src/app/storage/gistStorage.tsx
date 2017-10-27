@@ -147,6 +147,12 @@ export class GistStorage {
     public addItemToReadingList = (item: ReadListItem) => {
       // tslint:disable-next-line:no-console
       // console.log('old reading list', this.data.readList);
+
+      if (this.data.readList.findIndex(i => i.url === item.url) > 0 ) {
+        NotificationManager.warning('Link already in the reading list...', 'Add link', 1000);
+        return;
+      }
+      
       this.data.readList.push(item);
       // tslint:disable-next-line:no-console
       // console.log('new reading list', this.data.readList);
