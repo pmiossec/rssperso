@@ -17,7 +17,9 @@ https://github.com/facebookincubator/create-react-app/blob/master/packages/react
 
 ## Roadmap
 
+* Backup on https://crossorigin.me/
 * Reading list:
+    - remove item only when save succeed
     - download before saving reading list (to prevent loosing links)
 <!-- * Refactoring:
     - archive list in another gist -->
