@@ -18,7 +18,6 @@ https://github.com/facebookincubator/create-react-app/blob/master/packages/react
 ## Roadmap
 
 * Reading list:
-    - order by date / feed
     - download before saving reading list (to prevent loosing links)
 <!-- * Refactoring:
     - archive list in another gist -->

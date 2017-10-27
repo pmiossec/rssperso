@@ -153,10 +153,11 @@ export class GistStorage {
       this.saveReadingList(this.data.readList, 'Add item "' + item.title + '"');
     }
 
-    public removeItemFromReadingList = (itemIndex: number, item: ReadListItem): void => {
+    public removeItemFromReadingList = (item: ReadListItem): void => {
 
-      if (itemIndex < this.data.readList.length && this.data.readList[itemIndex].url === item.url) {
-        this.data.readList.splice(itemIndex, 1);
+      var indexFound = this.data.readList.findIndex((i) => { return i.url === item.url; });
+      if (indexFound !== -1) {
+        this.data.readList.splice(indexFound, 1);
         this.saveReadingList(this.data.readList, 'Removing item "' + item.title + '"');
         this.lastItemRemoved = item;
       }

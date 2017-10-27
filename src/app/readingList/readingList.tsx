@@ -13,6 +13,8 @@ interface IReadingListState {
 
 export class ReadingList extends React.Component<IReadingListProps, IReadingListState> {
   private displayReadingList: boolean = false;
+  private sortByDate: boolean = true;
+
   componentDidMount(): void {
     setInterval(() => this.refreshReadingList(), 30000);
   }
@@ -20,20 +22,38 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
   refreshReadingList = () => {
     this.setState({});
   }
-  remove = (itemIndex: number, item: ReadListItem): void => {
-    this.props.store.removeItemFromReadingList(itemIndex, item);
+
+  remove = (item: ReadListItem): void => {
+    this.props.store.removeItemFromReadingList(item);
     this.refreshReadingList();
     NotificationManager.warning('"' + item.title + '" removed', 'Reading list', 3000);
   }
 
-  openAndRemoveLink = (itemIndex: number, item: ReadListItem): void => {
+  openAndRemoveLink = (item: ReadListItem): void => {
     window.open(item.url, '_blank');
-    this.remove(itemIndex, item);
+    this.remove(item);
   }
 
   toggleVisibility = () => {
     this.displayReadingList = !this.displayReadingList;
-    this.setState({});
+    this.refreshReadingList();
+  }
+
+  sortListByDate = () => {
+    this.props.data.readList = this.props.data.readList.sort((i1, i2) => {
+      return new Date(i2.publicationDate).getTime() - new Date(i1.publicationDate).getTime();
+    });
+    this.refreshReadingList();
+  }
+
+  sortListByFeed = () => {
+    this.props.data.readList = this.props.data.readList.sort((i1, i2) => {
+      if (i1.idFeed === i2.idFeed) {
+        return i2.publicationDate.getTime() - i1.publicationDate.getTime();
+      }
+      return (parseInt(i1.idFeed, 10) - parseInt(i2.idFeed, 10));
+    });
+    this.refreshReadingList();
   }
 
   render() {
@@ -48,8 +68,8 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
       <div key={i}>
         [<span className="date">{Helper.DateFormatter.formatDate(new Date(l.publicationDate))}</span>
           |<a href={l.url} target="_blank">📄</a>
-          |<a onClick={this.remove.bind(null, i, l)}>❌</a>]
-        <a onClick={this.openAndRemoveLink.bind(null, i, l)} >
+          |<a onClick={this.remove.bind(null, l)}>❌</a>]
+        <a onClick={this.openAndRemoveLink.bind(null, l)} >
           {feed && <img src={feed.icon} />}
           {l.title}
         </a>
@@ -62,6 +82,8 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
         <div className="feed">
         <div className="title"> <a onClick={this.toggleVisibility} >>>> Reading list
           ({!this.props.data.readList ? 0 : this.props.data.readList.length}):</a>
+          {this.displayReadingList && this.sortByDate && <a onClick={this.sortListByFeed} >Sort by feed </a>}
+          {this.displayReadingList && !this.sortByDate && <a onClick={this.sortListByDate} >Sort by date </a>}
           {this.props.store.couldBeRestored()
              && <a onClick={this.props.store.restoreLastRemoveReadingItem} >Restore last deleted item </a>}
         </div>
