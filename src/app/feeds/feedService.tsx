@@ -131,7 +131,7 @@ export class FeedService {
 
   private storeClearDate(clearDate: Date): void {
     // localStorage.setItem(this.url, clearDate.toJSON());
-    this.storage.saveFeedsState(this.feedData.id, clearDate);
+    this.storage.saveFeedsState(this.feedData.id, this.feedData.name, clearDate);
   }
 
   private restoreInitialClearDate(clearDate: Date): void {

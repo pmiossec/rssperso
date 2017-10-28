@@ -125,10 +125,10 @@ export class GistStorage {
       });
     }
 
-    public saveFeedsState = (feedId: string, date: Date) => {
+    public saveFeedsState = (feedId: string, title: string, date: Date) => {
       this.data.state.updates[feedId] = date;
       this.saveFileToGist({
-        description : `Update publication date for feed "${feedId}"`,
+        description : `Update publication date for feed "${title}"`,
         files: {
           'state.json': { content: JSON.stringify(this.data.state)}
         }
