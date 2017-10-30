@@ -163,11 +163,10 @@ export class GistStorage {
   }
 
   public removeItemFromReadingList = (item: ReadListItem): void => {
-
-      var indexFound = this.data.readList.findIndex((i) => { return i.url === item.url; });
-      if (indexFound !== -1) {
+    var indexFound = this.data.readList.findIndex((i) => { return i.url === item.url; });
+    if (indexFound !== -1) {
       const readingList = [...this.data.readList];
-      readingList.splice(itemIndex, 1);
+      readingList.splice(indexFound, 1);
       this.saveReadingList(readingList, 'Removing item "' + item.title + '"')
         .then(() => {
           this.data.readList = readingList;
