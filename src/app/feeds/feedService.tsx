@@ -272,4 +272,25 @@ export class FeedService {
 
     return new Date();
   }
+
+  public calculateRefreshInterval() {
+    const oneDay = 24 * 3600 * 1000;
+    const maxInterval = 2 * 3600 * 1000;
+    if (!this.allLinks || this.allLinks.length === 0) {
+      return maxInterval;
+    }
+
+    const lastFeedDate = this.allLinks[0].publicationDate;
+    if (new Date().getTime() - lastFeedDate.getTime() > oneDay) {
+      return maxInterval;
+    }
+
+    const dates = this.allLinks.map(l => { return l.publicationDate.getTime(); });
+    const date1 = dates.slice(1);
+    const date2 = dates.slice(0, dates.length - 1);
+    const diff = date2.map((d, i) => d - date1[i]).sort((d1, d2) => d2 - d1).slice(1);
+    const moyenne = diff.reduce((d1, d2) => d1 + d2, 0) / diff.length;
+    const timeSpan = Math.max(Math.min(maxInterval, moyenne / 2), 5 * 60 * 1000);
+    return timeSpan;
+  }
 }
