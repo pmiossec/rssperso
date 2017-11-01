@@ -50,6 +50,9 @@ interface GistUpdate {
   description: string;
   files: { [fileId: string]: GistFileUpdate; };
 }
+const FeedListFileKey: string = 'feed.json';
+const FeedStateFileKey: string = 'state.json';
+const ReadingListFileKey: string = 'readlist.json';
 
 export class GistStorage {
   public receivedPromise: axios.AxiosPromise<{}>;
@@ -71,9 +74,9 @@ export class GistStorage {
   public loadGist = (): Promise<Gist> => {
     return this.getDataFromRemote()
       .then((data: Storage) => {
-        var feeds = (JSON.parse(data.files['feed.json'].content) as Feeds).feeds;
-        var state = JSON.parse(data.files['state.json'].content) as State;
-        var readList = (JSON.parse(data.files['readlist.json'].content) as ReadListItem[])
+        var feeds = (JSON.parse(data.files[FeedListFileKey].content) as Feeds).feeds;
+        var state = JSON.parse(data.files[FeedStateFileKey].content) as State;
+        var readList = (JSON.parse(data.files[ReadingListFileKey].content) as ReadListItem[])
           .map(i => { return {
              idFeed: i.idFeed,
              title: i.title,
@@ -122,28 +125,35 @@ export class GistStorage {
       });
   }
 
-    public saveFeedsState = (feedId: string, title: string, date: Date) => {
-      this.data.state.updates[feedId] = date;
-      this.saveFileToGist({
-        description : `Update publication date for feed "${title}"`,
-        files: {
-          'state.json': { content: JSON.stringify(this.data.state)}
-        }
-      });
-    }
+  public updateFeedState = (feedId: string, date: Date) => {
+    this.data.state.updates[feedId] = date;
+  }
 
-  private saveReadingList = (readingList: ReadListItem[], description: string) => {
-    return this.saveFileToGist({
-      description: description && 'Update reading list',
+  public saveFeedsState = (feedId: string, title: string, date: Date) => {
+    this.updateFeedState(feedId, date);
+    this.saveFileToGist({
+      description : `Update publication date for feed "${title}"`,
       files: {
-        'readlist.json': { content: JSON.stringify(readingList) }
+        FeedStateFileKey: { content: JSON.stringify(this.data.state)}
       }
     });
   }
 
-  public addItemToReadingList = (item: ReadListItem) => {
-    // tslint:disable-next-line:no-console
-    // console.log('old reading list', this.data.readList);
+  private saveReadingList = (readingList: ReadListItem[], description: string, state: State | null = null) => {
+    let filesToSave = {
+      ReadingListFileKey: { content: JSON.stringify(readingList) }
+    };
+    if (state !== null) {
+          filesToSave[FeedStateFileKey] = { content: JSON.stringify(this.data.state) };
+        }
+    return this.saveFileToGist({
+          description: description && 'Update reading list',
+          files: filesToSave
+        });
+  }
+
+  public addItemToReadingList = (item: ReadListItem, saveAlsoFeedState: boolean) => {
+    NotificationManager.info('Adding to reading list', 'Reading list', 200);
 
     if (this.data.readList.findIndex(i => i.url === item.url) > 0) {
       NotificationManager.warning('Link already in the reading list...', 'Add link', 1000);
@@ -151,12 +161,14 @@ export class GistStorage {
     }
 
     this.data.readList.push(item);
-    this.saveReadingList(this.data.readList, 'Add item "' + item.title + '"')
+    this.saveReadingList(this.data.readList, 'Add item "' + item.title + '"',
+                         saveAlsoFeedState ? this.data.state : null)
       // tslint:disable-next-line:no-empty
       .catch(() => { });
   }
 
   public removeItemFromReadingList = (item: ReadListItem): void => {
+    NotificationManager.info('Removing from reading list', 'Reading list', 200);
     var indexFound = this.data.readList.findIndex((i) => { return i.url === item.url; });
     if (indexFound !== -1) {
       const readingList = [...this.data.readList];

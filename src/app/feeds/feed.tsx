@@ -58,9 +58,9 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
     this.clearAllFeed();
   }
 
-  addToReadList = (item: ReadListItem ): (() => void) => {
+  addToReadList = (item: ReadListItem, index: number ) => {
     return () => {
-      this.props.feed.storage.addItemToReadingList(item);
+      this.props.feed.addItemToReadingList(item, index === 0);
     };
   }
 
@@ -94,8 +94,9 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
           {linksToDisplay.map((l: Link, i: number) => (
             <div key={i}>
             [<a  onClick={this.clearFeed.bind(null, l.publicationDate)} >
-              {Helper.DateFormatter.formatDate(l.publicationDate)}</a>|<a onClick={this.addToReadList(l)} >➕</a>]
-            <a href={this.unsecureUrl(l.url)} target="_blank">
+              {Helper.DateFormatter.formatDate(l.publicationDate)}</a>|
+              <a onClick={this.addToReadList(l, i)} >➕</a>]
+              <a href={this.unsecureUrl(l.url)} target="_blank">
               {l.title}
             </a>
             </div>

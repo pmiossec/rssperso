@@ -57,6 +57,20 @@ export class FeedService {
     this.storeClearDate(this.clearDate);
   }
 
+  public addItemToReadingList = (item: ReadListItem, clearFeed: boolean) => {
+    if (clearFeed) {
+      this.updateFeedDataOnClear(item.publicationDate);
+      this.storage.updateFeedState(this.feedData.id, item.publicationDate);
+    }
+    this.storage.addItemToReadingList(item, clearFeed);
+  }
+
+  private updateFeedDataOnClear(date: Date) {
+      this.clearDate = date;
+      this.links = this.links.filter(l => l.publicationDate > this.clearDate);
+      this.shouldDisplayAllLinks = false;
+  }
+
   public getLinksToDisplay(): Link[] {
     return this.shouldDisplayAllLinks ? this.allLinks : this.links;
   }
