@@ -6,7 +6,7 @@ import { ReadListItem } from '../storage/gistStorage';
 interface IFeedProps {
   key: number;
   feed: FeedService;
-  unsecured: boolean;
+  unsecured?: boolean;
 }
 
 interface IFeedState {

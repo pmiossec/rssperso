@@ -12,6 +12,8 @@ export interface FeedData {
   name: string;
   url: string;
   icon: string;
+  noCorsProxy?: boolean;
+  notSecured?: boolean;
 }
 
 interface Feeds {

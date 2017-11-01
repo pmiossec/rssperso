@@ -60,7 +60,8 @@ export class FeedService {
   constructor(
     public feedData: FeedData,
     public offsetDate: Date,
-    public storage: GistStorage
+    public storage: GistStorage,
+    public noCorsProxy?: boolean
   ) {
     this.links = [];
     this.title = feedData.name;
