@@ -40,20 +40,20 @@ export class FeedService {
     this.headers = this.getHeaders(this.feedData.url);
   }
 
-  public clearFeed = (date?: Date): void => {
-    this.shouldDisplayAllLinks = false;
-    if (date) {
-      this.clearDate = date;
-      this.links = this.links.filter(l => l.publicationDate > this.clearDate);
+  public clearAllFeed = (): void => {
+    if (this.links && this.links.length !== 0) {
+      const indexNewerLink = this.isOrderNewerFirst ? 0 : this.links.length - 1;
+      this.clearDate = this.links[indexNewerLink].publicationDate;
     } else {
-      if (this.links && this.links.length !== 0) {
-        const indexNewerLink = this.isOrderNewerFirst ? 0 : this.links.length - 1;
-        this.clearDate = this.links[indexNewerLink].publicationDate;
-      } else {
-        this.clearDate = new Date();
-      }
-      this.links = new Array<Link>();
+      this.clearDate = new Date();
     }
+    this.links = new Array<Link>();
+    this.shouldDisplayAllLinks = false;
+    this.storeClearDate(this.clearDate);
+  }
+
+  public clearFeed = (date: Date): void => {
+    this.updateFeedDataOnClear(date);
     this.storeClearDate(this.clearDate);
   }
 
@@ -119,7 +119,6 @@ export class FeedService {
     }
   }
 
-  // tslint:disable-next-line:member-ordering
   public loadFeedContent(): Promise<void> {
     return axios.default
       .get(this.url, this.headers)
@@ -186,7 +185,8 @@ export class FeedService {
       return this.parseDate(publicationDateElement.textContent);
     }
 
-    // console.log('date not found :(', this.url);
+    // tslint:disable-next-line:no-console
+    console.log('date not found :(', this.url);
     return new Date(2000, 1, 1);
   }
 

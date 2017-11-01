@@ -108,14 +108,10 @@ export class GistStorage {
   }
 
   private saveFileToGist = (content: GistUpdate) => {
-    // tslint:disable-next-line:no-console
-    // console.info('reading list saved ;)', content);
     this.saveDataInLocalStorage();
     return axios.default.patch(this.gistUrl, content)
       .then((response: axios.AxiosResponse<{}>) => {
         // this.shouldBeSaved = false;
-        // tslint:disable-next-line:no-console
-        //  console.info('reading list saved ;)');
         NotificationManager.info('Successfully saved update', 'Update', 200);
       })
       .catch(err => {
@@ -155,8 +151,6 @@ export class GistStorage {
     }
 
     this.data.readList.push(item);
-    // tslint:disable-next-line:no-console
-    // console.log('new reading list', this.data.readList);
     this.saveReadingList(this.data.readList, 'Add item "' + item.title + '"')
       // tslint:disable-next-line:no-empty
       .catch(() => { });

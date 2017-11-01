@@ -33,7 +33,12 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
     this.forceUpdate();
   }
 
-  clearFeed = (date?: Date): void => {
+  clearAllFeed = (): void => {
+    this.props.feed.clearAllFeed();
+    this.forceUpdate();
+  }
+
+  clearFeed = (date: Date): void => {
     this.props.feed.clearFeed(date);
     this.forceUpdate();
   }
@@ -50,7 +55,7 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
     this.props.feed.getLinksToDisplay().forEach(element => {
       window.open(this.unsecureUrl(element.url), '_blank');
     });
-    this.clearFeed();
+    this.clearAllFeed();
   }
 
   addToReadList = (item: ReadListItem ): (() => void) => {
@@ -65,7 +70,7 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
     if (linksToDisplay.length !== 0) {
       options = (
         <span>
-          <div className="text-badge" onClick={this.clearFeed.bind(null, null)}>
+          <div className="text-badge" onClick={this.clearAllFeed}>
             <a>{linksToDisplay.length}</a>
           </div>
           {!this.props.feed.isDisplayingAllLinks()
