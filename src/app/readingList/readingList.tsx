@@ -53,7 +53,7 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
       if (i1.idFeed === i2.idFeed) {
         return i2.publicationDate.getTime() - i1.publicationDate.getTime();
       }
-      return (parseInt(i1.idFeed, 10) - parseInt(i2.idFeed, 10));
+      return i1.idFeed - i2.idFeed;
     });
     this.refreshReadingList();
   }

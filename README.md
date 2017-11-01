@@ -10,14 +10,10 @@
 
 `yarn build && to_ghpages.bat`
 
-
-### Doc
-
-https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md
-
 ## Roadmap
 
-* Backup on https://crossorigin.me/
+* config: add "notSecured" (for dilbert) and "noProxy" (lemonde)
+* Better display and managment of link added (early notif and disapear and readd if saving failed)
 * Reading list:
     - remove item only when save succeed
     - download before saving reading list (to prevent loosing links)

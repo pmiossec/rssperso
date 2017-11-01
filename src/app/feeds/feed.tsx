@@ -4,7 +4,7 @@ import { FeedService, Link } from './feedService';
 import { ReadListItem } from '../storage/gistStorage';
 
 interface IFeedProps {
-  key: string;
+  key: number;
   feed: FeedService;
   unsecured: boolean;
 }

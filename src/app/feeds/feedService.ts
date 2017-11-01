@@ -28,7 +28,8 @@ const proxyHandlers: CorsProxyHandler[] =
   ];
 
 export class FeedService {
-  private proxyHandler = proxyHandlers[0];
+  private proxySwitcher: number = 0;
+  private proxyHandler: CorsProxyHandler;
   public httpProtocol: string;
   public logo: string;
   public title: string = 'Future title';
@@ -48,6 +49,7 @@ export class FeedService {
     this.links = [];
     this.title = feedData.name;
     this.logo = feedData.icon;
+    this.proxyHandler = proxyHandlers[feedData.id % proxyHandlers.length];
     if (this.offsetDate !== null) {
       this.restoreInitialClearDate(this.offsetDate);
     }
@@ -135,6 +137,9 @@ export class FeedService {
       .get(this.proxyHandler.url + this.feedData.url, this.proxyHandler.headers)
       .then(this.processFeedXml)
       .catch(err => {
+        this.proxySwitcher++;
+        this.proxyHandler = proxyHandlers[(this.feedData.id + this.proxySwitcher) % proxyHandlers.length];
+        return this.loadFeedContent();
         // localStorage.setItem('use_proxy.' + this.url, 'true');
       });
   }

@@ -8,7 +8,7 @@ export interface Gist {
 }
 
 export interface FeedData {
-  id: string;
+  id: number;
   name: string;
   url: string;
   icon: string;
@@ -24,7 +24,7 @@ export interface State {
 }
 
 export interface ReadListItem {
-  idFeed: string;
+  idFeed: number;
   title: string;
   url: string;
   publicationDate: Date;
@@ -125,11 +125,11 @@ export class GistStorage {
       });
   }
 
-  public updateFeedState = (feedId: string, date: Date) => {
+  public updateFeedState = (feedId: number, date: Date) => {
     this.data.state.updates[feedId] = date;
   }
 
-  public saveFeedsState = (feedId: string, title: string, date: Date) => {
+  public saveFeedsState = (feedId: number, title: string, date: Date) => {
     this.updateFeedState(feedId, date);
     this.saveFileToGist({
       description : `Update publication date for feed "${title}"`,
