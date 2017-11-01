@@ -140,12 +140,12 @@ export class GistStorage {
   }
 
   private saveReadingList = (readingList: ReadListItem[], description: string, state: State | null = null) => {
-    let filesToSave = {
-      ReadingListFileKey: { content: JSON.stringify(readingList) }
-    };
+    let filesToSave = {};
+    filesToSave[ReadingListFileKey] = { content: JSON.stringify(readingList) };
+
     if (state !== null) {
-          filesToSave[FeedStateFileKey] = { content: JSON.stringify(this.data.state) };
-        }
+      filesToSave[FeedStateFileKey] = { content: JSON.stringify(this.data.state) };
+    }
     return this.saveFileToGist({
           description: description && 'Update reading list',
           files: filesToSave
@@ -172,14 +172,14 @@ export class GistStorage {
     var indexFound = this.data.readList.findIndex((i) => { return i.url === item.url; });
     if (indexFound !== -1) {
       const readingList = [...this.data.readList];
-      readingList.splice(indexFound, 1);
+      this.data.readList.splice(indexFound, 1);
       this.saveReadingList(readingList, 'Removing item "' + item.title + '"')
         .then(() => {
-          this.data.readList = readingList;
           this.lastItemRemoved = item;
         })
-        // tslint:disable-next-line:no-empty
-        .catch(() => { });
+        .catch(() => {
+          this.data.readList.splice(indexFound, 0, item);
+         });
     }
   }
 
@@ -187,9 +187,9 @@ export class GistStorage {
     if (this.lastItemRemoved != null) {
       this.data.readList.push(this.lastItemRemoved);
       this.saveReadingList(this.data.readList, 'Restoring item "' + this.lastItemRemoved.title + '"')
+        .then(() => { this.lastItemRemoved = null; })
         // tslint:disable-next-line:no-empty
         .catch(() => { });
-      this.lastItemRemoved = null;
     }
   }
 

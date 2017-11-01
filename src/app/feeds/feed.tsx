@@ -60,7 +60,11 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
 
   addToReadList = (item: ReadListItem, index: number ) => {
     return () => {
-      this.props.feed.addItemToReadingList(item, index === 0);
+      const removingItem = index === 0;
+      this.props.feed.addItemToReadingList(item, removingItem);
+      if (removingItem) {
+        this.forceUpdate();
+      }
     };
   }
 
