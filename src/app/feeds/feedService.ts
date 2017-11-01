@@ -13,16 +13,32 @@ interface CorsProxyHandler {
   responseHandler: (response: {}) => string;
 }
 
+// cors proxy list: https://gist.github.com/jimmywarting/ac1be6ea0297c16c477e17f8fbe51347
 const proxyHandlers: CorsProxyHandler[] =
   [
     {
-      url : 'cors-proxy.htmldriven.com/?url=',
-      headers: {},
-      responseHandler: (response: {body: string}) => {return response.body; }
-    },
-    {
       url: 'cors-anywhere.herokuapp.com/',
       headers: { headers: { 'X-Requested-With': 'XMLHttpRequest' } },
+      responseHandler: (response: string) => {return response; }
+    },
+    {
+      url : 'thingproxy.freeboard.io/fetch/',
+      headers: {},
+      responseHandler: (response: string) => {return response; }
+    },
+    {
+      url: 'dry-sierra-94326.herokuapp.com/',
+      headers: { headers: { 'X-Requested-With': 'XMLHttpRequest' } },
+      responseHandler: (response: string) => {return response; }
+    },
+    {
+      url: 'jsonp.herokuapp.com/?url=',
+      headers: { headers: { 'X-Requested-With': 'XMLHttpRequest' } },
+      responseHandler: (response: string) => {return response; }
+    },
+    {
+      url: 'galvanize-cors-proxy.herokuapp.com/',
+      headers: { },
       responseHandler: (response: string) => {return response; }
     }
   ];
