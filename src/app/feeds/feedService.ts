@@ -16,12 +16,12 @@ interface CorsProxyHandler {
 const proxyHandlers: CorsProxyHandler[] =
   [
     {
-      url : 'http://cors-proxy.htmldriven.com/?url=',
+      url : 'cors-proxy.htmldriven.com/?url=',
       headers: {},
       responseHandler: (response: {body: string}) => {return response.body; }
     },
     {
-      url: 'http://cors-anywhere.herokuapp.com/',
+      url: 'cors-anywhere.herokuapp.com/',
       headers: { headers: { 'X-Requested-With': 'XMLHttpRequest' } },
       responseHandler: (response: string) => {return response; }
     }
@@ -49,6 +49,7 @@ export class FeedService {
     this.links = [];
     this.title = feedData.name;
     this.logo = feedData.icon;
+    this.httpProtocol = window.location.protocol;
     this.proxyHandler = proxyHandlers[feedData.id % proxyHandlers.length];
     if (this.offsetDate !== null) {
       this.restoreInitialClearDate(this.offsetDate);
@@ -134,7 +135,9 @@ export class FeedService {
 
   public loadFeedContent(): Promise<void> {
     return axios.default
-      .get(this.proxyHandler.url + this.feedData.url, this.proxyHandler.headers)
+      .get(this.httpProtocol + '//' +
+           this.proxyHandler.url + this.feedData.url,
+           this.proxyHandler.headers)
       .then(this.processFeedXml)
       .catch(err => {
         this.proxySwitcher++;
