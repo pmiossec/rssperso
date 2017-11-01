@@ -1,15 +1,34 @@
 import * as axios from 'axios';
 import { FeedData, GistStorage, ReadListItem } from '../storage/gistStorage';
 
-const ProxyHeaders = { headers: { 'X-Requested-With': 'XMLHttpRequest' } };
-
 export interface Link extends ReadListItem {
   read: boolean;
   iconUrl: string;
   feedName: string;
 }
 
+interface CorsProxyHandler {
+  url: string;
+  headers: {};
+  responseHandler: (response: {}) => string;
+}
+
+const proxyHandlers: CorsProxyHandler[] =
+  [
+    {
+      url : 'http://cors-proxy.htmldriven.com/?url=',
+      headers: {},
+      responseHandler: (response: {body: string}) => {return response.body; }
+    },
+    {
+      url: 'http://cors-anywhere.herokuapp.com/',
+      headers: { headers: { 'X-Requested-With': 'XMLHttpRequest' } },
+      responseHandler: (response: string) => {return response; }
+    }
+  ];
+
 export class FeedService {
+  private proxyHandler = proxyHandlers[0];
   public httpProtocol: string;
   public logo: string;
   public title: string = 'Future title';
@@ -19,10 +38,7 @@ export class FeedService {
   public content: string;
   public clearDate: Date = new Date(1900, 1, 1);
   private isOrderNewerFirst = false;
-  private corsProxyUrl: string;
-  private headers: {};
   private shouldDisplayAllLinks: boolean = false;
-  private url: string;
 
   constructor(
     public feedData: FeedData,
@@ -32,12 +48,9 @@ export class FeedService {
     this.links = [];
     this.title = feedData.name;
     this.logo = feedData.icon;
-    this.httpProtocol = window.location.protocol + '//';
-    this.corsProxyUrl = this.httpProtocol + 'cors-anywhere.herokuapp.com/';
     if (this.offsetDate !== null) {
       this.restoreInitialClearDate(this.offsetDate);
     }
-    this.headers = this.getHeaders(this.feedData.url);
   }
 
   public clearAllFeed = (): void => {
@@ -83,22 +96,13 @@ export class FeedService {
     this.shouldDisplayAllLinks = !this.shouldDisplayAllLinks;
   }
 
-  private getHeaders(url: string) {
-    // if (localStorage.getItem('use_proxy.' + url)) {
-      this.url = this.corsProxyUrl + url;
-      return ProxyHeaders;
-    // } else {
-    //   // no need of a proxy
-    //   return { headers: { 'Origin': url } };
-    // }
-  }
-
-  private processFeedXml = (response: axios.AxiosResponse<string>) => {
+  // tslint:disable-next-line:no-any
+  private processFeedXml = (response: axios.AxiosResponse<any>) => {
     this.allLinks = [];
     this.links = [];
     const parser = new DOMParser();
     try {
-      var content = response.data;
+      var content = this.proxyHandler.responseHandler(response.data);
       const xmlDoc = parser.parseFromString(content, 'text/xml');
       // console.log('xmlDoc:', xmlDoc.documentElement);
       const feedFormat = xmlDoc.documentElement.tagName;
@@ -111,31 +115,24 @@ export class FeedService {
           this.manageAtomFeed(xmlDoc.documentElement);
           break;
         default:
-          this.title = `${this.url} => Feed format not supported:` + feedFormat;
+          this.title = `${this.feedData.url} => Feed format not supported:` + feedFormat;
       }
 
       this.allLinks = this.sortFeed(this.allLinks);
       this.links = this.sortFeed(this.links);
 
-      // if (!this.logo || !this.logo.startsWith('http')) {
-      //   var parts = this.url.split('/');
-      //   this.logo = this.httpProtocol + parts[2] + '/favicon.ico';
-      // } else if (!this.logo.startsWith(this.httpProtocol)) {
-      //   this.logo = this.httpProtocol + this.logo.split('://')[1];
-      // }
-
       if (!this.title) {
-        this.title = this.url;
+        this.title = this.feedData.url;
       }
       // console.log('feed read', this);
     } catch (ex) {
-      this.title = `${this.url} Error loading :( Error: ${ex}`;
+      this.title = `${this.feedData.url} Error loading :( Error: ${ex}`;
     }
   }
 
   public loadFeedContent(): Promise<void> {
     return axios.default
-      .get(this.url, this.headers)
+      .get(this.proxyHandler.url + this.feedData.url, this.proxyHandler.headers)
       .then(this.processFeedXml)
       .catch(err => {
         // localStorage.setItem('use_proxy.' + this.url, 'true');
@@ -155,13 +152,7 @@ export class FeedService {
   private manageRssFeed(xmlDoc: HTMLElement): void {
     const channel = this.getElementByTagName(xmlDoc, 'channel');
     if (channel) {
-      // this.title = this.getElementContentByTagName(channel, 'title');
       this.webSiteUrl = this.getElementContentByTagName(channel, 'link');
-      // const imageTag = this.getElementByTagName(channel, 'image');
-      // if (imageTag) {
-      //   const logoUrl = this.getElementContentByTagName(imageTag, 'url');
-      //   this.logo = this.getFaviconUrl(logoUrl, this.webSiteUrl);
-      // }
     }
 
     const items = xmlDoc.getElementsByTagName('item');
@@ -200,7 +191,7 @@ export class FeedService {
     }
 
     // tslint:disable-next-line:no-console
-    console.log('date not found :(', this.url);
+    console.log('date not found :(', this.feedData.url);
     return new Date(2000, 1, 1);
   }
 
