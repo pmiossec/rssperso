@@ -50,7 +50,7 @@ interface GistUpdate {
   description: string;
   files: { [fileId: string]: GistFileUpdate; };
 }
-const FeedListFileKey: string = 'feed.json';
+
 const FeedStateFileKey: string = 'state.json';
 const ReadingListFileKey: string = 'readlist.json';
 
@@ -74,7 +74,7 @@ export class GistStorage {
   public loadGist = (): Promise<Gist> => {
     return this.getDataFromRemote()
       .then((data: Storage) => {
-        var feeds = (JSON.parse(data.files[FeedListFileKey].content) as Feeds).feeds;
+        var feeds = (JSON.parse(data.files['feed.json'].content) as Feeds).feeds;
         var state = JSON.parse(data.files[FeedStateFileKey].content) as State;
         var readList = (JSON.parse(data.files[ReadingListFileKey].content) as ReadListItem[])
           .map(i => { return {
@@ -134,14 +134,13 @@ export class GistStorage {
     this.saveFileToGist({
       description : `Update publication date for feed "${title}"`,
       files: {
-        FeedStateFileKey: { content: JSON.stringify(this.data.state)}
+        [FeedStateFileKey]: { content: JSON.stringify(this.data.state)}
       }
     });
   }
 
   private saveReadingList = (readingList: ReadListItem[], description: string, state: State | null = null) => {
-    let filesToSave = {};
-    filesToSave[ReadingListFileKey] = { content: JSON.stringify(readingList) };
+    let filesToSave = {[ReadingListFileKey] : { content: JSON.stringify(readingList) }};
 
     if (state !== null) {
       filesToSave[FeedStateFileKey] = { content: JSON.stringify(this.data.state) };
