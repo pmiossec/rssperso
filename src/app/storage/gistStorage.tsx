@@ -133,6 +133,7 @@ export class GistStorage {
 
   public saveFeedsState = (feedId: number, title: string, date: Date) => {
     this.updateFeedState(feedId, date);
+    this.data.state.last_update = new Date();
     this.saveFileToGist({
       description : `Update publication date for feed "${title}"`,
       files: {
@@ -145,6 +146,7 @@ export class GistStorage {
     let filesToSave = {[ReadingListFileKey] : { content: JSON.stringify(readingList) }};
 
     if (state !== null) {
+      this.data.state.last_update = new Date();
       filesToSave[FeedStateFileKey] = { content: JSON.stringify(this.data.state) };
     }
     return this.saveFileToGist({
