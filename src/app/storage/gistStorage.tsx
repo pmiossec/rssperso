@@ -77,7 +77,10 @@ export class GistStorage {
 
   public loadGist = (): Promise<Gist> => {
     return this.getDataFromRemote()
-      .then((data: Storage) => {
+      .then((data) => {
+        if (data === null) {
+          return {} as Gist;
+        }
         var feeds = (JSON.parse(data.files['feed.json'].content) as Feeds).feeds;
         var state = JSON.parse(data.files[FeedStateFileKey].content) as State;
         var readList = (JSON.parse(data.files[ReadingListFileKey].content) as ReadListItem[])
@@ -102,22 +105,28 @@ export class GistStorage {
 
   private getDataFromRemote = () => {
     return axios.default.get(this.gistUrl)
-      .then((response: axios.AxiosResponse<{}>) => {
+      .then((response: axios.AxiosResponse<Storage>) => {
         this.dataFetched = true;
         const data = response.data;
         return data;
       })
       .catch(err => {
         // tslint:disable-next-line:no-console
-        console.log('err fetching online state:', err);
-        return {};
+        NotificationManager.error('err fetching online state:' + err, 'Error fetching', 5000);
+        return null;
       });
   }
 
   private saveFileToGist = (content: GistUpdate) => {
     this.saveDataInLocalStorage();
     return axios.default.patch(this.gistUrl, content)
-      .then((response: axios.AxiosResponse<{}>) => {
+      .then((response: axios.AxiosResponse<Storage>) => {
+        const newRevisionCount = response.data.history.length;
+        if (newRevisionCount >  this.data.revisionCount + 1) {
+          NotificationManager.warning('Probable data loss. Please refresh!!', 'Data lost', 3000);
+        }
+        this.data.revisionCount = newRevisionCount;
+        this.data.readList = (JSON.parse(response.data.files[ReadingListFileKey].content) as ReadListItem[]);
         // this.shouldBeSaved = false;
         NotificationManager.info('Successfully saved update', 'Update', 200);
       })
