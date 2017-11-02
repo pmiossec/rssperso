@@ -5,6 +5,7 @@ export interface Gist {
   feeds: FeedData[];
   state: State;
   readList: ReadListItem[];
+  revisionCount: number;
 }
 
 export interface FeedData {
@@ -44,6 +45,7 @@ interface GistFileContent {
 
 interface Storage {
   files: { [fileId: string]: GistFileContent; };
+  history: {}[];
 }
 interface GistFileUpdate {
   content: string;
@@ -87,7 +89,7 @@ export class GistStorage {
           .sort((i1, i2) => {
              return i2.publicationDate.getTime() - i1.publicationDate.getTime();
           });
-        this.data = { feeds, state, readList };
+        this.data = { feeds, state, readList, revisionCount: data.history.length };
         this.saveDataInLocalStorage();
         return this.data;
       })
