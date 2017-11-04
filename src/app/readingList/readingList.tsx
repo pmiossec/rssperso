@@ -14,7 +14,7 @@ export class ReadingList extends React.Component<
   IReadingListState
 > {
   private displayReadingList: boolean = false;
-  private sortByDate: boolean = true;
+  private sortByDate: boolean = false;
 
   componentDidMount(): void {
     setInterval(() => this.refreshReadingList(), 30000);
@@ -42,25 +42,11 @@ export class ReadingList extends React.Component<
     this.refreshReadingList();
   }
 
-  sortListByDate = () => {
+  changeSort = () => {
     this.sortByDate = !this.sortByDate;
-    this.props.data.readList = this.props.data.readList.sort((i1, i2) => {
-      return (
-        new Date(i2.publicationDate).getTime() -
-        new Date(i1.publicationDate).getTime()
-      );
-    });
-    this.refreshReadingList();
-  }
-
-  sortListByFeed = () => {
-    this.sortByDate = !this.sortByDate;
-    this.props.data.readList = this.props.data.readList.sort((i1, i2) => {
-      if (i1.idFeed === i2.idFeed) {
-        return i2.publicationDate.getTime() - i1.publicationDate.getTime();
-      }
-      return i1.idFeed - i2.idFeed;
-    });
+    this.props.data.readList = this.sortByDate
+      ? this.props.store.sortListByDate(this.props.data.readList)
+      : this.props.store.sortListByFeed(this.props.data.readList);
     this.refreshReadingList();
   }
 
@@ -100,11 +86,7 @@ export class ReadingList extends React.Component<
                 : this.props.data.readList.length}):
             </a>
             {this.displayReadingList &&
-              this.sortByDate &&
-              <a onClick={this.sortListByFeed}>Sort by feed </a>}
-            {this.displayReadingList &&
-              !this.sortByDate &&
-              <a onClick={this.sortListByDate}>Sort by date </a>}
+              <a onClick={this.changeSort}>Sort by {this.sortByDate ? 'feed' : 'date'} </a>}
             {this.props.store.couldBeRestored() &&
               <a onClick={this.props.store.restoreLastRemoveReadingItem}>
                 Restore last deleted item{' '}

@@ -43,10 +43,15 @@ interface GistFileContent {
   content: string;
 }
 
+interface GistFilesContent {
+  [fileId: string]: GistFileContent;
+}
+
 interface Storage {
-  files: { [fileId: string]: GistFileContent };
+  files: GistFilesContent;
   history: {}[];
 }
+
 interface GistFileUpdate {
   content: string;
 }
@@ -81,29 +86,10 @@ export class GistStorage {
         if (data === null) {
           return {} as Gist;
         }
-        var feeds = (JSON.parse(data.files['feed.json'].content) as Feeds)
-          .feeds;
-        const state = (JSON.parse(data.files[FeedStateFileKey].content) as State);
-        state.last_update = new Date(state.last_update);
-        Object.keys(state.updates).forEach(k => state.updates[k] = new Date(state.updates[k]));
-        var readList = (JSON.parse(
-          data.files[ReadingListFileKey].content
-        ) as ReadListItem[])
-          .map(i => {
-            return {
-              idFeed: i.idFeed,
-              title: i.title,
-              url: i.url,
-              publicationDate: new Date(i.publicationDate)
-            };
-          })
-          .sort((i1, i2) => {
-            return i2.publicationDate.getTime() - i1.publicationDate.getTime();
-          });
         this.data = {
-          feeds,
-          state,
-          readList,
+          feeds: this.getFeedsData(data.files),
+          state: this.getFeedStateData(data.files),
+          readList: this.getReadingListData(data.files),
           revisionCount: data.history.length
         };
         this.saveDataInLocalStorage();
@@ -122,6 +108,31 @@ export class GistStorage {
         return this.data;
       });
   }
+
+  //#region Convert gist data
+  private getFeedsData = (data: GistFilesContent) => (JSON.parse(data['feed.json'].content) as Feeds).feeds;
+
+  private getFeedStateData = (data: GistFilesContent) => {
+    const state = (JSON.parse(data[FeedStateFileKey].content) as State);
+    state.last_update = new Date(state.last_update);
+    Object.keys(state.updates).forEach(k => state.updates[k] = new Date(state.updates[k]));
+    return state;
+  }
+
+  private getReadingListData = (data: GistFilesContent) => {
+    return this.sortListByFeed((JSON.parse(
+      data[ReadingListFileKey].content
+    ) as ReadListItem[])
+      .map(i => {
+        return {
+          idFeed: i.idFeed,
+          title: i.title,
+          url: i.url,
+          publicationDate: new Date(i.publicationDate)
+        };
+      }));
+  }
+  //#endregion
 
   private getDataFromRemote = () => {
     return axios.default
@@ -157,9 +168,7 @@ export class GistStorage {
           );
         }
         this.data.revisionCount = newRevisionCount;
-        this.data.readList = JSON.parse(
-          response.data.files[ReadingListFileKey].content
-        ) as ReadListItem[];
+        this.data.readList = this.getReadingListData(response.data.files);
         // this.shouldBeSaved = false;
         NotificationManager.info('Successfully saved update', 'Update', 200);
       })
@@ -267,7 +276,25 @@ export class GistStorage {
 
   public couldBeRestored = () => this.lastItemRemoved != null;
 
-  private saveDataInLocalStorage() {
+  private saveDataInLocalStorage = () => {
     localStorage.setItem('rssPerso', JSON.stringify(this.data));
+  }
+
+  public sortListByDate = (readList: ReadListItem[]) => {
+    return readList.sort((i1, i2) => {
+      return (
+        i2.publicationDate.getTime() -
+        i1.publicationDate.getTime()
+      );
+    });
+  }
+
+  public sortListByFeed = (readList: ReadListItem[]) => {
+    return readList.sort((i1, i2) => {
+      if (i1.idFeed === i2.idFeed) {
+        return i2.publicationDate.getTime() - i1.publicationDate.getTime();
+      }
+      return i1.idFeed - i2.idFeed;
+    });
   }
 }
