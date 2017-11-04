@@ -69,8 +69,7 @@ export class FeedService {
   constructor(
     public feedData: FeedData,
     public offsetDate: Date,
-    public storage: GistStorage,
-    public noCorsProxy?: boolean
+    public storage: GistStorage
   ) {
     this.links = [];
     this.title = feedData.name;
@@ -135,7 +134,6 @@ export class FeedService {
     try {
       var content = this.proxyHandler.responseHandler(response.data);
       const xmlDoc = parser.parseFromString(content, 'text/xml');
-      // console.log('xmlDoc:', xmlDoc.documentElement);
       const feedFormat = xmlDoc.documentElement.tagName;
       switch (feedFormat) {
         case 'rss':
@@ -156,18 +154,17 @@ export class FeedService {
       if (!this.title) {
         this.title = this.feedData.url;
       }
-      // console.log('feed read', this);
     } catch (ex) {
       this.title = `${this.feedData.url} Error loading :( Error: ${ex}`;
     }
   }
 
   public loadFeedContent(): Promise<void> {
-    const url = this.noCorsProxy
+    const url = this.feedData.noCorsProxy
       ? this.feedData.url
       : this.httpProtocol + '//' + this.proxyHandler.url + this.feedData.url;
     return axios.default
-      .get(url, this.noCorsProxy ? undefined : this.proxyHandler.headers)
+      .get(url, this.feedData.noCorsProxy ? undefined : this.proxyHandler.headers)
       .then(this.processFeedXml)
       .catch(err => {
         this.proxySwitcher++;

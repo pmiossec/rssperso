@@ -58,9 +58,8 @@ export class Main extends React.Component<IMainProps, IMainState> {
               feed={
                 new FeedService(
                   feed,
-                  new Date(this.state.data.state.updates[feed.id]),
-                  this.state.store,
-                  feed.noCorsProxy
+                  this.state.data.state.updates[feed.id],
+                  this.state.store
                 )
               }
               unsecured={feed.notSecured}

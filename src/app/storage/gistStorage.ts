@@ -83,7 +83,9 @@ export class GistStorage {
         }
         var feeds = (JSON.parse(data.files['feed.json'].content) as Feeds)
           .feeds;
-        var state = JSON.parse(data.files[FeedStateFileKey].content) as State;
+        const state = (JSON.parse(data.files[FeedStateFileKey].content) as State);
+        state.last_update = new Date(state.last_update);
+        Object.keys(state.updates).forEach(k => state.updates[k] = new Date(state.updates[k]));
         var readList = (JSON.parse(
           data.files[ReadingListFileKey].content
         ) as ReadListItem[])
