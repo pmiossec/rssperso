@@ -6,8 +6,7 @@ import { ReadingList } from './readingList/readingList';
 import { NotificationContainer } from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
 
-interface IMainProps {
- }
+interface IMainProps {}
 interface IMainState {
   data: Gist;
   store: GistStorage;
@@ -16,13 +15,9 @@ interface IMainState {
 export class Main extends React.Component<IMainProps, IMainState> {
   componentDidMount() {
     const store = new GistStorage();
-    store.loadGist()
-      .then(res => {
-        const data = res;
-        // tslint:disable-next-line:no-console
-        console.log('data', data);
-        this.setState({ store, data });
-      });
+    store.loadGist().then(data => {
+      this.setState({ store, data });
+    });
   }
 
   // clearAll = () => {
@@ -37,7 +32,7 @@ export class Main extends React.Component<IMainProps, IMainState> {
 
   hashCode = (text: string) => {
     // tslint:disable-next-line:no-bitwise
-    return text.split('').reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a & a; }, 0);
+    return text.split('').reduce((a, b) => {  a = (a << 5) - a + b.charCodeAt(0); return a & a; }, 0);
   }
 
   render() {
@@ -58,12 +53,18 @@ export class Main extends React.Component<IMainProps, IMainState> {
         </div> */}
         <div className="feeds">
           {this.state.data.feeds.map((feed: FeedData, i: number) =>
-             <Feed
-               key={feed.id}
-               feed={new FeedService(
-                 feed, new Date(this.state.data.state.updates[feed.id]), this.state.store, feed.noCorsProxy)}
-               unsecured={feed.notSecured}
-             />
+            <Feed
+              key={feed.id}
+              feed={
+                new FeedService(
+                  feed,
+                  new Date(this.state.data.state.updates[feed.id]),
+                  this.state.store,
+                  feed.noCorsProxy
+                )
+              }
+              unsecured={feed.notSecured}
+            />
           )}
         </div>
         <ReadingList data={this.state.data} store={this.state.store} />

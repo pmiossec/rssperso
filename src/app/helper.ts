@@ -8,7 +8,8 @@ export namespace DateFormatter {
       return '-';
     }
     const now = new Date();
-    return (now.getDate() === date.getDate() && now.getMonth() === date.getMonth())
+    return now.getDate() === date.getDate() &&
+    now.getMonth() === date.getMonth()
       ? `${padDigits(date.getHours())}:${padDigits(date.getMinutes())}`
       : `${padDigits(date.getDate())}/${padDigits(date.getMonth() + 1)}`;
   };

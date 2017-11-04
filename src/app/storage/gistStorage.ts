@@ -44,7 +44,7 @@ interface GistFileContent {
 }
 
 interface Storage {
-  files: { [fileId: string]: GistFileContent; };
+  files: { [fileId: string]: GistFileContent };
   history: {}[];
 }
 interface GistFileUpdate {
@@ -52,7 +52,7 @@ interface GistFileUpdate {
 }
 interface GistUpdate {
   description: string;
-  files: { [fileId: string]: GistFileUpdate; };
+  files: { [fileId: string]: GistFileUpdate };
 }
 
 const FeedStateFileKey: string = 'state.json';
@@ -63,8 +63,8 @@ export class GistStorage {
   public dataFetched: boolean = false;
 
   private data: Gist;
-  private gistUrl: string = 'aHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9naXN0cy8xZDgwMDQzOGMyZWRlZTNlMDdlNTQ3YTNkNGQ'
-  + 'yMGVmMT9hY2Nlc3NfdG9rZW49MzAzNzJiMmNkOWQ5NDdmZjhjODg5MWIzMTUzNDA1MTNmMjJkMTEzNw=';
+  private gistUrl: string = 'aHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9naXN0cy8xZDgwMDQzOGMyZWRlZTNlMDdlNTQ3YTNkNGQ' +
+    'yMGVmMT9hY2Nlc3NfdG9rZW49MzAzNzJiMmNkOWQ5NDdmZjhjODg5MWIzMTUzNDA1MTNmMjJkMTEzNw=';
 
   private lastItemRemoved: ReadListItem | null;
   constructor() {
@@ -77,34 +77,53 @@ export class GistStorage {
 
   public loadGist = (): Promise<Gist> => {
     return this.getDataFromRemote()
-      .then((data) => {
+      .then(data => {
         if (data === null) {
           return {} as Gist;
         }
-        var feeds = (JSON.parse(data.files['feed.json'].content) as Feeds).feeds;
+        var feeds = (JSON.parse(data.files['feed.json'].content) as Feeds)
+          .feeds;
         var state = JSON.parse(data.files[FeedStateFileKey].content) as State;
-        var readList = (JSON.parse(data.files[ReadingListFileKey].content) as ReadListItem[])
-          .map(i => { return {
-             idFeed: i.idFeed,
-             title: i.title,
-             url: i.url,
-             publicationDate: new Date(i.publicationDate) }; })
+        var readList = (JSON.parse(
+          data.files[ReadingListFileKey].content
+        ) as ReadListItem[])
+          .map(i => {
+            return {
+              idFeed: i.idFeed,
+              title: i.title,
+              url: i.url,
+              publicationDate: new Date(i.publicationDate)
+            };
+          })
           .sort((i1, i2) => {
-             return i2.publicationDate.getTime() - i1.publicationDate.getTime();
+            return i2.publicationDate.getTime() - i1.publicationDate.getTime();
           });
-        this.data = { feeds, state, readList, revisionCount: data.history.length };
+        this.data = {
+          feeds,
+          state,
+          readList,
+          revisionCount: data.history.length
+        };
         this.saveDataInLocalStorage();
+        // tslint:disable-next-line:no-console
+        // console.log('data from gist received:', this.data);
+
         return this.data;
       })
       .catch(err => {
-        NotificationManager.warning('Loading data from cache...' , 'Loading data', 3000);
+        NotificationManager.warning(
+          'Loading data from cache...',
+          'Loading data',
+          3000
+        );
         this.data = JSON.parse(localStorage.getItem('rssPerso')!) as Gist;
         return this.data;
       });
   }
 
   private getDataFromRemote = () => {
-    return axios.default.get(this.gistUrl)
+    return axios.default
+      .get(this.gistUrl)
       .then((response: axios.AxiosResponse<Storage>) => {
         this.dataFetched = true;
         const data = response.data;
@@ -113,21 +132,32 @@ export class GistStorage {
       .catch(err => {
         // tslint:disable-next-line:no-console
         console.error('Failed to load the gist.', err);
-        NotificationManager.error('Failed to load the gist:' + err, 'Error fetching', 25000);
+        NotificationManager.error(
+          'Failed to load the gist:' + err,
+          'Error fetching',
+          25000
+        );
         return null;
       });
   }
 
   private saveFileToGist = (content: GistUpdate) => {
     this.saveDataInLocalStorage();
-    return axios.default.patch(this.gistUrl, content)
+    return axios.default
+      .patch(this.gistUrl, content)
       .then((response: axios.AxiosResponse<Storage>) => {
         const newRevisionCount = response.data.history.length;
-        if (newRevisionCount >  this.data.revisionCount + 1) {
-          NotificationManager.warning('Probable data loss. Please refresh!!', 'Data lost', 3000);
+        if (newRevisionCount > this.data.revisionCount + 1) {
+          NotificationManager.warning(
+            'Probable data loss. Please refresh!!',
+            'Data lost',
+            3000
+          );
         }
         this.data.revisionCount = newRevisionCount;
-        this.data.readList = (JSON.parse(response.data.files[ReadingListFileKey].content) as ReadListItem[]);
+        this.data.readList = JSON.parse(
+          response.data.files[ReadingListFileKey].content
+        ) as ReadListItem[];
         // this.shouldBeSaved = false;
         NotificationManager.info('Successfully saved update', 'Update', 200);
       })
@@ -147,45 +177,65 @@ export class GistStorage {
     this.updateFeedState(feedId, date);
     this.data.state.last_update = new Date();
     this.saveFileToGist({
-      description : `Update publication date for feed "${title}"`,
+      description: `Update publication date for feed "${title}"`,
       files: {
-        [FeedStateFileKey]: { content: JSON.stringify(this.data.state)}
+        [FeedStateFileKey]: { content: JSON.stringify(this.data.state) }
       }
     });
   }
 
-  private saveReadingList = (readingList: ReadListItem[], description: string, state: State | null = null) => {
-    let filesToSave = {[ReadingListFileKey] : { content: JSON.stringify(readingList) }};
+  private saveReadingList = (
+    readingList: ReadListItem[],
+    description: string,
+    state: State | null = null
+  ) => {
+    let filesToSave = {
+      [ReadingListFileKey]: { content: JSON.stringify(readingList) }
+    };
 
     if (state !== null) {
       this.data.state.last_update = new Date();
-      filesToSave[FeedStateFileKey] = { content: JSON.stringify(this.data.state) };
+      filesToSave[FeedStateFileKey] = {
+        content: JSON.stringify(this.data.state)
+      };
     }
     return this.saveFileToGist({
-          description: description && 'Update reading list',
-          files: filesToSave
-        });
+      description: description && 'Update reading list',
+      files: filesToSave
+    });
   }
 
-  public addItemToReadingList = (item: ReadListItem, saveAlsoFeedState: boolean) => {
+  public addItemToReadingList = (
+    item: ReadListItem,
+    saveAlsoFeedState: boolean
+  ) => {
     NotificationManager.info('Adding to reading list', 'Reading list', 200);
 
     if (this.data.readList.findIndex(i => i.url === item.url) > 0) {
-      NotificationManager.warning('Link already in the reading list...', 'Add link', 1000);
+      NotificationManager.warning(
+        'Link already in the reading list...',
+        'Add link',
+        1000
+      );
       return;
     }
 
     this.data.readList.push(item);
-    this.saveReadingList(this.data.readList, 'Add item "' + item.title + '"',
-                         saveAlsoFeedState ? this.data.state : null)
+    this.saveReadingList(
+      this.data.readList,
+      'Add item "' + item.title + '"',
+      saveAlsoFeedState ? this.data.state : null
+    )
       // tslint:disable-next-line:no-empty
-      .catch(() => { });
+      .catch(() => {});
   }
 
   public removeItemFromReadingList = (item: ReadListItem): void => {
     const msg = 'Removing "' + item.title + '" from reading list';
     NotificationManager.warning(msg, 'Reading list', 3000);
-    var indexFound = this.data.readList.findIndex((i) => { return i.url === item.url; });
+    var indexFound = this.data.readList.findIndex(i => {
+      return i.url === item.url;
+    });
     if (indexFound !== -1) {
       this.data.readList.splice(indexFound, 1);
       this.saveReadingList(this.data.readList, msg)
@@ -194,17 +244,22 @@ export class GistStorage {
         })
         .catch(() => {
           this.data.readList.splice(indexFound, 0, item);
-         });
+        });
     }
   }
 
   public restoreLastRemoveReadingItem = () => {
     if (this.lastItemRemoved != null) {
       this.data.readList.push(this.lastItemRemoved);
-      this.saveReadingList(this.data.readList, 'Restoring item "' + this.lastItemRemoved.title + '"')
-        .then(() => { this.lastItemRemoved = null; })
+      this.saveReadingList(
+        this.data.readList,
+        'Restoring item "' + this.lastItemRemoved.title + '"'
+      )
+        .then(() => {
+          this.lastItemRemoved = null;
+        })
         // tslint:disable-next-line:no-empty
-        .catch(() => { });
+        .catch(() => {});
     }
   }
 

@@ -7,10 +7,12 @@ interface IReadingListProps {
   store: GistStorage;
 }
 
-interface IReadingListState {
-}
+interface IReadingListState {}
 
-export class ReadingList extends React.Component<IReadingListProps, IReadingListState> {
+export class ReadingList extends React.Component<
+  IReadingListProps,
+  IReadingListState
+> {
   private displayReadingList: boolean = false;
   private sortByDate: boolean = true;
 
@@ -40,7 +42,10 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
   sortListByDate = () => {
     this.sortByDate = !this.sortByDate;
     this.props.data.readList = this.props.data.readList.sort((i1, i2) => {
-      return new Date(i2.publicationDate).getTime() - new Date(i1.publicationDate).getTime();
+      return (
+        new Date(i2.publicationDate).getTime() -
+        new Date(i1.publicationDate).getTime()
+      );
     });
     this.refreshReadingList();
   }
@@ -59,38 +64,56 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
   render() {
     var readItems;
     if (!this.props.data) {
-      readItems = (<div>loading...</div>);
+      readItems = <div>loading...</div>;
     } else {
       const data = this.props.data;
       readItems = data.readList.map((l: ReadListItem, i: number) => {
         const feed = data.feeds.find(f => f.id === l.idFeed);
         return (
-      <div key={i}>
-        [<span className="date">{Helper.DateFormatter.formatDate(new Date(l.publicationDate))}</span>
-          |<a href={l.url} target="_blank">📄</a>
-          |<a onClick={this.remove.bind(null, l)}>❌</a>]
-        <a onClick={this.openAndRemoveLink.bind(null, l)} >
-          {feed && <img src={feed.icon} />}
-          {l.title}
-        </a>
-      </div>);
+          <div key={i}>
+            [<span className="date">
+              {Helper.DateFormatter.formatDate(new Date(l.publicationDate))}
+            </span>
+            |<a href={l.url} target="_blank">
+              📄
+            </a>
+            |<a onClick={this.remove.bind(null, l)}>❌</a>]
+            <a onClick={this.openAndRemoveLink.bind(null, l)}>
+              {feed && <img src={feed.icon} />}
+              {l.title}
+            </a>
+          </div>
+        );
       });
     }
 
     if (this.props.data) {
       return (
         <div className="feed">
-        <div className="title"> <a onClick={this.toggleVisibility} >>>> Reading list
-          ({!this.props.data.readList ? 0 : this.props.data.readList.length}):</a>
-          {this.displayReadingList && this.sortByDate && <a onClick={this.sortListByFeed} >Sort by feed </a>}
-          {this.displayReadingList && !this.sortByDate && <a onClick={this.sortListByDate} >Sort by date </a>}
-          {this.props.store.couldBeRestored()
-             && <a onClick={this.props.store.restoreLastRemoveReadingItem} >Restore last deleted item </a>}
+          <div className="title">
+            {' '}<a onClick={this.toggleVisibility}>
+              >>> Reading list ({!this.props.data.readList
+                ? 0
+                : this.props.data.readList.length}):
+            </a>
+            {this.displayReadingList &&
+              this.sortByDate &&
+              <a onClick={this.sortListByFeed}>Sort by feed </a>}
+            {this.displayReadingList &&
+              !this.sortByDate &&
+              <a onClick={this.sortListByDate}>Sort by date </a>}
+            {this.props.store.couldBeRestored() &&
+              <a onClick={this.props.store.restoreLastRemoveReadingItem}>
+                Restore last deleted item{' '}
+              </a>}
+          </div>
+          <div className="links">
+            {' '}{this.displayReadingList && readItems}{' '}
+          </div>
         </div>
-        <div className="links"> {this.displayReadingList && readItems} </div>
-      </div>);
+      );
     } else {
-        return <div />;
-      }
+      return <div />;
+    }
   }
 }

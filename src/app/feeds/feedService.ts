@@ -14,34 +14,43 @@ interface CorsProxyHandler {
 }
 
 // cors proxy list: https://gist.github.com/jimmywarting/ac1be6ea0297c16c477e17f8fbe51347
-const proxyHandlers: CorsProxyHandler[] =
-  [
-    {
-      url: 'cors-anywhere.herokuapp.com/',
-      headers: { headers: { 'X-Requested-With': 'XMLHttpRequest' } },
-      responseHandler: (response: string) => {return response; }
-    },
-    {
-      url : 'thingproxy.freeboard.io/fetch/',
-      headers: {},
-      responseHandler: (response: string) => {return response; }
-    },
-    {
-      url: 'dry-sierra-94326.herokuapp.com/',
-      headers: { headers: { 'X-Requested-With': 'XMLHttpRequest' } },
-      responseHandler: (response: string) => {return response; }
-    },
-    {
-      url: 'jsonp.herokuapp.com/?url=',
-      headers: { headers: { 'X-Requested-With': 'XMLHttpRequest' } },
-      responseHandler: (response: string) => {return response; }
-    },
-    {
-      url: 'galvanize-cors-proxy.herokuapp.com/',
-      headers: { },
-      responseHandler: (response: string) => {return response; }
+const proxyHandlers: CorsProxyHandler[] = [
+  {
+    url: 'cors-anywhere.herokuapp.com/',
+    headers: { headers: { 'X-Requested-With': 'XMLHttpRequest' } },
+    responseHandler: (response: string) => {
+      return response;
     }
-  ];
+  },
+  {
+    url: 'thingproxy.freeboard.io/fetch/',
+    headers: {},
+    responseHandler: (response: string) => {
+      return response;
+    }
+  },
+  {
+    url: 'dry-sierra-94326.herokuapp.com/',
+    headers: { headers: { 'X-Requested-With': 'XMLHttpRequest' } },
+    responseHandler: (response: string) => {
+      return response;
+    }
+  },
+  {
+    url: 'jsonp.herokuapp.com/?url=',
+    headers: { headers: { 'X-Requested-With': 'XMLHttpRequest' } },
+    responseHandler: (response: string) => {
+      return response;
+    }
+  },
+  {
+    url: 'galvanize-cors-proxy.herokuapp.com/',
+    headers: {},
+    responseHandler: (response: string) => {
+      return response;
+    }
+  }
+];
 
 export class FeedService {
   private proxySwitcher: number = 0;
@@ -99,9 +108,9 @@ export class FeedService {
   }
 
   private updateFeedDataOnClear(date: Date) {
-      this.clearDate = date;
-      this.links = this.links.filter(l => l.publicationDate > this.clearDate);
-      this.shouldDisplayAllLinks = false;
+    this.clearDate = date;
+    this.links = this.links.filter(l => l.publicationDate > this.clearDate);
+    this.shouldDisplayAllLinks = false;
   }
 
   public getLinksToDisplay(): Link[] {
@@ -109,7 +118,9 @@ export class FeedService {
   }
 
   public isDisplayingAllLinks(): boolean {
-    return this.shouldDisplayAllLinks || this.allLinks.length === this.links.length;
+    return (
+      this.shouldDisplayAllLinks || this.allLinks.length === this.links.length
+    );
   }
 
   public displayAllLinks(): void {
@@ -135,7 +146,8 @@ export class FeedService {
           this.manageAtomFeed(xmlDoc.documentElement);
           break;
         default:
-          this.title = `${this.feedData.url} => Feed format not supported:` + feedFormat;
+          this.title =
+            `${this.feedData.url} => Feed format not supported:` + feedFormat;
       }
 
       this.allLinks = this.sortFeed(this.allLinks);
@@ -151,22 +163,29 @@ export class FeedService {
   }
 
   public loadFeedContent(): Promise<void> {
-    const url = this.noCorsProxy ? this.feedData.url : this.httpProtocol + '//' +
-                this.proxyHandler.url + this.feedData.url;
+    const url = this.noCorsProxy
+      ? this.feedData.url
+      : this.httpProtocol + '//' + this.proxyHandler.url + this.feedData.url;
     return axios.default
-      .get(url,
-           this.noCorsProxy ? undefined : this.proxyHandler.headers)
+      .get(url, this.noCorsProxy ? undefined : this.proxyHandler.headers)
       .then(this.processFeedXml)
       .catch(err => {
         this.proxySwitcher++;
-        this.proxyHandler = proxyHandlers[(this.feedData.id + this.proxySwitcher) % proxyHandlers.length];
+        this.proxyHandler =
+          proxyHandlers[
+            (this.feedData.id + this.proxySwitcher) % proxyHandlers.length
+          ];
         return this.loadFeedContent();
         // localStorage.setItem('use_proxy.' + this.url, 'true');
       });
   }
 
   private storeClearDate(clearDate: Date): void {
-    this.storage.saveFeedsState(this.feedData.id, this.feedData.name, clearDate);
+    this.storage.saveFeedsState(
+      this.feedData.id,
+      this.feedData.name,
+      clearDate
+    );
   }
 
   private restoreInitialClearDate(clearDate: Date): void {
@@ -186,7 +205,9 @@ export class FeedService {
       var item = items.item(iItems);
       var link = {
         url: this.getElementContentByTagName(item, 'link'),
-        title: item ? this.getElementContentByTagName(item, 'title') : 'No tile found :(',
+        title: item
+          ? this.getElementContentByTagName(item, 'title')
+          : 'No tile found :(',
         publicationDate: this.getLinkRssDate(item),
         read: false,
         iconUrl: this.feedData.icon,
@@ -202,7 +223,9 @@ export class FeedService {
   }
 
   private parseDate(date: string): Date {
-    return new Date(date.endsWith('Z') ? date.substr(0, date.length - 1) : date);
+    return new Date(
+      date.endsWith('Z') ? date.substr(0, date.length - 1) : date
+    );
   }
 
   private getLinkRssDate(element: Element): Date {
@@ -221,7 +244,10 @@ export class FeedService {
     return new Date(2000, 1, 1);
   }
 
-  private getElementContentByTagName(element: Element | Document, tagName: string): string {
+  private getElementContentByTagName(
+    element: Element | Document,
+    tagName: string
+  ): string {
     const foundElement = this.getElementByTagName(element, tagName);
     if (foundElement && foundElement.textContent) {
       return foundElement.textContent;
@@ -229,7 +255,10 @@ export class FeedService {
     return '';
   }
 
-  private getElementByTagName(element: Element | Document, tagName: string): Element | null {
+  private getElementByTagName(
+    element: Element | Document,
+    tagName: string
+  ): Element | null {
     if (!element || !element.children) {
       return null;
     }
@@ -287,7 +316,9 @@ export class FeedService {
 
   private sortFeed = (links: Link[]): Link[] => {
     const inverter = this.isOrderNewerFirst ? -1 : 1;
-    return links.sort((l1, l2) => { return inverter * (l1.publicationDate < l2.publicationDate ? -1 : 1); });
+    return links.sort((l1, l2) => {
+      return inverter * (l1.publicationDate < l2.publicationDate ? -1 : 1);
+    });
   }
 
   private getLinkAtomDate(element: Element): Date {
@@ -316,12 +347,20 @@ export class FeedService {
       return maxInterval;
     }
 
-    const dates = this.allLinks.map(l => { return l.publicationDate.getTime(); });
+    const dates = this.allLinks.map(l => {
+      return l.publicationDate.getTime();
+    });
     const date1 = dates.slice(1);
     const date2 = dates.slice(0, dates.length - 1);
-    const diff = date2.map((d, i) => d - date1[i]).sort((d1, d2) => d2 - d1).slice(1);
+    const diff = date2
+      .map((d, i) => d - date1[i])
+      .sort((d1, d2) => d2 - d1)
+      .slice(1);
     const moyenne = diff.reduce((d1, d2) => d1 + d2, 0) / diff.length;
-    const timeSpan = Math.max(Math.min(maxInterval, moyenne / 2), 5 * 60 * 1000);
+    const timeSpan = Math.max(
+      Math.min(maxInterval, moyenne / 2),
+      5 * 60 * 1000
+    );
     return timeSpan;
   }
 }
