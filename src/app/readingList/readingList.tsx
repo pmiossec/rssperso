@@ -1,6 +1,5 @@
 import * as React from 'react';
 import * as Helper from '../helper';
-import { NotificationManager } from 'react-notifications';
 import { GistStorage, ReadListItem, Gist } from '../storage/gistStorage';
 
 interface IReadingListProps {
@@ -26,7 +25,6 @@ export class ReadingList extends React.Component<IReadingListProps, IReadingList
   remove = (item: ReadListItem): void => {
     this.props.store.removeItemFromReadingList(item);
     this.refreshReadingList();
-    NotificationManager.warning('"' + item.title + '" removed', 'Reading list', 3000);
   }
 
   openAndRemoveLink = (item: ReadListItem): void => {

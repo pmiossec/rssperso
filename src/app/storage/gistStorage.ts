@@ -97,7 +97,7 @@ export class GistStorage {
         return this.data;
       })
       .catch(err => {
-        NotificationManager.error('Failed to load the gist. Loading previous data!!!!', 'Loading data', 5000);
+        NotificationManager.warning('Loading data from cache...' , 'Loading data', 3000);
         this.data = JSON.parse(localStorage.getItem('rssPerso')!) as Gist;
         return this.data;
       });
@@ -112,7 +112,8 @@ export class GistStorage {
       })
       .catch(err => {
         // tslint:disable-next-line:no-console
-        NotificationManager.error('err fetching online state:' + err, 'Error fetching', 5000);
+        console.error('Failed to load the gist.', err);
+        NotificationManager.error('Failed to load the gist:' + err, 'Error fetching', 25000);
         return null;
       });
   }
@@ -182,7 +183,8 @@ export class GistStorage {
   }
 
   public removeItemFromReadingList = (item: ReadListItem): void => {
-    NotificationManager.info('Removing from reading list', 'Reading list', 200);
+    const msg = 'Removing "' + item.title + '" from reading list';
+    NotificationManager.warning(msg, 'Reading list', 3000);
     var indexFound = this.data.readList.findIndex((i) => { return i.url === item.url; });
     if (indexFound !== -1) {
       this.data.readList.splice(indexFound, 1);
