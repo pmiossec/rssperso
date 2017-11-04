@@ -69,6 +69,19 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
     };
   }
 
+  removeIfFirstOnClick = (item: ReadListItem, index: number) => {
+    return () => {
+      setTimeout(() => {
+        const shouldRemoveItem = index === 0;
+        if (shouldRemoveItem) {
+          this.clearFeed(item.publicationDate);
+          this.forceUpdate();
+        }
+      },
+                 200);
+  };
+  }
+
   render() {
     let options = null;
     const linksToDisplay = this.props.feed.getLinksToDisplay();
@@ -113,7 +126,7 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
               {Helper.DateFormatter.formatDate(l.publicationDate)}
             </a>|
             <a onClick={this.addToReadList(l, i)}>➕</a>]
-            <a href={this.unsecureUrl(l.url)} target="_blank">
+            <a href={this.unsecureUrl(l.url)} target="_blank" onClick={this.removeIfFirstOnClick(l, i)}>
               {l.title}
             </a>
           </div>
