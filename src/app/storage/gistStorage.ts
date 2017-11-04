@@ -185,9 +185,8 @@ export class GistStorage {
     NotificationManager.info('Removing from reading list', 'Reading list', 200);
     var indexFound = this.data.readList.findIndex((i) => { return i.url === item.url; });
     if (indexFound !== -1) {
-      const readingList = [...this.data.readList];
       this.data.readList.splice(indexFound, 1);
-      this.saveReadingList(readingList, 'Removing item "' + item.title + '"')
+      this.saveReadingList(this.data.readList, msg)
         .then(() => {
           this.lastItemRemoved = item;
         })
