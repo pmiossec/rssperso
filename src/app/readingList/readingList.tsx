@@ -29,9 +29,12 @@ export class ReadingList extends React.Component<
     this.refreshReadingList();
   }
 
-  openAndRemoveLink = (item: ReadListItem): void => {
-    window.open(item.url, '_blank');
-    this.remove(item);
+  openAndRemoveLink = (item: ReadListItem) => {
+    return () => {
+      setTimeout(() => {
+        this.remove(item);
+      },         200);
+    };
   }
 
   toggleVisibility = () => {
@@ -72,13 +75,13 @@ export class ReadingList extends React.Component<
         return (
           <div key={i}>
             [<span className="date">
-              {Helper.DateFormatter.formatDate(new Date(l.publicationDate))}
+              {Helper.DateFormatter.formatDate(l.publicationDate)}
             </span>
             |<a href={l.url} target="_blank">
               📄
             </a>
             |<a onClick={this.remove.bind(null, l)}>❌</a>]
-            <a onClick={this.openAndRemoveLink.bind(null, l)}>
+            <a href={l.url} target="_blank" onClick={this.openAndRemoveLink(l)}>
               {feed && <img src={feed.icon} />}
               {l.title}
             </a>
@@ -91,7 +94,7 @@ export class ReadingList extends React.Component<
       return (
         <div className="feed">
           <div className="title">
-            {' '}<a onClick={this.toggleVisibility}>
+            <a onClick={this.toggleVisibility}>
               >>> Reading list ({!this.props.data.readList
                 ? 0
                 : this.props.data.readList.length}):
@@ -108,7 +111,7 @@ export class ReadingList extends React.Component<
               </a>}
           </div>
           <div className="links">
-            {' '}{this.displayReadingList && readItems}{' '}
+            {this.displayReadingList && readItems}
           </div>
         </div>
       );
