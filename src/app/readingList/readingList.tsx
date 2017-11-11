@@ -81,7 +81,7 @@ export class ReadingList extends React.Component<
         <div className="feed">
           <div className="title">
             <a onClick={this.toggleVisibility}>
-              >>> Reading list ({!this.props.data.readList
+              📑 Reading list ({!this.props.data.readList
                 ? 0
                 : this.props.data.readList.length}):
             </a>

@@ -125,7 +125,7 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
             [<a onClick={this.clearFeed.bind(null, l.publicationDate)}>
               {Helper.DateFormatter.formatDate(l.publicationDate)}
             </a>|
-            <a onClick={this.addToReadList(l, i)}>➕</a>]
+            <a onClick={this.addToReadList(l, i)}>📑</a>]
             <a href={this.unsecureUrl(l.url)} target="_blank" onClick={this.removeIfFirstOnClick(l, i)}>
               {l.title}
             </a>
