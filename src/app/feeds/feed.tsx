@@ -82,6 +82,16 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
   };
   }
 
+  private replaceInTitle = (title: string) => {
+    return title
+      .replace('Tennis', '🎾')
+      .replace('Basket', '🏀')
+      .replace('Football', '⚽')
+      .replace('Handball', '🤾')
+      .replace('Rugby', '🏉')
+      .replace('Auto-Moto', '🏎');
+  }
+
   render() {
     let options = null;
     const linksToDisplay = this.props.feed.getLinksToDisplay();
@@ -120,14 +130,17 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
 
     let links = (
       <div>
-        {linksToDisplay.map((l: Link, i: number) =>
+        {linksToDisplay
+          .filter(l => this.props.feed.feedData.filter === undefined
+            || l.title.indexOf(this.props.feed.feedData.filter) === -1)
+          .map((l: Link, i: number) =>
           <div key={i}>
             [<a onClick={this.clearFeed.bind(null, l.publicationDate)}>
               {Helper.DateFormatter.formatDate(l.publicationDate)}
             </a>|
             <a onClick={this.addToReadList(l, i)}>📑</a>]
             <a href={this.unsecureUrl(l.url)} target="_blank" onClick={this.removeIfFirstOnClick(l, i)}>
-              {l.title}
+              {this.props.feed.feedData.enhance === true ? this.replaceInTitle(l.title) : l.title}
             </a>
           </div>
         )}
