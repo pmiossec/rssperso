@@ -89,7 +89,7 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
       .replace('Football', '⚽')
       .replace('Handball', '🤾')
       .replace('Rugby', '🏉')
-      .replace('Auto-Moto', '🏎');
+      .replace('Auto/Moto', '🏎');
   }
 
   render() {
