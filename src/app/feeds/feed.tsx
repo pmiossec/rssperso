@@ -83,12 +83,16 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
   }
 
   private replaceInTitle = (title: string) => {
+    // https://emojiterra.com/fr/activites/
     return title
       .replace('Tennis', '🎾')
       .replace('Basket', '🏀')
       .replace('Football', '⚽')
       .replace('Handball', '🤾')
       .replace('Rugby', '🏉')
+      .replace('Golf', '⛳')
+      .replace('Cyclisme', '🚲')
+      .replace('Sports d\'hiver', '🎿')
       .replace('Auto/Moto', '🏎');
   }
 
