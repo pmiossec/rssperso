@@ -92,6 +92,7 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
       .replace('Rugby', '🏉')
       .replace('Golf', '⛳')
       .replace('Cyclisme', '🚲')
+      .replace('Sports US', '🇺🇸')
       .replace('Sports d\'hiver', '🎿')
       .replace('Auto/Moto', '🏎');
   }
