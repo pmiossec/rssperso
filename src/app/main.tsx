@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from 'preact-compat';
 import { GistStorage, Gist, FeedData } from './storage/gistStorage';
 import { FeedService } from './feeds/feedService';
 import { Feed } from './feeds/feed';

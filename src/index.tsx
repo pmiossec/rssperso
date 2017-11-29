@@ -1,7 +1,7 @@
 import 'es6-promise';
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import * as React from 'preact-compat';
+import * as ReactDOM from 'preact-compat';
 
 import { Main } from './app/main';
 

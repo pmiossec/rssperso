@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from 'preact-compat';
 import * as Helper from '../helper';
 import { FeedService, Link } from './feedService';
 import { ReadListItem } from '../storage/gistStorage';

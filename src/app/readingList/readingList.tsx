@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from 'preact-compat';
 import * as Helper from '../helper';
 import { GistStorage, ReadListItem, Gist } from '../storage/gistStorage';
 
