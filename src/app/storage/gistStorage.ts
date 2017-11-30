@@ -66,7 +66,7 @@ const FeedStateFileKey: string = 'state.json';
 const ReadingListFileKey: string = 'readlist.json';
 
 export class GistStorage {
-  public receivedPromise: axios.AxiosPromise<{}>;
+  // public receivedPromise: axios.AxiosPromise<{}>;
   public dataFetched: boolean = false;
 
   private data: Gist;
@@ -84,7 +84,7 @@ export class GistStorage {
 
   public loadGist = (): Promise<Gist> => {
     return this.getDataFromRemote()
-      .then(data => {
+      .then((data: Storage) => {
         if (data === null) {
           return {} as Gist;
         }
@@ -137,12 +137,10 @@ export class GistStorage {
   //#endregion
 
   private getDataFromRemote = () => {
-    return axios.default
-      .get(this.gistUrl)
-      .then((response: axios.AxiosResponse<Storage>) => {
+    return fetch(this.gistUrl)
+      .then(response => {
         this.dataFetched = true;
-        const data = response.data;
-        return data;
+        return response.json().then(data => data);
       })
       .catch(err => {
         // tslint:disable-next-line:no-console

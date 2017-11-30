@@ -1,4 +1,3 @@
-import * as axios from 'axios';
 import { FeedData, GistStorage, ReadListItem } from '../storage/gistStorage';
 import { NotificationManager } from 'react-notifications';
 
@@ -127,13 +126,12 @@ export class FeedService {
     this.shouldDisplayAllLinks = !this.shouldDisplayAllLinks;
   }
 
-  // tslint:disable-next-line:no-any
-  private processFeedXml = (response: axios.AxiosResponse<any>) => {
+  private processFeedXml = (data: string) => {
     this.allLinks = [];
     this.links = [];
     const parser = new DOMParser();
     try {
-      var content = this.proxyHandler.responseHandler(response.data);
+      var content = this.proxyHandler.responseHandler(data);
       const xmlDoc = parser.parseFromString(content, 'text/xml');
       const feedFormat = xmlDoc.documentElement.tagName;
       switch (feedFormat) {
@@ -168,9 +166,18 @@ export class FeedService {
     const url = this.feedData.noCorsProxy
       ? this.feedData.url
       : this.httpProtocol + '//' + this.proxyHandler.url + this.feedData.url;
-    return axios.default
-      .get(url, this.feedData.noCorsProxy ? undefined : this.proxyHandler.headers)
-      .then(this.processFeedXml)
+    const headers = new Headers();
+    headers.append('User-Agent',
+                   'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0');
+    headers.append('Accept', 'application/xml');
+
+    if (!this.feedData.noCorsProxy) {
+      Object.keys(this.proxyHandler.headers).forEach(header => {
+        headers.append(header, this.proxyHandler.headers[header]);
+      });
+    }
+    return fetch(url, { headers: headers})
+      .then(r => r.text().then(this.processFeedXml))
       .catch(err => {
         this.proxySwitcher++;
         if (this.proxySwitcher > proxyHandlers.length) {
