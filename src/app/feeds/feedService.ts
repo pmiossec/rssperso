@@ -1,5 +1,6 @@
 import * as axios from 'axios';
 import { FeedData, GistStorage, ReadListItem } from '../storage/gistStorage';
+import { NotificationManager } from 'react-notifications';
 
 export interface Link extends ReadListItem {
   read: boolean;
@@ -144,8 +145,12 @@ export class FeedService {
           this.manageAtomFeed(xmlDoc.documentElement);
           break;
         default:
-          this.title =
-            `${this.feedData.url} => Feed format not supported:` + feedFormat;
+          const error = `${this.feedData.url} => Feed format not supported:` + feedFormat;
+          // tslint:disable-next-line:no-console
+          console.error(error);
+          NotificationManager.error(error,
+                                    'Feed format not supported', 5000);
+          this.title = error;
       }
 
       this.allLinks = this.sortFeed(this.allLinks);
