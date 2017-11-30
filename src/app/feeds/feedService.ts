@@ -168,6 +168,12 @@ export class FeedService {
       .then(this.processFeedXml)
       .catch(err => {
         this.proxySwitcher++;
+        if (this.proxySwitcher > proxyHandlers.length) {
+          return new Promise<void>((resolve, reject) => {
+            reject();
+          });
+        }
+
         this.proxyHandler =
           proxyHandlers[
             (this.feedData.id + this.proxySwitcher) % proxyHandlers.length
