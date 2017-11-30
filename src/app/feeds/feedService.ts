@@ -23,13 +23,13 @@ const proxyHandlers: CorsProxyHandler[] = [
       return response;
     }
   },
-  {
-    url: 'thingproxy.freeboard.io/fetch/',
-    headers: {},
-    responseHandler: (response: string) => {
-      return response;
-    }
-  },
+  // {
+  //   url: 'thingproxy.freeboard.io/fetch/',
+  //   headers: {},
+  //   responseHandler: (response: string) => {
+  //     return response;
+  //   }
+  // },
   {
     url: 'dry-sierra-94326.herokuapp.com/',
     headers: { headers: { 'X-Requested-With': 'XMLHttpRequest' } },
