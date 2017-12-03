@@ -91,9 +91,18 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
       .replace('Handball', '🤾')
       .replace('Rugby', '🏉')
       .replace('Golf', '⛳')
-      .replace('Cyclisme', '🚲')
+      .replace('Cyclisme', '🚴‍')
       .replace('Sports US', '🇺🇸')
       .replace('Sports d\'hiver', '🎿')
+      .replace('Judo', '🥋')
+      .replace('Volley', '🏐')
+      .replace('Boxe', '🥊')
+      .replace('Jeux olympiques', '🏅')
+      .replace('Voile', '⛵')
+      .replace('Equitation', '🏇🏻')
+      .replace('Natation', '🏊🏻')
+      .replace('Escrime', '🤺')
+      .replace('Athlétisme', '🏃‍')
       .replace('Auto/Moto', '🏎');
   }
 
