@@ -13,8 +13,21 @@ interface IMainState {
 }
 
 export class Main extends React.Component<IMainProps, IMainState> {
-  componentDidMount() {
-    const store = new GistStorage();
+  GetFeed(): string {
+    const feeds: string[] = [
+      'aHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9naXN0cy8xZDgwMDQzOGMyZWRlZTNlMDdlNTQ3YTNkNGQ' +
+    'yMGVmMT9hY2Nlc3NfdG9rZW49MzAzNzJiMmNkOWQ5NDdmZjhjODg5MWIzMTUzNDA1MTNmMjJkMTEzNw=', // Philippe
+    'aHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9naXN0cy83NzQ3ODIzNzZmYmQ4ZDAxYThiYzI2NjljZGJmN' +
+     'jA5Nj9hY2Nlc3NfdG9rZW49MzAzNzJiMmNkOWQ5NDdmZjhjODg5MWIzMTUzNDA1MTNmMjJkMTEzNw=' // Khanh
+    ];
+
+    if (window.location.search.indexOf('khanh') !== -1) {
+      return feeds[1];
+    }
+    return feeds[0];
+  }
+  componentWillMount() {
+    const store = new GistStorage(this.GetFeed());
     store.loadGist().then(data => {
       this.setState({ store, data });
     });

@@ -71,11 +71,10 @@ export class GistStorage {
   private lastItemRemoved: ReadListItem | null;
 
   private data: Gist;
-  private gistUrl: string = 'aHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9naXN0cy8xZDgwMDQzOGMyZWRlZTNlMDdlNTQ3YTNkNGQ' +
-    'yMGVmMT9hY2Nlc3NfdG9rZW49MzAzNzJiMmNkOWQ5NDdmZjhjODg5MWIzMTUzNDA1MTNmMjJkMTEzNw=';
+  private gistUrl: string;
 
-  constructor() {
-    this.gistUrl = this.goodOne(this.gistUrl);
+  constructor(gistUrl: string) {
+    this.gistUrl = this.goodOne(gistUrl);
   }
 
   private goodOne = (str: string): string => {
