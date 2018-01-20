@@ -68,12 +68,12 @@ const ReadingListFileKey: string = 'readlist.json';
 export class GistStorage {
   public receivedPromise: axios.AxiosPromise<{}>;
   public dataFetched: boolean = false;
+  private lastItemRemoved: ReadListItem | null;
 
   private data: Gist;
   private gistUrl: string = 'aHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9naXN0cy8xZDgwMDQzOGMyZWRlZTNlMDdlNTQ3YTNkNGQ' +
     'yMGVmMT9hY2Nlc3NfdG9rZW49MzAzNzJiMmNkOWQ5NDdmZjhjODg5MWIzMTUzNDA1MTNmMjJkMTEzNw=';
 
-  private lastItemRemoved: ReadListItem | null;
   constructor() {
     this.gistUrl = this.goodOne(this.gistUrl);
   }
@@ -101,6 +101,7 @@ export class GistStorage {
         return this.data;
       })
       .catch(err => {
+        console.error(err);
         NotificationManager.warning(
           'Loading data from cache...',
           'Loading data',
@@ -114,16 +115,24 @@ export class GistStorage {
   //#region Convert gist data
   private getFeedsData = (data: GistFilesContent) => (JSON.parse(data['feed.json'].content) as Feeds).feeds;
 
-  private getFeedStateData = (data: GistFilesContent) => {
-    const state = (JSON.parse(data[FeedStateFileKey].content) as State);
+  private getFeedStateData = (data: GistFilesContent): State => {
+    const content = data[FeedStateFileKey].content;
+    if (content === '') {
+      return { last_update: new Date(1990, 1, 1), updates: {} };
+    }
+    const state = (JSON.parse(content) as State);
     state.last_update = new Date(state.last_update);
     Object.keys(state.updates).forEach(k => state.updates[k] = new Date(state.updates[k]));
     return state;
   }
 
-  private getReadingListData = (data: GistFilesContent) => {
+  private getReadingListData = (data: GistFilesContent): ReadListItem[] => {
+    const content = data[ReadingListFileKey].content;
+    if (content === '') {
+      return [];
+    }
     return this.sortListByFeed((JSON.parse(
-      data[ReadingListFileKey].content
+      content
     ) as ReadListItem[])
       .map(i => {
         return {
