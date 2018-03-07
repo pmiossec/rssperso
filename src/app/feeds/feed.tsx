@@ -112,7 +112,7 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
     if (linksToDisplay.length !== 0) {
       options = (
         <span>
-          <div className="text-badge" onClick={this.clearAllFeed}>
+          <div className="text-badge close" onClick={this.clearAllFeed}>
             <a>
               {linksToDisplay.length}
             </a>
@@ -122,7 +122,7 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
               <a>All</a>{' '}
             </div>}
           {linksToDisplay.length !== 0 &&
-            <div className="text-badge" onClick={this.openAll}>
+            <div className="text-badge open" onClick={this.openAll}>
               <a> Open All</a>{' '}
             </div>}
         </span>

@@ -78,7 +78,12 @@ a {
     font-weight: bold;
     overflow: hidden;
     background-color: #7e7070;
-
+    &.open {
+      background-color: #518d6a;
+    }
+    &.close {
+      background-color: #f19c4c;
+    }
     a {
       color: white;
         &:hover {
