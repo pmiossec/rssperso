@@ -38,6 +38,10 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
     this.forceUpdate();
   }
 
+  refreshFeed = (): void => {
+    this.loadFeed();
+  }
+
   clearFeed = (date: Date): void => {
     this.props.feed.clearFeed(date);
     this.forceUpdate();
@@ -117,13 +121,17 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
               {linksToDisplay.length}
             </a>
           </div>
+          <div className="text-badge refresh" onClick={this.refreshFeed}>
+            <a> ⟳
+            </a>
+          </div>
           {!this.props.feed.isDisplayingAllLinks() &&
             <div className="text-badge" onClick={this.displayAll}>
-              <a>All</a>{' '}
+              <a>All</a>
             </div>}
           {linksToDisplay.length !== 0 &&
             <div className="text-badge open" onClick={this.openAll}>
-              <a> Open All</a>{' '}
+              <a>Open All</a>
             </div>}
         </span>
       );
@@ -132,7 +140,7 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
         options = (
           <span>
             <div className="text-badge" onClick={this.displayAll}>
-              <a>All</a>{' '}
+              <a>All</a>{'  '}
             </div>{' '}
             - Nothing new :(
           </span>
@@ -153,7 +161,7 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
               {Helper.DateFormatter.formatDate(l.publicationDate)}
             </a>|
             <a onClick={this.addToReadList(l, i)}>📑</a>]
-            <a href={this.unsecureUrl(l.url)} target="_blank" onClick={this.removeIfFirstOnClick(l, i)}>
+            <a href={this.unsecureUrl(l.url)} target="_blank" onClick={this.removeIfFirstOnClick(l, i)} >
               {this.props.feed.feedData.enhance === true ? this.replaceInTitle(l.title) : l.title}
             </a>
           </div>
