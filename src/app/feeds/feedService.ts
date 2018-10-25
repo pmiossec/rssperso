@@ -14,43 +14,42 @@ interface CorsProxyHandler {
   responseHandler: (response: {}) => string;
 }
 
+const defaultCorsProxyResponseHandler = (response: string) => {
+  return response;
+};
+const defaultCorsProxyHeaders = { Origin: 'https://pmiossec.github.io/'};
+
 // cors proxy list: https://gist.github.com/jimmywarting/ac1be6ea0297c16c477e17f8fbe51347
 const proxyHandlers: CorsProxyHandler[] = [
   {
     url: 'cors-anywhere.herokuapp.com/',
     headers: { headers: { 'X-Requested-With': 'XMLHttpRequest' } },
-    responseHandler: (response: string) => {
-      return response;
-    }
-  },
+    responseHandler: defaultCorsProxyResponseHandler
+  }//,
   // {
   //   url: 'thingproxy.freeboard.io/fetch/',
-  //   headers: {},
+  //   headers: defaultCorsProxyHeaders,
+  //   responseHandler: defaultCorsProxyResponseHandler
+  // },
+  // {
+  //   url: 'crossorigin.me/',
+  //   headers: defaultCorsProxyHeaders,
+  //   responseHandler: defaultCorsProxyResponseHandler
+  // }
+  // {
+  //   url: 'jsonp.herokuapp.com/?url=',
+  //   headers: { headers: { 'X-Requested-With': 'XMLHttpRequest' } },
   //   responseHandler: (response: string) => {
   //     return response;
   //   }
   // },
-  {
-    url: 'dry-sierra-94326.herokuapp.com/',
-    headers: { headers: { 'X-Requested-With': 'XMLHttpRequest' } },
-    responseHandler: (response: string) => {
-      return response;
-    }
-  },
-  {
-    url: 'jsonp.herokuapp.com/?url=',
-    headers: { headers: { 'X-Requested-With': 'XMLHttpRequest' } },
-    responseHandler: (response: string) => {
-      return response;
-    }
-  },
-  {
-    url: 'galvanize-cors-proxy.herokuapp.com/',
-    headers: {},
-    responseHandler: (response: string) => {
-      return response;
-    }
-  }
+  // {
+  //   url: 'galvanize-cors-proxy.herokuapp.com/',
+  //   headers: {},
+  //   responseHandler: (response: string) => {
+  //     return response;
+  //   }
+  // }
 ];
 
 export class FeedService {
