@@ -17,7 +17,7 @@ interface CorsProxyHandler {
 const defaultCorsProxyResponseHandler = (response: string) => {
   return response;
 };
-const defaultCorsProxyHeaders = { Origin: 'https://pmiossec.github.io/'};
+// const defaultCorsProxyHeaders = { Origin: 'https://pmiossec.github.io/'};
 
 // cors proxy list: https://gist.github.com/jimmywarting/ac1be6ea0297c16c477e17f8fbe51347
 const proxyHandlers: CorsProxyHandler[] = [
@@ -25,7 +25,8 @@ const proxyHandlers: CorsProxyHandler[] = [
     url: 'cors-anywhere.herokuapp.com/',
     headers: { headers: { 'X-Requested-With': 'XMLHttpRequest' } },
     responseHandler: defaultCorsProxyResponseHandler
-  }//,
+  }
+  // ,
   // {
   //   url: 'thingproxy.freeboard.io/fetch/',
   //   headers: defaultCorsProxyHeaders,

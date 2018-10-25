@@ -100,6 +100,7 @@ export class GistStorage {
         return this.data;
       })
       .catch(err => {
+        // tslint:disable-next-line:no-console
         console.error(err);
         NotificationManager.warning(
           'Loading data from cache...',
