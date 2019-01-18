@@ -50,7 +50,7 @@ export class Main extends React.Component<IMainProps, IMainState> {
 
   render() {
     if (this.state === null) {
-      return <div>loading feeds...</div>;
+      return <div>&nbsp;&nbsp;loading feeds...</div>;
     }
 
     return (

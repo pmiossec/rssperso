@@ -13,6 +13,7 @@ interface IFeedState {}
 
 export class Feed extends React.Component<IFeedProps, IFeedState> {
   shouldDisplayEmptyFeeds: boolean = false;
+  hiddenTextArea: HTMLTextAreaElement = document.createElement('textarea');
 
   componentWillMount(): void {
     this.loadFeed().then(() => {
@@ -86,9 +87,15 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
   };
   }
 
+  private decodeEntities = (encodedString: string) => {
+    this.hiddenTextArea.innerHTML = encodedString;
+    return this.hiddenTextArea.value;
+  }
+
   private replaceInTitle = (title: string) => {
     // https://emojiterra.com/fr/activites/
-    return title
+    return this.decodeEntities(title)
+      .replace('Tennis', '🎾')
       .replace('Tennis', '🎾')
       .replace('Basket', '🏀')
       .replace('Football', '⚽')
