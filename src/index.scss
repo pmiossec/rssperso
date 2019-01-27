@@ -3,12 +3,23 @@ html, body, #root {
   height: 100%;
   font-family: Tahoma,Arial,Verdana,Helvetica,"Bitstream Vera Sans",sans-serif;
   font-size: 15px;
+}
+
+.dark {
+  background-color: rgb(28,  41, 56);
+  color: #eee0e0;
+}
+
+.light {
+  background-color: #ffffff;
   color: #7e7070;
 }
+
 .displayModes {
   display: flex;
   justify-content: right;
 }
+
 .feeds {
     display: flex;
     flex-direction: column;
@@ -32,6 +43,14 @@ html, body, #root {
   }
 }
 
+.dark a {
+  color: #eee0e0;
+}
+
+.light a {
+  color: #7e7070;
+}
+
 a {
   cursor: pointer;
   font-style: normal;
@@ -52,7 +71,7 @@ a {
   font-variant-numeric: normal;
   font-variant-position: normal;
   text-decoration: none;
-  color: #7e7070;
+  // color: #7e7070;
 
   &:hover {
     color: #5aadbb;

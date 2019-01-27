@@ -26,6 +26,7 @@ export class Main extends React.Component<IMainProps, IMainState> {
     }
     return feeds[0];
   }
+
   componentWillMount() {
     const store = new GistStorage(this.GetFeed());
     store.loadGist().then(data => {
@@ -53,34 +54,38 @@ export class Main extends React.Component<IMainProps, IMainState> {
       return <div>&nbsp;&nbsp;loading feeds...</div>;
     }
 
+    const darkModeEnabled = window.location.search.indexOf('dark') !== -1;
+
     return (
-      <main className="feeds">
-        <NotificationContainer />
-        {/* <div className="displayModes">
-          <a onClick={this.clearAll}>Clear All</a> / <a onClick={this.displayAll}>Show All</a>
-        </div> */}
-        {/* <div>
-        {this.state.data.feeds.map((feed: FeedData, i: number) =>
-             <img key={i} src={feed.icon} height="16px" alt={feed.name} />
-          )}
-        </div> */}
+      <main className={darkModeEnabled ? 'dark' : 'light'}>
         <div className="feeds">
+          <NotificationContainer />
+          {/* <div className="displayModes">
+            <a onClick={this.clearAll}>Clear All</a> / <a onClick={this.displayAll}>Show All</a>
+          </div> */}
+          {/* <div>
           {this.state.data.feeds.map((feed: FeedData, i: number) =>
-            <Feed
-              key={feed.id}
-              feed={
-                new FeedService(
-                  feed,
-                  this.state.data.state.updates[feed.id],
-                  this.state.store
-                )
-              }
-              unsecured={feed.notSecured}
-            />
-          )}
-        </div>
-        <ReadingList data={this.state.data} store={this.state.store} />
-      </main>
+              <img key={i} src={feed.icon} height="16px" alt={feed.name} />
+            )}
+          </div> */}
+          <div className="feeds">
+            {this.state.data.feeds.map((feed: FeedData, i: number) =>
+              <Feed
+                key={feed.id}
+                feed={
+                  new FeedService(
+                    feed,
+                    this.state.data.state.updates[feed.id],
+                    this.state.store
+                  )
+                }
+                unsecured={feed.notSecured}
+              />
+            )}
+          </div>
+          <ReadingList data={this.state.data} store={this.state.store} />
+          </div>
+        </main>
     );
   }
 }
