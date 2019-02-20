@@ -6,6 +6,7 @@ import { ReadListItem } from '../storage/gistStorage';
 interface IFeedProps {
   key: number;
   feed: FeedService;
+  id: number;
   unsecured?: boolean;
 }
 
@@ -36,7 +37,9 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
 
   clearAllFeed = (): void => {
     this.props.feed.clearAllFeed();
-    this.forceUpdate();
+    this.forceUpdate(() => {
+      this.DisplayFeedOnTopOfTheScreen((this.props.id + 1).toString());
+    });
   }
 
   refreshFeed = (): void => {
@@ -45,7 +48,15 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
 
   clearFeed = (date: Date): void => {
     this.props.feed.clearFeed(date);
+    this.DisplayFeedOnTopOfTheScreen((this.props.id).toString());
     this.forceUpdate();
+  }
+
+  DisplayFeedOnTopOfTheScreen(feedId: string) {
+    const feed = document.getElementById((this.props.id).toString());
+    if (feed != null) {
+      feed.scrollIntoView(true);
+    }
   }
 
   displayAll = (): void => {
@@ -153,7 +164,7 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
           </span>
         );
       } else {
-        return <div />;
+        return <div id={this.props.id.toString()} />;
       }
     }
 
@@ -177,7 +188,7 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
     );
 
     return (
-      <div className="feed">
+      <div className="feed" id={this.props.id.toString()}>
         <div className="title">
           <div>
             <img src={this.props.feed.logo} />

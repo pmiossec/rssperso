@@ -59,33 +59,34 @@ export class Main extends React.Component<IMainProps, IMainState> {
     return (
       <main className={darkModeEnabled ? 'dark' : 'light'}>
         <div className="feeds">
-          <NotificationContainer />
-          {/* <div className="displayModes">
-            <a onClick={this.clearAll}>Clear All</a> / <a onClick={this.displayAll}>Show All</a>
-          </div> */}
-          {/* <div>
+        <NotificationContainer />
+        {/* <div className="displayModes">
+          <a onClick={this.clearAll}>Clear All</a> / <a onClick={this.displayAll}>Show All</a>
+        </div> */}
+        {/* <div>
+        {this.state.data.feeds.map((feed: FeedData, i: number) =>
+             <img key={i} src={feed.icon} height="16px" alt={feed.name} />
+          )}
+        </div> */}
+        <div className="feeds">
           {this.state.data.feeds.map((feed: FeedData, i: number) =>
-              <img key={i} src={feed.icon} height="16px" alt={feed.name} />
-            )}
-          </div> */}
-          <div className="feeds">
-            {this.state.data.feeds.map((feed: FeedData, i: number) =>
-              <Feed
-                key={feed.id}
-                feed={
-                  new FeedService(
-                    feed,
-                    this.state.data.state.updates[feed.id],
-                    this.state.store
-                  )
-                }
-                unsecured={feed.notSecured}
-              />
-            )}
+            <Feed
+              key={feed.id}
+              id={i}
+              feed={
+                new FeedService(
+                  feed,
+                  this.state.data.state.updates[feed.id],
+                  this.state.store
+                )
+              }
+              unsecured={feed.notSecured}
+            />
+          )}
+        </div>
+        <ReadingList data={this.state.data} store={this.state.store} />
           </div>
-          <ReadingList data={this.state.data} store={this.state.store} />
-          </div>
-        </main>
+      </main>
     );
   }
 }
