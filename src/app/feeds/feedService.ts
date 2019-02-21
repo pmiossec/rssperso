@@ -213,7 +213,10 @@ export class FeedService {
 
     const items = xmlDoc.getElementsByTagName('item');
     for (var iItems = 0; iItems < items.length; iItems++) {
-      var item = items.item(iItems);
+      const item = items.item(iItems);
+      if (!item) {
+        continue;
+      }
       var link = {
         url: this.getElementContentByTagName(item, 'link'),
         title: item
@@ -276,7 +279,7 @@ export class FeedService {
     var iElement: number;
     for (iElement = 0; iElement < element.children.length; iElement++) {
       const foundElement = element.children.item(iElement);
-      if (foundElement.tagName === tagName) {
+      if (foundElement && foundElement.tagName === tagName) {
         return foundElement;
       }
     }
@@ -294,7 +297,7 @@ export class FeedService {
     const linksWebSite = xmlDoc.getElementsByTagName('link');
     for (var iLinks = 0; iLinks < linksWebSite.length; iLinks++) {
       var tag = linksWebSite.item(iLinks);
-      if (tag.getAttribute('rel') === 'alternate') {
+      if (tag && tag.getAttribute('rel') === 'alternate') {
         this.webSiteUrl = tag.getAttribute('href');
         break;
       }
@@ -304,7 +307,11 @@ export class FeedService {
     // }
     const items = xmlDoc.getElementsByTagName('entry');
     for (var iEntries = 0; iEntries < items.length; iEntries++) {
-      var item = items.item(iEntries);
+      const item = items.item(iEntries);
+      if (!item) {
+        continue;
+      }
+
       const linkFound = this.getElementByTagName(item, 'link');
       if (!linkFound) {
         continue;
