@@ -15,14 +15,19 @@ interface IFeedState {}
 export class Feed extends React.Component<IFeedProps, IFeedState> {
   shouldDisplayEmptyFeeds: boolean = false;
   hiddenTextArea: HTMLTextAreaElement = document.createElement('textarea');
+  timerId: number;
 
   componentWillMount(): void {
     this.loadFeed().then(() => {
-      setInterval(
+      this.timerId = window.setInterval(
         () => this.loadFeed(),
         this.props.feed.calculateRefreshInterval()
       );
     });
+  }
+
+  componentWillUnmount(): void {
+    window.clearInterval(this.timerId);
   }
 
   loadFeed(): Promise<void> {

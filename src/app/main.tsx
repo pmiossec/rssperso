@@ -6,19 +6,19 @@ import { ReadingList } from './readingList/readingList';
 import { NotificationContainer } from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
 
-interface IMainProps {}
+interface IMainProps { }
 interface IMainState {
   data: Gist;
   store: GistStorage;
 }
 
 export class Main extends React.Component<IMainProps, IMainState> {
+  private isUpdated: boolean = false;
+  private refreshTimer: number;
   GetFeed(): string {
     const feeds: string[] = [
-      'aHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9naXN0cy8xZDgwMDQzOGMyZWRlZTNlMDdlNTQ3YTNkNGQ' +
-    'yMGVmMT9hY2Nlc3NfdG9rZW49MzAzNzJiMmNkOWQ5NDdmZjhjODg5MWIzMTUzNDA1MTNmMjJkMTEzNw=', // Philippe
-    'aHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9naXN0cy83NzQ3ODIzNzZmYmQ4ZDAxYThiYzI2NjljZGJmN' +
-     'jA5Nj9hY2Nlc3NfdG9rZW49MzAzNzJiMmNkOWQ5NDdmZjhjODg5MWIzMTUzNDA1MTNmMjJkMTEzNw=' // Khanh
+      '1d800438c2edee3e07e547a3d4d20ef1' , // Philippe
+      '774782376fbd8d01a8bc2669cdbf6096' // Khanh
     ];
 
     if (window.location.search.indexOf('khanh') !== -1) {
@@ -32,6 +32,16 @@ export class Main extends React.Component<IMainProps, IMainState> {
     store.loadGist().then(data => {
       this.setState({ store, data });
     });
+    this.refreshTimer = window.setInterval(
+      () => store.isGistUpdated().then(isUpdated => {
+        if (isUpdated) {
+          this.isUpdated = true;
+          window.clearInterval(this.refreshTimer);
+          this.forceUpdate();
+        }
+      }),
+      1000 * 60
+    );
   }
 
   // clearAll = () => {
@@ -46,7 +56,7 @@ export class Main extends React.Component<IMainProps, IMainState> {
 
   hashCode = (text: string) => {
     // tslint:disable-next-line:no-bitwise
-    return text.split('').reduce((a, b) => {  a = (a << 5) - a + b.charCodeAt(0); return a & a; }, 0);
+    return text.split('').reduce((a, b) => { a = (a << 5) - a + b.charCodeAt(0); return a & a; }, 0);
   }
 
   render() {
@@ -54,38 +64,42 @@ export class Main extends React.Component<IMainProps, IMainState> {
       return <div>&nbsp;&nbsp;loading feeds...</div>;
     }
 
+    if (this.isUpdated) {
+      return <a href="#" onClick={() => location.reload()}> Is Updated => should refresh!!!</a>;
+    }
+
     const darkModeEnabled = window.location.search.indexOf('dark') !== -1;
 
     return (
       <main className={darkModeEnabled ? 'dark' : 'light'}>
         <div className="feeds">
-        <NotificationContainer />
-        {/* <div className="displayModes">
+          <NotificationContainer />
+          {/* <div className="displayModes">
           <a onClick={this.clearAll}>Clear All</a> / <a onClick={this.displayAll}>Show All</a>
         </div> */}
-        {/* <div>
+          {/* <div>
         {this.state.data.feeds.map((feed: FeedData, i: number) =>
              <img key={i} src={feed.icon} height="16px" alt={feed.name} />
           )}
         </div> */}
-        <div className="feeds">
-          {this.state.data.feeds.map((feed: FeedData, i: number) =>
-            <Feed
-              key={feed.id}
-              id={i}
-              feed={
-                new FeedService(
-                  feed,
-                  this.state.data.state.updates[feed.id],
-                  this.state.store
-                )
-              }
-              unsecured={feed.notSecured}
-            />
-          )}
-        </div>
-        <ReadingList data={this.state.data} store={this.state.store} />
+          <div className="feeds">
+            {this.state.data.feeds.map((feed: FeedData, i: number) =>
+              <Feed
+                key={feed.id}
+                id={i}
+                feed={
+                  new FeedService(
+                    feed,
+                    this.state.data.state.updates[feed.id],
+                    this.state.store
+                  )
+                }
+                unsecured={feed.notSecured}
+              />
+            )}
           </div>
+          <ReadingList data={this.state.data} store={this.state.store} />
+        </div>
       </main>
     );
   }

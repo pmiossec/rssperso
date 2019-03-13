@@ -52,6 +52,7 @@ interface GistFilesContent {
 interface Storage {
   files: GistFilesContent;
   history: {}[];
+  updated_at: string;
 }
 
 interface GistFileUpdate {
@@ -62,23 +63,54 @@ interface GistUpdate {
   files: { [fileId: string]: GistFileUpdate };
 }
 
+interface UserGistUpdate {
+  id: string;
+  updated_at: string;
+}
+
 const FeedStateFileKey: string = 'state.json';
 const ReadingListFileKey: string = 'readlist.json';
+const GithubApiUrl: string = 'https://api.github.com/';
 
 export class GistStorage {
+  private urlPart: string = atob('P2FjY2Vzc190b2tlbj0zMDM3MmIyY2Q5Z'
+  + 'Dk0N2ZmOGM4ODkxYjMxNTM0MDUxM2YyMmQxMTM3');
   public receivedPromise: axios.AxiosPromise<{}>;
   public dataFetched: boolean = false;
+  private lastUpdate: Date;
   private lastItemRemoved: ReadListItem | null;
+  private updateGistUrl: string = GithubApiUrl + 'users/pmiossec/gists' + this.urlPart + '&since=';
 
   private data: Gist;
   private gistUrl: string;
+  private gistId: string;
 
-  constructor(gistUrl: string) {
-    this.gistUrl = this.goodOne(gistUrl);
+  constructor(gistId: string) {
+    this.gistId = gistId;
+    this.gistUrl = GithubApiUrl + 'gists/' + gistId + this.urlPart;
   }
 
-  private goodOne = (str: string): string => {
-    return atob(str + '=');
+  public isGistUpdated = (): Promise<boolean> => {
+    const updateDate = new Date(this.lastUpdate.getTime());
+    updateDate.setSeconds(updateDate.getSeconds() + 1);
+    return axios.default
+    .get(this.updateGistUrl + updateDate.toISOString())
+    .then((response: axios.AxiosResponse<UserGistUpdate[]>) => {
+      if (response.data.filter(g => g.id === this.gistId).length === 0 ) {
+        return false;
+      }
+      return true;
+    })
+    .catch(err => {
+      // tslint:disable-next-line:no-console
+      console.error('Failed to load the gist.', err);
+      NotificationManager.error(
+        'Failed to load the gist:' + err,
+        'Error fetching',
+        25000
+      );
+      return false;
+    });
   }
 
   public loadGist = (): Promise<Gist> => {
@@ -93,6 +125,7 @@ export class GistStorage {
           readList: this.getReadingListData(data.files),
           revisionCount: data.history.length
         };
+        this.lastUpdate = new Date(data.updated_at);
         this.saveDataInLocalStorage();
         // tslint:disable-next-line:no-console
         // console.log('data from gist received:', this.data);
@@ -178,6 +211,10 @@ export class GistStorage {
             3000
           );
         }
+        var updateGist = new Date(response.data.updated_at);
+        // strange value where github set in the gist not the same time than in the save response (with 1s more :()
+        updateGist.setSeconds(updateGist.getSeconds() + 10);
+        this.lastUpdate = updateGist;
         this.data.revisionCount = newRevisionCount;
         this.data.readList = this.getReadingListData(response.data.files);
         // this.shouldBeSaved = false;
