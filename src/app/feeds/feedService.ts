@@ -56,6 +56,12 @@ const proxyHandlers: CorsProxyHandler[] = [
   // }
 ];
 
+const minute = 60 * 1000;
+const hour = 60 * minute;
+const oneDayInterval = 24 * hour;
+const maxRefreshInterval = 2 * hour;
+const minRefreshInterval = 5 * minute;
+
 export class FeedService {
   private proxySwitcher: number = 0;
   private proxyHandler: CorsProxyHandler;
@@ -354,15 +360,13 @@ export class FeedService {
   }
 
   public calculateRefreshInterval() {
-    const oneDay = 24 * 3600 * 1000;
-    const maxInterval = 2 * 3600 * 1000;
     if (!this.allLinks || this.allLinks.length === 0) {
-      return maxInterval;
+      return maxRefreshInterval;
     }
 
     const lastFeedDate = this.allLinks[0].publicationDate;
-    if (new Date().getTime() - lastFeedDate.getTime() > oneDay) {
-      return maxInterval;
+    if (new Date().getTime() - lastFeedDate.getTime() > oneDayInterval) {
+      return maxRefreshInterval;
     }
 
     const dates = this.allLinks.map(l => {
@@ -376,8 +380,8 @@ export class FeedService {
       .slice(1);
     const moyenne = diff.reduce((d1, d2) => d1 + d2, 0) / diff.length;
     const timeSpan = Math.max(
-      Math.min(maxInterval, moyenne / 2),
-      5 * 60 * 1000
+      Math.min(maxRefreshInterval, moyenne / 2),
+      minRefreshInterval
     );
     return timeSpan;
   }
