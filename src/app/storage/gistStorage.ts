@@ -180,7 +180,7 @@ export class GistStorage {
 
   private getDataFromRemote = () => {
     return axios.default
-      .get(this.gistUrl)
+      .get(this.gistUrl + '&disable-cache=' + new Date().getTime())
       .then((response: axios.AxiosResponse<Storage>) => {
         this.dataFetched = true;
         const data = response.data;
