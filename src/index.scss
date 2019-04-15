@@ -5,6 +5,35 @@ html, body, #root {
   font-size: 15px;
 }
 
+.loading{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+
+  .spinner {
+    padding-bottom: 40px;
+    padding-left: 40px;
+    height: 100px;
+
+    width: 100px;
+    font-size: 100px;
+    animation:spin 4s linear infinite;
+    color: gray;
+    // background-color: #518d6a;
+  }
+}
+
+@keyframes spin {
+  from {
+      transform:rotate(0deg);
+  }
+  to {
+      transform:rotate(360deg);
+  }
+}
+
 .dark {
   background-color: rgb(28,  41, 56);
   color: #eee0e0;

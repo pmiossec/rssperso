@@ -61,7 +61,11 @@ export class Main extends React.Component<IMainProps, IMainState> {
 
   render() {
     if (this.state === null) {
-      return <div>&nbsp;&nbsp;loading feeds...</div>;
+      return (
+      <div className="loading">
+        <div>loading feeds...</div>
+        <div className="spinner">&#9676;</div>
+      </div>);
     }
 
     if (this.isUpdated) {
