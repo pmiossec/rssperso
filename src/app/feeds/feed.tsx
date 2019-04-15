@@ -145,7 +145,7 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
             </a>
           </div>
           <div className="text-badge refresh" onClick={this.refreshFeed}>
-            <a> ⟳
+            <a> &#10227;
             </a>
           </div>
           {!this.props.feed.isDisplayingAllLinks() &&
