@@ -28,6 +28,7 @@ export class Main extends React.Component<IMainProps, IMainState> {
   }
 
   componentWillMount() {
+    document.addEventListener('visibilitychange', this.handleVisibilityChange, false);
     const store = new GistStorage(this.GetFeed());
     store.loadGist().then(data => {
       this.setState({ store, data });
@@ -53,6 +54,12 @@ export class Main extends React.Component<IMainProps, IMainState> {
   //   this.state.data.feeds.forEach(f => f.displayAllLinks());
   //   this.forceUpdate();
   // }
+
+  handleVisibilityChange = () => {
+    if (!document.hidden && this.isUpdated) {
+      location.reload();
+    }
+  }
 
   hashCode = (text: string) => {
     // tslint:disable-next-line:no-bitwise
