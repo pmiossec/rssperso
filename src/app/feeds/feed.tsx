@@ -10,7 +10,7 @@ interface IFeedProps {
   unsecured?: boolean;
 }
 
-interface IFeedState {}
+interface IFeedState { }
 
 export class Feed extends React.Component<IFeedProps, IFeedState> {
   shouldDisplayEmptyFeeds: boolean = false;
@@ -66,7 +66,11 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
   DisplayFeedOnTopOfTheScreen(feedId: string) {
     const feed = document.getElementById((this.props.id).toString());
     if (feed != null) {
-      feed.scrollIntoView(true);
+      feed.scrollIntoView({
+        block: 'nearest',
+        inline: 'nearest',
+        behavior: 'smooth'
+      });
     }
   }
 
