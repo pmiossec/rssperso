@@ -10,11 +10,13 @@ interface IMainProps { }
 interface IMainState {
   data: Gist;
   store: GistStorage;
+  feedServices: FeedService[];
 }
 
 export class Main extends React.Component<IMainProps, IMainState> {
   private isUpdated: boolean = false;
   private refreshTimer: number;
+  private darkModeEnabled: boolean;
   GetFeed(): string {
     const feeds: string[] = [
       '1d800438c2edee3e07e547a3d4d20ef1' , // Philippe
@@ -28,10 +30,19 @@ export class Main extends React.Component<IMainProps, IMainState> {
   }
 
   componentWillMount() {
+    this.darkModeEnabled = window.location.search.indexOf('dark') !== -1;
     document.addEventListener('visibilitychange', this.handleVisibilityChange, false);
     const store = new GistStorage(this.GetFeed());
     store.loadGist().then(data => {
-      this.setState({ store, data });
+
+    const feedServices = data.feeds.map((feed: FeedData) =>
+      new FeedService(
+        feed,
+        data.state.updates[feed.id],
+        store
+      )
+    );
+    this.setState({ store, data, feedServices });
     });
     this.refreshTimer = window.setInterval(
       () => store.isGistUpdated().then(isUpdated => {
@@ -54,6 +65,13 @@ export class Main extends React.Component<IMainProps, IMainState> {
   //   this.state.data.feeds.forEach(f => f.displayAllLinks());
   //   this.forceUpdate();
   // }
+
+  displayAllLinks = (feedService: FeedService) => {
+    return () => {
+      feedService.displayAllLinks();
+      this.forceUpdate();
+    };
+  }
 
   handleVisibilityChange = () => {
     if (!document.hidden && this.isUpdated) {
@@ -79,10 +97,8 @@ export class Main extends React.Component<IMainProps, IMainState> {
       return <a href="#" onClick={() => location.reload()}> Is Updated => should refresh!!!</a>;
     }
 
-    const darkModeEnabled = window.location.search.indexOf('dark') !== -1;
-
     return (
-      <main className={darkModeEnabled ? 'dark' : 'light'}>
+      <main className={this.darkModeEnabled ? 'dark' : 'light'}>
         <div className="feeds">
           <NotificationContainer />
           {/* <div className="displayModes">
@@ -94,22 +110,28 @@ export class Main extends React.Component<IMainProps, IMainState> {
           )}
         </div> */}
           <div className="feeds">
-            {this.state.data.feeds.map((feed: FeedData, i: number) =>
+            {this.state.feedServices.map((feedService: FeedService, i: number) =>
               <Feed
-                key={feed.id}
+                key={feedService.feedData.id}
                 id={i}
-                feed={
-                  new FeedService(
-                    feed,
-                    this.state.data.state.updates[feed.id],
-                    this.state.store
-                  )
-                }
-                unsecured={feed.notSecured}
+                feed={feedService}
+                unsecured={feedService.feedData.notSecured}
               />
             )}
           </div>
           <ReadingList data={this.state.data} store={this.state.store} />
+        </div>
+        <div>
+        {this.state.feedServices.map((feedService: FeedService, i: number) =>
+              <img
+                key={feedService.feedData.id}
+                src={feedService.logo}
+                height="16"
+                width="16"
+                onClick={this.displayAllLinks(feedService)}
+                title={feedService.title}
+              />
+            )}
         </div>
       </main>
     );
