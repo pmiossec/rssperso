@@ -19,15 +19,21 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
 
   componentWillMount(): void {
     this.loadFeed().then(() => {
+      if (this.props.feed.refreshInterval === -1) {
+        this.timerId = -1;
+        return;
+      }
       this.timerId = window.setInterval(
         () => this.loadFeed(),
-        this.props.feed.calculateRefreshInterval()
+        this.props.feed.refreshInterval
       );
     });
   }
 
   componentWillUnmount(): void {
-    window.clearInterval(this.timerId);
+    if (this.timerId !== -1) {
+      window.clearInterval(this.timerId);
+    }
   }
 
   loadFeed(): Promise<void> {

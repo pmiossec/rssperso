@@ -58,6 +58,7 @@ const proxyHandlers: CorsProxyHandler[] = [
 
 const minute = 60 * 1000;
 const hour = 60 * minute;
+const noRefresh = -1;
 const oneDayInterval = 24 * hour;
 const maxRefreshInterval = 2 * hour;
 const minRefreshInterval = 5 * minute;
@@ -75,6 +76,7 @@ export class FeedService {
   public clearDate: Date = new Date(1900, 1, 1);
   private isOrderNewerFirst = false;
   private shouldDisplayAllLinks: boolean = false;
+  public refreshInterval: number;
 
   constructor(
     public feedData: FeedData,
@@ -171,6 +173,9 @@ export class FeedService {
     } catch (ex) {
       this.title = `${this.feedData.url} Error loading :( Error: ${ex}`;
     }
+    this.calculateRefreshInterval();
+    // tslint:disable-next-line:no-console
+    console.info('Refresh ' + this.title, this.refreshInterval / 1000);
   }
 
   public loadFeedContent(): Promise<void> {
@@ -361,14 +366,21 @@ export class FeedService {
 
   public calculateRefreshInterval() {
     if (!this.allLinks || this.allLinks.length === 0) {
-      return maxRefreshInterval;
+      this.refreshInterval = maxRefreshInterval;
+      return;
     }
 
-    const lastFeedDate = this.allLinks[0].publicationDate;
-    if (new Date().getTime() - lastFeedDate.getTime() > oneDayInterval) {
-      return maxRefreshInterval;
+    const lastFeedDate = this.allLinks[this.allLinks.length - 1].publicationDate;
+    const lastRefreshInterval = new Date().getTime() - lastFeedDate.getTime();
+    if (lastRefreshInterval > 2 * oneDayInterval) {
+      this.refreshInterval = noRefresh;
+      return;
     }
 
+    if (lastRefreshInterval > oneDayInterval) {
+      this.refreshInterval = maxRefreshInterval;
+      return;
+    }
     const dates = this.allLinks.map(l => {
       return l.publicationDate.getTime();
     });
@@ -383,6 +395,6 @@ export class FeedService {
       Math.min(maxRefreshInterval, moyenne / 2),
       minRefreshInterval
     );
-    return timeSpan;
+    this.refreshInterval = timeSpan;
   }
 }
