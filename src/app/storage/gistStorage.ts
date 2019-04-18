@@ -238,7 +238,7 @@ export class GistStorage {
     this.saveFileToGist({
       description: `Update publication date for feed "${title}"`,
       files: {
-        [FeedStateFileKey]: { content: JSON.stringify(this.data.state) }
+        [FeedStateFileKey]: { content: JSON.stringify(this.data.state, null, '\t') }
       }
     });
   }
@@ -249,13 +249,13 @@ export class GistStorage {
     state: State | null = null
   ) => {
     let filesToSave = {
-      [ReadingListFileKey]: { content: JSON.stringify(readingList) }
+      [ReadingListFileKey]: { content: JSON.stringify(readingList, null, '\t') }
     };
 
     if (state !== null) {
       this.data.state.last_update = new Date();
       filesToSave[FeedStateFileKey] = {
-        content: JSON.stringify(this.data.state)
+        content: JSON.stringify(this.data.state, null, '\t')
       };
     }
     return this.saveFileToGist({
@@ -325,7 +325,7 @@ export class GistStorage {
   public couldBeRestored = () => this.lastItemRemoved != null;
 
   private saveDataInLocalStorage = () => {
-    localStorage.setItem('rssPerso', JSON.stringify(this.data));
+    localStorage.setItem('rssPerso', JSON.stringify(this.data, null, '\t'));
   }
 
   public sortListByDate = (readList: ReadListItem[]) => {
