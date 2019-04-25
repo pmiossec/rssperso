@@ -49,7 +49,7 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
   clearAllFeed = (): void => {
     this.props.feed.clearAllFeed();
     this.forceUpdate(() => {
-      this.DisplayFeedOnTopOfTheScreen((this.props.id + 1).toString());
+      this.displayFeedOnTopOfTheScreen((this.props.id + 1).toString());
     });
   }
 
@@ -59,12 +59,12 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
 
   clearFeed = (date: Date): void => {
     this.props.feed.clearFeed(date);
-    this.DisplayFeedOnTopOfTheScreen((this.props.id).toString());
+    this.displayFeedOnTopOfTheScreen((this.props.id).toString());
     this.forceUpdate();
   }
 
-  DisplayFeedOnTopOfTheScreen(feedId: string) {
-    const feed = document.getElementById((this.props.id).toString());
+  displayFeedOnTopOfTheScreen(feedId: string) {
+    const feed = document.getElementById(feedId);
     if (feed != null) {
       feed.scrollIntoView({
         block: 'nearest',

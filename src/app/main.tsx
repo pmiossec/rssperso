@@ -66,16 +66,24 @@ export class Main extends React.Component<IMainProps, IMainState> {
   //   this.forceUpdate();
   // }
 
-  displayAllLinks = (feedService: FeedService) => {
+  displayAllLinks = (feedService: FeedService, id: number) => {
     return () => {
       feedService.displayAllLinks();
-      this.forceUpdate();
+
+      this.forceUpdate(() => { this.displayFeedOnTopOfTheScreen(id.toString()); });
     };
   }
 
   handleVisibilityChange = () => {
     if (!document.hidden && this.isUpdated) {
       location.reload();
+    }
+  }
+
+  displayFeedOnTopOfTheScreen(feedId: string) {
+    const feed = document.getElementById(feedId);
+    if (feed != null) {
+      feed.scrollIntoView(true);
     }
   }
 
@@ -128,7 +136,7 @@ export class Main extends React.Component<IMainProps, IMainState> {
                 src={feedService.logo}
                 height="16"
                 width="16"
-                onClick={this.displayAllLinks(feedService)}
+                onClick={this.displayAllLinks(feedService, i)}
                 title={feedService.title}
               />
             )}
