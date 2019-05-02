@@ -145,7 +145,9 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
 
   render() {
     let options = null;
-    const linksToDisplay = this.props.feed.getLinksToDisplay();
+    const linksToDisplay = this.props.feed.getLinksToDisplay()
+      .filter(l => this.props.feed.feedData.filter === undefined
+      || l.title.indexOf(this.props.feed.feedData.filter) === -1);
     if (linksToDisplay.length !== 0) {
       options = (
         <span>
@@ -185,10 +187,7 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
 
     let links = (
       <div>
-        {linksToDisplay
-          .filter(l => this.props.feed.feedData.filter === undefined
-            || l.title.indexOf(this.props.feed.feedData.filter) === -1)
-          .map((l: Link, i: number) =>
+        {linksToDisplay.map((l: Link, i: number) =>
           <div key={i}>
             [<a onClick={this.clearFeed.bind(null, l.publicationDate)}>
               {Helper.DateFormatter.formatDate(l.publicationDate)}
