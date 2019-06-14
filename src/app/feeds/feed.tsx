@@ -121,7 +121,7 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
   private replaceInTitle = (title: string) => {
     // https://emojiterra.com/fr/activites/
     return this.decodeEntities(title)
-      .replace('Tennis', '🎾')
+      .replace('  ', ' ')
       .replace('Tennis', '🎾')
       .replace('Basket', '🏀')
       .replace('Football', '⚽')
