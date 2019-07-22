@@ -26,6 +26,7 @@ interface Feeds {
 export interface State {
   last_update: Date;
   updates: { [feedid: string]: Date };
+  raw_url: string;
 }
 
 export interface ReadListItem {
@@ -35,12 +36,17 @@ export interface ReadListItem {
   publicationDate: Date;
 }
 
-interface GistFileContent {
+interface GistFileDescription {
   filename: string;
   type: string;
   language: string;
   raw_url: string;
   size: string;
+  truncated: string;
+  content: string;
+}
+
+interface GistFileContent extends GistFileDescription {
   truncated: string;
   content: string;
 }
@@ -63,11 +69,13 @@ interface GistUpdate {
   files: { [fileId: string]: GistFileUpdate };
 }
 
-interface UserGistUpdate {
+interface UserGistUpdates {
   id: string;
-  updated_at: string;
+  // updated_at: string;
+  files: { [fileId: string]: GistFileDescription };
 }
 
+const FeedFileKey: string = 'feed.json';
 const FeedStateFileKey: string = 'state.json';
 const ReadingListFileKey: string = 'readlist.json';
 const GithubApiUrl: string = 'https://api.github.com/';
@@ -95,8 +103,9 @@ export class GistStorage {
     updateDate.setSeconds(updateDate.getSeconds() + 1);
     return axios.default
     .get(this.updateGistUrl + updateDate.toISOString())
-    .then((response: axios.AxiosResponse<UserGistUpdate[]>) => {
-      if (response.data.filter(g => g.id === this.gistId).length === 0 ) {
+    .then((response: axios.AxiosResponse<UserGistUpdates[]>) => {
+      if (response.data.filter(g => g.id === this.gistId
+        && g.files[FeedStateFileKey].raw_url !== this.data.state.raw_url).length === 0 ) {
         return false;
       }
       return true;
@@ -146,15 +155,16 @@ export class GistStorage {
   }
 
   //#region Convert gist data
-  private getFeedsData = (data: GistFilesContent) => (JSON.parse(data['feed.json'].content) as Feeds).feeds;
+  private getFeedsData = (data: GistFilesContent) => (JSON.parse(data[FeedFileKey].content) as Feeds).feeds;
 
   private getFeedStateData = (data: GistFilesContent): State => {
     const content = data[FeedStateFileKey].content;
     if (content === '') {
-      return { last_update: new Date(1990, 1, 1), updates: {} };
+      return { last_update: new Date(1990, 1, 1), updates: {}, raw_url: '' };
     }
     const state = (JSON.parse(content) as State);
     state.last_update = new Date(state.last_update);
+    state.raw_url = data[FeedStateFileKey].raw_url;
     Object.keys(state.updates).forEach(k => state.updates[k] = new Date(state.updates[k]));
     return state;
   }
@@ -216,6 +226,7 @@ export class GistStorage {
         updateGist.setSeconds(updateGist.getSeconds() + 10);
         this.lastUpdate = updateGist;
         this.data.revisionCount = newRevisionCount;
+        this.data.state.raw_url = response.data.files[FeedStateFileKey].raw_url;
         this.data.readList = this.getReadingListData(response.data.files);
         // this.shouldBeSaved = false;
         NotificationManager.info('Successfully saved update', 'Update', 200);
