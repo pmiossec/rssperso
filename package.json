@@ -16,7 +16,8 @@
   },
   "devDependencies": {
     "node-sass-chokidar": "^0.0.3",
-    "npm-run-all": "^4.0.2"
+    "npm-run-all": "^4.0.2",
+    "webpack-dev-server": "^3.1.11", "//": " To fix vulnerability (to remove later!)"
   },
   "scripts": {
     "start": "npm-run-all -p watch-css start-ts",
