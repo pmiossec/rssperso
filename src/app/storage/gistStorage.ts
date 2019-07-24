@@ -92,6 +92,7 @@ export class GistStorage {
   private data: Gist;
   private gistUrl: string;
   private gistId: string;
+  private isPushingAnUpdate: boolean = false;
 
   constructor(gistId: string) {
     this.gistId = gistId;
@@ -99,6 +100,9 @@ export class GistStorage {
   }
 
   public isGistUpdated = (): Promise<boolean> => {
+    if (this.isPushingAnUpdate) {
+      return Promise.resolve(false);
+    }
     const updateDate = new Date(this.lastUpdate.getTime());
     updateDate.setSeconds(updateDate.getSeconds() + 1);
     return axios.default
@@ -210,6 +214,7 @@ export class GistStorage {
 
   private saveFileToGist = (content: GistUpdate) => {
     this.saveDataInLocalStorage();
+    this.isPushingAnUpdate = true;
     return axios.default
       .patch(this.gistUrl, content)
       .then((response: axios.AxiosResponse<Storage>) => {
@@ -229,9 +234,11 @@ export class GistStorage {
         this.data.state.raw_url = response.data.files[FeedStateFileKey].raw_url;
         this.data.readList = this.getReadingListData(response.data.files);
         // this.shouldBeSaved = false;
+        this.isPushingAnUpdate = false;
         NotificationManager.info('Successfully saved update', 'Update', 200);
       })
       .catch(err => {
+        this.isPushingAnUpdate = false;
         NotificationManager.error('Failed to save update', 'Update', 3000);
         // tslint:disable-next-line:no-console
         console.error('err saving state:', err);
