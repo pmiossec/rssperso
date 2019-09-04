@@ -56,9 +56,9 @@ const proxyHandlers: CorsProxyHandler[] = [
   // }
 ];
 
+export const noRefresh = -1;
 const minute = 60 * 1000;
 const hour = 60 * minute;
-const noRefresh = -1;
 const oneDayInterval = 24 * hour;
 const maxRefreshInterval = 30 * minute;
 const minRefreshInterval = 5 * minute;
@@ -159,8 +159,7 @@ export class FeedService {
           const error = `${this.feedData.url} => Feed format not supported:` + feedFormat;
           // tslint:disable-next-line:no-console
           console.error(error);
-          NotificationManager.error(error,
-                                    'Feed format not supported', 5000);
+          NotificationManager.error(error, 'Feed format not supported', 5000);
           this.title = error;
       }
 
@@ -396,6 +395,6 @@ export class FeedService {
     this.refreshInterval = Math.max(
       Math.min(maxRefreshInterval, meanInterval / 2),
       minRefreshInterval
-    );
+    ) + Math.random() * minute ;
   }
 }

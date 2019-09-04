@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as Helper from '../helper';
-import { FeedService, Link } from './feedService';
+import { FeedService, Link, noRefresh } from './feedService';
 import { ReadListItem } from '../storage/gistStorage';
 
 interface IFeedProps {
@@ -19,7 +19,7 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
 
   componentWillMount(): void {
     this.loadFeed().then(() => {
-      if (this.props.feed.refreshInterval === -1) {
+      if (this.props.feed.refreshInterval === noRefresh) {
         this.timerId = -1;
         return;
       }
