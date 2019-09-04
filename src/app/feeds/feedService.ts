@@ -60,7 +60,7 @@ const minute = 60 * 1000;
 const hour = 60 * minute;
 const noRefresh = -1;
 const oneDayInterval = 24 * hour;
-const maxRefreshInterval = 2 * hour;
+const maxRefreshInterval = 30 * minute;
 const minRefreshInterval = 5 * minute;
 
 export class FeedService {
@@ -381,20 +381,21 @@ export class FeedService {
       this.refreshInterval = maxRefreshInterval;
       return;
     }
+
     const dates = this.allLinks.map(l => {
       return l.publicationDate.getTime();
     });
-    const date1 = dates.slice(1);
-    const date2 = dates.slice(0, dates.length - 1);
-    const diff = date2
-      .map((d, i) => d - date1[i])
-      .sort((d1, d2) => d2 - d1)
-      .slice(1);
-    const moyenne = diff.reduce((d1, d2) => d1 + d2, 0) / diff.length;
-    const timeSpan = Math.max(
-      Math.min(maxRefreshInterval, moyenne / 2),
+
+    const datesExcludingFirstAndLast = dates.slice(1, dates.length - 1);
+    const diffs: number[] = [];
+    for (let i = 0; i < datesExcludingFirstAndLast.length - 1 ; i++) {
+      diffs.push(datesExcludingFirstAndLast[i + 1] - datesExcludingFirstAndLast[i]);
+    }
+
+    const meanInterval = diffs.reduce((d1, d2) => d1 + d2, 0) / diffs.length;
+    this.refreshInterval = Math.max(
+      Math.min(maxRefreshInterval, meanInterval / 2),
       minRefreshInterval
     );
-    this.refreshInterval = timeSpan;
   }
 }
