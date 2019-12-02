@@ -122,6 +122,8 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
     // https://emojiterra.com/fr/activites/
     return this.decodeEntities(title)
       .replace('  ', ' ')
+      .replace('Equipe de France', '🇫🇷‍')
+      .replace('Jeux olympiques', '🏅')
       .replace('Tennis', '🎾')
       .replace('Basket', '🏀')
       .replace('Football', '⚽')
@@ -134,7 +136,6 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
       .replace('Judo', '🥋')
       .replace('Volley', '🏐')
       .replace('Boxe', '🥊')
-      .replace('Jeux olympiques', '🏅')
       .replace('Voile', '⛵')
       .replace('Equitation', '🏇🏻')
       .replace('Natation', '🏊🏻')
