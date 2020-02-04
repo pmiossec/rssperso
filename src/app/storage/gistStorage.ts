@@ -81,13 +81,11 @@ const ReadingListFileKey: string = 'readlist.json';
 const GithubApiUrl: string = 'https://api.github.com/';
 
 export class GistStorage {
-  private urlPart: string = atob('P2FjY2Vzc190b2tlbj0zMDM3MmIyY2Q5Z'
-  + 'Dk0N2ZmOGM4ODkxYjMxNTM0MDUxM2YyMmQxMTM3');
   public receivedPromise: axios.AxiosPromise<{}>;
   public dataFetched: boolean = false;
   private lastUpdate: Date;
   private lastItemRemoved: ReadListItem | null;
-  private updateGistUrl: string = GithubApiUrl + 'users/pmiossec/gists' + this.urlPart + '&since=';
+  private updateGistUrl: string = GithubApiUrl + 'users/pmiossec/gists?since=';
 
   private data: Gist;
   private gistUrl: string;
@@ -96,7 +94,9 @@ export class GistStorage {
 
   constructor(gistId: string) {
     this.gistId = gistId;
-    this.gistUrl = GithubApiUrl + 'gists/' + gistId + this.urlPart;
+    this.gistUrl = GithubApiUrl + 'gists/' + gistId;
+    axios.default.defaults.headers.common.Authorization = 'Bearer ' + atob('MzAzNzJiMmNkOWQ5NDdmZjhj'
+    + 'ODg5MWIzMTUzNDA1MTNmMjJkMTEzNw==');
   }
 
   public isGistUpdated = (): Promise<boolean> => {
@@ -194,7 +194,7 @@ export class GistStorage {
 
   private getDataFromRemote = () => {
     return axios.default
-      .get(this.gistUrl + '&disable-cache=' + new Date().getTime())
+      .get(this.gistUrl + '?disable-cache=' + new Date().getTime())
       .then((response: axios.AxiosResponse<Storage>) => {
         this.dataFetched = true;
         const data = response.data;
