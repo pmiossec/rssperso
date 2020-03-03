@@ -85,7 +85,7 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
 
   openAll = (): void => {
     this.props.feed.getLinksToDisplay().forEach(element => {
-      window.open(this.unsecureUrl(element.url), '_blank');
+      window.open(this.unsecureUrl(element.url), '_blank', 'noreferrer');
     });
     this.clearAllFeed();
   }
@@ -194,7 +194,12 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
               {Helper.DateFormatter.formatDate(l.publicationDate)}
             </a>|
             <a onClick={this.addToReadList(l, i)}>📑</a>]
-            <a href={this.unsecureUrl(l.url)} target="_blank" onClick={this.removeIfFirstOnClick(l, i)} >
+            <a
+              href={this.unsecureUrl(l.url)}
+              target="_blank"
+              rel="noreferrer"
+              onClick={this.removeIfFirstOnClick(l, i)}
+            >
               {this.props.feed.feedData.enhance === true ? this.replaceInTitle(l.title) : l.title}
             </a>
           </div>
@@ -207,7 +212,7 @@ export class Feed extends React.Component<IFeedProps, IFeedState> {
         <div className="title">
           <div>
             <img src={this.props.feed.logo} />
-            <a href={this.props.feed.webSiteUrl as string} target="_blank">
+            <a href={this.props.feed.webSiteUrl as string} target="_blank" rel="noreferrer" >
               {' '}{this.props.feed.title}
             </a>
           </div>

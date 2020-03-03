@@ -63,11 +63,11 @@ export class ReadingList extends React.Component<
             [<span className="date">
               {Helper.DateFormatter.formatDate(l.publicationDate)}
             </span>
-            |<a href={l.url} target="_blank">
+            |<a href={l.url} target="_blank" rel="noreferrer">
               📄
             </a>
             |<a onClick={this.remove.bind(null, l)}>❌</a>]
-            <a href={l.url} target="_blank" onClick={this.openAndRemoveLink(l)}>
+            <a href={l.url} target="_blank" rel="noreferrer" onClick={this.openAndRemoveLink(l)}>
               {feed && <img src={feed.icon} />}
               {l.title}
             </a>
