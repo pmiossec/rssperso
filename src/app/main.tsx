@@ -3,7 +3,7 @@ import { GistStorage, Gist, FeedData } from './storage/gistStorage';
 import { FeedService } from './feeds/feedService';
 import { Feed } from './feeds/feed';
 import { ReadingList } from './readingList/readingList';
-import { NotificationContainer } from 'react-notifications';
+import { NotificationContainer, NotificationManager } from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
 
 interface IMainProps { }
@@ -29,27 +29,48 @@ export class Main extends React.Component<IMainProps, IMainState> {
     return feeds[0];
   }
 
+  loadGist(store: GistStorage) {
+    store.loadGist().then(data => {
+
+      if (this.state === null) {
+        const feedServices = data.feeds.map((feedConfig: FeedData) =>
+          new FeedService(
+            feedConfig,
+            data.state.updates[feedConfig.id],
+            store
+          )
+        );
+        this.setState({ store, data, feedServices });
+      } else {
+        const newState = {... this.state};
+        for (let i = 0; i < data.feeds.length; i++) {
+          newState.feedServices[i].updateFeedDataOnClear(data.state.updates[data.feeds[i].id]);
+        }
+        this.setState(newState);
+        this.forceUpdate();
+      }
+    });
+  }
+
   componentWillMount() {
     this.darkModeEnabled = window.location.search.indexOf('dark') !== -1;
     document.addEventListener('visibilitychange', this.handleVisibilityChange, false);
     const store = new GistStorage(this.GetFeed());
-    store.loadGist().then(data => {
+    this.loadGist(store);
 
-    const feedServices = data.feeds.map((feed: FeedData) =>
-      new FeedService(
-        feed,
-        data.state.updates[feed.id],
-        store
-      )
-    );
-    this.setState({ store, data, feedServices });
-    });
     this.refreshTimer = window.setInterval(
       () => store.isGistUpdated().then(isUpdated => {
         if (isUpdated) {
           this.isUpdated = true;
           window.clearInterval(this.refreshTimer);
           this.forceUpdate();
+          NotificationManager.warning(
+            'Need refresh!!',
+            'Updated',
+            5000
+          );
+
+          this.loadGist(store);
         }
       }),
       1000 * 60
@@ -95,14 +116,12 @@ export class Main extends React.Component<IMainProps, IMainState> {
   render() {
     if (this.state === null) {
       return (
-      <div className="loading">
-        <div>loading feeds...</div>
-        <div className="spinner">&#9676;</div>
-      </div>);
-    }
-
-    if (this.isUpdated) {
-      return <a href="#" onClick={() => location.reload()}> Is Updated => should refresh!!!</a>;
+        <main className={this.darkModeEnabled ? 'dark' : 'light'}>
+          <div className="loading">
+            <div>loading feeds...</div>
+            <div className="spinner">&#9676;</div>
+          </div>
+        </main>);
     }
 
     return (

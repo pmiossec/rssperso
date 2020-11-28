@@ -118,7 +118,7 @@ export class FeedService {
     this.storage.addItemToReadingList(item, clearFeed);
   }
 
-  private updateFeedDataOnClear(date: Date) {
+  public updateFeedDataOnClear(date: Date) {
     this.clearDate = date;
     this.links = this.links.filter(l => l.publicationDate > this.clearDate);
     this.shouldDisplayAllLinks = false;
